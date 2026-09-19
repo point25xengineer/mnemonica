@@ -101,10 +101,19 @@ class MedicationResolution(BaseModel):
     # populated when status == "resolved"
     rxcui: str | None
     canonical_name: str | None        # RxNorm preferred name
-    tty: str | None                   # IN | BN | PSN | SCD | SBD | SY | TMSY
+    tty: str | None                   # IN | BN | PIN | SY | TMSY
+                                      # (name-index TTYs only — a product TTY
+                                      #  can never be a *match*, only
+                                      #  enrichment; see the index tables)
     ingredients: list[str]            # normalized ingredient names
     brand_names: list[str]            # known brands for this ingredient
     is_brand: bool | None
+
+    # salt specificity — see "The salt problem"
+    salt_unspecified: bool            # True when an IN matched and that
+                                      # ingredient has 2+ PIN salt children
+    salt_candidates: list[str]        # e.g. ["metoprolol succinate",
+                                      #       "metoprolol tartrate"]
 
     # how we got there — drives D16 disposition
     match_type: Literal["exact", "case_insensitive", "fuzzy", "none"]
@@ -123,7 +132,8 @@ class MedicationResolution(BaseModel):
 
     # provenance for the citation chain
     source: Literal["RxNorm Current Prescribable"]
-    source_release: str               # e.g. "09082026"
+    source_release: str               # read from the RxNorm release, never
+                                      # hardcoded — this archive is "09012026"
 ```
 
 ### Resolution algorithm
@@ -132,19 +142,39 @@ Two indexes, built once offline from `RXNCONSO.RRF` filtered to `LAT='ENG'` and
 `SUPPRESS != 'Y'`.
 
 **Spoken-name index** — what clinicians actually say, and the only index
-searched for a name:
+searched for a name. **18,094 strings**, not the 48,046 the raw TTY list
+implies and not the 246,241 in the file:
 
-| TTY | Rows | Content |
+| TTY | Indexed | Content |
 |---|---|---|
-| `IN` | 5,844 | ingredients — *metoprolol succinate* |
-| `BN` | 4,134 | brand names — *Toprol-XL* |
-| `SY` | 28,329 | synonyms |
-| `TMSY` | 9,739 | tall-man synonyms |
+| `IN` | 5,844 | ingredient — *metoprolol* (RxCUI 6918) |
+| `BN` | 4,134 | brand name — *Toprol-XL* |
+| `PIN` | 1,943 | **precise ingredient — *metoprolol succinate* (221124), *metoprolol tartrate* (203191)** |
+| `SY` | 2,902 | synonyms, **after filtering** (28,329 raw − 25,427 dose-bearing) |
+| `TMSY` | 3,271 | tall-man synonyms, **after filtering** (9,739 raw − 6,468) |
 
-**Product index** — `SCD` (12,076) + `SBD` (8,079), full strings like
-*metoprolol succinate 25 MG Extended Release Oral Tablet*. Never searched for a
-name; clinicians do not speak this way, which is precisely why dose lives in
-`parse_sig`. Used for enrichment and cross-validation after a concept is known.
+Two corrections here, both measured off `RXNCONSO.RRF` rather than assumed,
+and both of which the original table got backwards:
+
+- **`SY` and `TMSY` are ~90% and ~66% product strings.** A real `SY` row is
+  `metoprolol succinate 100 MG 24 HR Extended Release Oral Capsule`. Indexing
+  them unfiltered puts 31,895 dose-bearing strings into the index that exists
+  precisely to keep dose out of name matching — and since the rescore uses
+  Jaro-Winkler, which weights *prefix* agreement, every one of those scores
+  high against the bare ingredient and floods the margin test. **Filter
+  `SY`/`TMSY` by `\d+\s*(MG|ML|MCG|UNT|%|/)` at build time.** Apply the
+  filter to those two TTYs only: it would also drop 42 `IN`, 27 `BN` and
+  43 `PIN` rows that are legitimate names containing a numeral.
+- **`PIN` was missing, and it is the TTY that carries salt forms.** The old
+  table labelled `IN` as "*metoprolol succinate*", which is wrong — that string
+  is `PIN` 221124. `IN` holds bare `metoprolol`. See "The salt problem" below.
+
+**Product index** — `SCD` (12,076) + `SBD` (8,079) + `PSN` (21,305), full
+strings like *metoprolol succinate 25 MG Extended Release Oral Tablet*. Never
+searched for a name; clinicians do not speak this way, which is precisely why
+dose lives in `parse_sig`. Used for enrichment and cross-validation after a
+concept is known. `PSN` ("prescribable name") sounds like a spoken name and is
+94.8% dose-bearing — it belongs here, not in the name index.
 
 **Normalization** — one function, applied identically to index keys at build
 time and to the query at lookup. Any asymmetry produces misses that are almost
@@ -156,19 +186,61 @@ impossible to find later.
     mcg/ml/units) -> strip trailing form words (tablet/pill/capsule)
 
 Then emit a **second, salt-stripped key** with `succinate`, `tartrate`,
-`hydrochloride`/`hcl`, `sodium`, `maleate`, `besylate` removed. RxNorm `IN`
-entries are frequently salt forms, so "metoprolol" must be able to reach both
-*metoprolol succinate* and *metoprolol tartrate* — which are different RXCUIs,
-making this a genuine `ambiguous` result rather than something to resolve
-silently. Treat `ER`/`XR`/`SR`/`XL` the same way: strip to base, retain the
-modifier as a separate attribute.
+`hydrochloride`/`hcl`, `sodium`, `maleate`, `besylate` removed — so a spoken
+*"metoprolol succinate"* can also reach bare `metoprolol`. Treat
+`ER`/`XR`/`SR`/`XL` the same way: strip to base, retain the modifier as a
+separate attribute.
+
+### The salt problem — and why the original design could not catch it
+
+The earlier rationale here was inverted, and the correction matters clinically.
+
+It claimed `IN` entries are frequently salt forms, so "metoprolol" would land
+`ambiguous` between two RXCUIs. The data says otherwise:
+
+| String | TTY | RxCUI | In the old index? |
+|---|---|---|---|
+| `metoprolol` | `IN` | 6918 | yes |
+| `metoprolol succinate` | `PIN` | 221124 | **no — `PIN` was indexed nowhere** |
+| `metoprolol tartrate` | `PIN` | 203191 | **no** |
+
+So a clinician saying *"metoprolol"* hit `IN` 6918 on the **stage-1 exact
+lookup**, returned `match_type="exact"`, `status="resolved"`, and printed as
+fact. The salt-stripped key never fired, the ambiguity never surfaced, and the
+two salts were unreachable. A silent confident answer, on the demo's hero drug.
+
+**Succinate is extended-release, dosed once daily. Tartrate is immediate-
+release, dosed twice daily.** Same spoken word, different frequency. This is
+exactly the class of error the whole architecture exists to prevent, and it
+would have walked straight through it.
+
+**The fix, and it is cheap.** Precompute, offline, the set of `IN` concepts
+having **two or more** distinct `PIN` salt children. Measured against this
+release: **32 ingredients**, out of 5,844. Metoprolol is one of them.
+
+- Spoken *"metoprolol succinate"* → exact `PIN` hit. Fully specified. No flag.
+- Spoken *"metoprolol"* → exact `IN` hit, **and the ingredient is on the
+  32-row table** → `status="resolved"`, `salt_unspecified=True`, both salts
+  returned as `salt_candidates`.
+
+Note this is deliberately **not** `ambiguous`. The resolution succeeded — the
+ingredient really is metoprolol, and the clinician really did not say which
+salt. That is D16 category 5's philosophy applied to a different field: *"not
+specified" is a finding, not a failure.* It is also a good demo beat — the
+knowledge base knowing that one spoken word has two dosing schedules is the
+thesis doing visible work.
+
+32 out of 5,844 means this flag is rare enough to be meaningful rather than
+noise. Build the table at ingest; it is one `GROUP BY`.
 
 **Staged match:**
 
 1. **Exact hash lookup** on the normalized key. Most mentions land here.
    -> `match_type="exact"`.
 2. **Deterministic variants** — retry with the salt-stripped and
-   release-modifier-stripped keys. Still no scoring.
+   release-modifier-stripped keys. Still no scoring. A spoken salt form
+   (*"metoprolol succinate"*) hits `PIN` directly at stage 1 and never reaches
+   here; this stage is for the reverse direction and for release modifiers.
 3. **Phonetic candidate generation.** The critical stage, and the reason it is
    phonetic: **Whisper's errors are acoustic, not orthographic — it mishears,
    it does not typo.** Precompute a **Double Metaphone** code for every index
@@ -201,6 +273,8 @@ modifier as a separate attribute.
    Two thresholds. The margin one is the one that prevents harm.
 6. **Enrich** from the RXCUI: `SPL_SET_ID` from `RXNSAT` for the openFDA join,
    plus `RXN_AVAILABLE_STRENGTH` and dose forms for §3 cross-validation.
+   **Also set `salt_unspecified`** by looking the matched `IN` up in the
+   32-row salt table. One hash lookup.
 
    **Brand -> ingredient linkage caveat:** the authoritative
    `has_ingredient` / `tradename_of` graph lives in `RXNREL.RRF` (198 MB),
@@ -213,9 +287,16 @@ modifier as a separate attribute.
 ### Upstream: bias Whisper with the drug list
 
 Going local (D1) cost us ElevenLabs' `keyterms` priming, but Whisper's
-`initial_prompt` is the analogue: seed it with the drugs most likely to appear
-— the ~50 most commonly prescribed, or the ones in the demo script — and
-Whisper produces correct spellings more often, so step 3 fires less often.
+`initial_prompt` is the analogue: seed it with the ~50 most commonly
+prescribed drugs and Whisper produces correct spellings more often, so step 3
+fires less often.
+
+**Seed it with the generic top-50 list only — never with the demo script's own
+drugs.** Two reasons, and the second is the one that bites: priming on the
+script overfits the demo so measured accuracy means nothing, *and* it
+suppresses the `metropolol` → *metoprolol* mistranscription that is the whole
+point of demo beat #2. You would be priming away the error you are about to
+show off catching.
 
 Prompt context is limited (~224 tokens), so this is a targeted bias, not the
 whole vocabulary. It closes the same loop the sponsor API would have:
@@ -226,6 +307,7 @@ whole vocabulary. It closes the same loop the sponsor API would have:
 | Result | Disposition |
 |---|---|
 | `resolved`, `match_type="exact"` | printed as fact |
+| `resolved`, **`salt_unspecified=True`** | prefilled + flagged — *"metoprolol: succinate (once daily) or tartrate (twice daily)?"* Never printed as fact unclicked, because the two differ in dosing frequency |
 | `resolved`, `match_type="fuzzy"`, `edit_distance <= 2` | prefilled + flagged — **likely mistranscription, show both heard and resolved** |
 | `resolved`, `match_type="fuzzy"`, `edit_distance > 2` | prefilled + flagged, low confidence |
 | `ambiguous` | prefilled + flagged, candidates offered for one-click pick |
@@ -413,7 +495,14 @@ class DateResolution(BaseModel):
 `display_string` must carry **both** the resolved date and the original
 phrasing, per D18:
 
-> `"three weeks from today, which is Friday, October 10"`
+> `"three weeks from today, which is Friday, October 9"`
+
+(From a visit on Friday, September 18, 2026. The original example said
+*Friday, October 10* — October 10, 2026 is a **Saturday**. A wrong day-of-week
+on a medical document is precisely the error printing both forms is supposed to
+let a patient catch, so the example failing at it was worth fixing. See D18 for
+the related demo trap: every whole number of weeks from the hackathon's
+Saturday lands on a weekend.)
 
 An elderly patient reading a bare date has no way to catch an error. Reading
 both lets them.
@@ -448,6 +537,9 @@ class MedicationItem(BaseModel):
     change_kind: Literal["new", "increased", "decreased",
                          "stopped", "continued", "unchanged"]
     change_evidence_quote: str            # verbatim support for change_kind
+    change_kind_derived: bool             # True when the pipeline computed it
+                                          # from two parsed doses rather than
+                                          # taking the model's word
 
 class AppointmentItem(BaseModel):
     when: ResolveDateCall
@@ -475,6 +567,31 @@ closed enum, or a nested tool call whose own fields are verbatim quotes. There
 is no free-text field anywhere in the schema. That is the structural expression
 of the thesis in SPEC.md §1.
 
+### The closed enums are not free, and `change_kind` is the expensive one
+
+"Closed enum" guarantees *well-formed*, not *correct*. `change_evidence_quote`
+being verbatim proves the doctor said something; it does not prove the enum
+matches it. And `change_kind` is the **verb of the headline sentence** on the
+action card:
+
+> Dr. —— **increased** your metoprolol from 25 mg to 50 mg.
+
+The template is fixed, so the thesis survives literally — the model authored no
+prose. But it picked between `increased` and `decreased`, which is a one-token
+difference with maximal clinical consequence, and "it only chose from a list"
+is not a safety argument when that is the list. Per SPEC.md D12:
+
+1. **Derive it where possible.** Two parsed doses for one drug, both resolved →
+   `increased`/`decreased` is arithmetic. Set `change_kind_derived=True` and
+   print as fact.
+2. **Otherwise it is prefilled and flagged**, never printed as fact. The
+   clinician's click promotes it.
+
+Also note that template's *"from 25 mg"*: there is no chart input anywhere in
+this system, so a prior dose exists only if the clinician said it aloud. The
+template needs a variant for when it is absent — *"Dr. —— changed your
+metoprolol to 50 mg"* — rather than a blank or an invented baseline.
+
 ---
 
 ## 5. Verification order
@@ -489,11 +606,22 @@ its D16 disposition; nothing proceeds on unverified input.
 3. **Turn attribution** — map offsets to the diarized turn; look up speaker
    role from the enrollment match (D20). A dose from a non-clinician turn ->
    D16 category 3, blocking (D19).
-4. **Tool execution** — `resolve_medication`, `parse_sig`, `resolve_date` run
+4. **Association check** — for each `MedicationItem`, compare the turn its
+   `mention_quote` resolved to against the turns its `sig`, `start_or_stop`
+   and `change_evidence_quote` resolved to. **Different turns -> D16 category
+   8**, flagged and rendered expanded.
+
+   This is the step that covers what span verification structurally cannot.
+   Every quote in a wrong-association item is real and passes step 1 — the
+   model took a genuine *"twice daily"* from drug A's turn and nested it under
+   drug B. Nothing downstream can detect that, so it is caught here by
+   comparing offsets, or it is not caught at all.
+5. **Tool execution** — `resolve_medication`, `parse_sig`, `resolve_date` run
    on their verified arguments.
-5. **Cross-validation** — strength/form consistency, duplicate sig detection.
-6. **Disposition** — assign from the D16 table.
-7. **Render** — templated action card, extractive summary (D7). Only items
+6. **Cross-validation** — strength/form consistency, duplicate sig detection,
+   `change_kind` derivation from two parsed doses where possible.
+7. **Disposition** — assign from the D16 table.
+8. **Render** — templated action card, extractive summary (D7). Only items
    printed as fact or clinician-resolved reach the page.
 
 ---
@@ -506,5 +634,8 @@ its D16 disposition; nothing proceeds on unverified input.
   whether it is internally consistent and consistent with available strengths.
 - **No inference across turns.** A tool sees one verbatim quote. Connecting a
   drug named at 2:10 to a dose stated at 9:40 is the model's structural job via
-  `MedicationItem`, and the clinician confirms it.
+  `MedicationItem` — **and it is the one thing in this system no tool and no
+  verifier can check.** "The clinician confirms it" is only true if the UI
+  shows it, so §5 step 4 detects the cross-turn case and D16 category 8 forces
+  it open rather than leaving it collapsed with everything else that passed.
 - **No writing.** No tool returns patient-facing prose. Templates do that (D7).

@@ -44,17 +44,27 @@ exported.
 
 ## 0d — openFDA bulk · CLOCK
 
+**Do not construct the URLs by hand.** The part count and the zero-padding
+both change between releases, and `seq -w 1 14` yields `01` where openFDA uses
+four digits. Take the manifest:
+
 ```bash
 mkdir -p openfda
-for i in $(seq -w 1 14); do
-  curl -sL -o "openfda/drug-label-${i}-of-0014.json.zip" \
-    "https://download.open.fda.gov/drug/label/drug-label-${i}-of-0014.json.zip" &
-done; wait
+curl -s https://api.fda.gov/download.json \
+  | python3 -c "import json,sys;[print(p['file']) for p in json.load(sys.stdin)['results']['drug']['label']['partitions']]" \
+  | while read -r url; do
+      curl -fL --retry 3 -C - -o "openfda/$(basename "$url")" "$url" &
+    done; wait
 ```
+
+`-f` is the flag that matters: the original `-s` writes an error page silently
+on a 404, and `du -sh` still looks about right. You find out at A8, hours
+later. `--retry 3 -C -` survives hackathon Wi-Fi.
 
 1.77 GB, CC0, no API key. Only step A8 needs it, so it can finish whenever.
 
-**Done when:** `du -sh openfda` shows ~1.8 GB across 14 files.
+**Done when:** `du -sh openfda` shows ~1.8 GB, **and every part passes
+`unzip -t`.** Size alone does not prove a zip is intact.
 
 ## 0e — Kill telemetry · D4
 
@@ -69,8 +79,22 @@ phoning home destroys the D1 claim.
 Put it in the shell profile **and** set it in code, so it survives someone
 running a script in a fresh shell.
 
-**Done when:** it's in the profile, in code, and item 4 of PRESENTATION-NOTES
-still reads true.
+**Order matters, and this is the part that silently fails.** pyannote reads
+the setting at **import time**. An `os.environ[...]` line *below*
+`import pyannote.audio` does nothing at all — and you will believe telemetry
+is off when it is not. In code it goes at the very top of the entry point,
+above every pyannote import.
+
+**Also pin the stack offline once weights are cached**, so 4b's Wi-Fi-off run
+does not discover a lazy metadata fetch on stage:
+
+```bash
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+```
+
+**Done when:** it's in the profile, at the top of the entry point, the offline
+vars are set, and item 4 of PRESENTATION-NOTES still reads true.
 
 ## 0f — Diarization model access
 
@@ -138,7 +162,9 @@ toward the shorter demo clip.
 - [ ] every package imports
 - [ ] ffmpeg resolves
 - [ ] openFDA downloaded
-- [ ] telemetry disabled in profile and code
+- [ ] telemetry disabled in profile and code, **set above the pyannote import**
+- [ ] `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` set, weights pre-cached
+- [ ] every openFDA part passes `unzip -t`
 - [ ] 0g answered, and if it failed, single-speaker mode is written into
       PHASE-2B as the plan rather than a surprise
 - [ ] 0h answered, and the device choice is recorded somewhere Track B reads

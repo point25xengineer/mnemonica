@@ -7,6 +7,14 @@ data/
 *.sqlite
 *.sqlite3
 
+# Logs are PHI too — a dropped-quote log line carries transcript text (D2).
+logs/
+*.log
+*.jsonl
+
+# FHIR output (D26) — a signed note is a medical record, not a build artifact.
+fhir/
+
 # Audio and derived PHI-shaped artifacts. Never commit, even role-play.
 *.wav
 *.mp3

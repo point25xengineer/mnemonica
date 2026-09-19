@@ -111,6 +111,12 @@ within a day, so nothing of value is lost.
   retention windows are a hospital policy question, not ours to invent.
 - Delete the structured extraction too, not just the recording. A list of
   someone's medications is PHI without the audio.
+- **Every derived artifact is in scope, not just the two obvious ones.** D16
+  category 1 logs each dropped quote, and that log line contains transcript
+  text. So do ffmpeg scratch files, crash tracebacks carrying transcript
+  context, and any `.jsonl` debug trace. The one-sentence claim survives
+  exactly one question about logs. Write the sweep against a **session
+  directory**, not against two file paths, so there is nothing to forget.
 
 **D4 — Dependency telemetry is disabled.** Non-negotiable.
 
@@ -121,10 +127,55 @@ the device, this is a credibility kill shot.
 
     export PYANNOTE_METRICS_ENABLED=false
 
+**Order matters.** pyannote reads this at import time. `os.environ[...]` set
+*after* `import pyannote.audio` does nothing — which is the failure mode where
+you believe telemetry is off and it is not. Put it in the shell profile, and in
+code only at the very top of the entry point, above every pyannote import.
+
 Run the demo with Wi-Fi off. It is the cheapest possible proof of the claim.
 
-**D5 — The clinician's enrolled voice embedding is biometric data.** Stored
-locally, never transmitted. It belongs to the clinician, not the patient.
+**D5 — Voice embeddings are biometric data. Both of them.** Stored locally,
+never transmitted.
+
+The clinician's enrolled embedding is the obvious one, and it belongs to the
+clinician, not the patient. But `speaker_embeddings` carries a vector for
+**every** cluster — B3 has to embed the patient's voice in order to compare
+clusters against the enrollment at all, and B6's distance check reads the same
+array. So the pipeline does compute a patient voiceprint, transiently.
+
+**Rule: non-clinician embeddings are never persisted, never logged, and never
+leave the function that computes the distances.** `Session` has no field for
+them. Say this precisely if privacy comes up — "the embedding belongs to the
+clinician" is not quite true, and knowing the difference between *local* and
+*harmless* is the point being made.
+
+**D27 — The patient consents to the recording, and the artifact proves it.**
+
+Numbered last because it was found last, in review. It belongs here.
+
+Nothing in the pipeline turned on a microphone with the patient's knowledge.
+That is a hole in a product whose entire claim is about handling someone's
+most sensitive data carefully, and it is the first question a healthcare-track
+judge asks after the privacy one.
+
+- `Session.consent` is captured **at session start**, before recording, and is
+  a required field — a session cannot reach review without it.
+- The printed footer already names the attesting clinician (D10). It also
+  states that the patient was informed: *"Recorded with your knowledge and
+  consent."*
+- **Massachusetts is an all-party-consent jurisdiction**, and its wiretap
+  statute is criminal rather than civil. We are demoing in Cambridge. Our
+  own audio is teammate role-play (§8) so the demo is clean, but the *product*
+  was specified without a consent step and that is the thing being fixed.
+
+- *Rejected — implicit consent from the visit itself:* consent to be treated
+  is not consent to be recorded, and the distinction is exactly the one a
+  patient would care about.
+- *Rejected — a consent checkbox with no artifact:* if it does not appear on
+  the patient's copy, it is a UI affordance rather than a record.
+
+This is roughly fifteen minutes of work and it closes the largest gap in the
+spec. Do not defer it.
 
 ### 3.2 Product shape
 
@@ -192,6 +243,27 @@ The LLM emits only structured fields, each carrying a verbatim transcript
 quote. Patient-visible prose comes from templates (D7). The model extracted
 and routed; it authored nothing.
 
+**The honest asterisk, stated here rather than discovered by a judge.** Three
+values in the schema are model-decided and *cannot* be span-verified, because
+they are classifications rather than quotes:
+
+| Value | Risk |
+|---|---|
+| `change_kind` | it is the **verb** of the headline sentence — *"Dr. — **increased** your metoprolol"* |
+| `event_kind` | miscategorizes a date rather than inventing one; already a closed enum with an `other` escape |
+| the **association itself** | which `sig` nests under which `medication` — see D16 category 8 |
+
+`change_kind` is the sharp one. Mitigation, in order of preference:
+
+1. **Derive it.** When two doses for one drug are parsed and both resolve,
+   `increased`/`decreased` is arithmetic, not a judgement. Compute it.
+2. When it cannot be derived, `change_kind` is **never printed as fact** — it
+   is prefilled and flagged, and the clinician's click is what promotes it.
+
+A closed enum keeps the thesis in §1 literally true — the model still authored
+no prose — but "it only picked from a list" is not a safety argument when the
+list is {increased, decreased}.
+
 **D13 — Two independent guarantees, neither doing the other's job.**
 
 | Layer | Guarantees | Mechanism |
@@ -226,22 +298,23 @@ present the same size input to the model.
 
 **D16 — Uncertainty disposition table.** *(Q11)*
 
-Seven distinct failure modes. The critical rule: **"I could not hear it" and
+Eight distinct failure modes. The critical rule: **"I could not hear it" and
 "your doctor never said it" must never look the same.** Conflating them builds
 a system that blames itself for the doctor's omissions, or the doctor for its
 own.
 
 | # | Failure mode | Disposition |
 |---|---|---|
-| 1 | **Span verification failed** — quote not in transcript | **Dropped silently**, logged. This is fabrication; the correct response is deletion, not disclosure. |
-| 2 | Low transcription confidence (per-word probability) | Prefilled + flagged, audio auto-cued to that word |
+| 1 | **Span verification failed** — quote not in transcript | **Dropped**, logged, **and counted**. This is fabrication; the correct response is deletion. The *count* is shown (see below). |
+| 2 | Low transcription confidence — per-word `probability`, **or** segment-level `no_speech_prob` / `compression_ratio` | Prefilled + flagged, audio auto-cued to that word |
 | 3 | Attribution ambiguous | **Blocking** for dose/frequency; flagged otherwise |
 | 4 | Drug unresolved against RxNorm | Prefilled with raw heard text + flagged, offering near-matches |
 | 5 | No dose spoken ("take as directed") | Explicit "not specified" — **not an error** |
 | 6 | Loose thread ("we'll adjust your dose", never revisited) | Surfaced as a distinct *"you left this open"* section |
 | 7 | Internal contradiction (20mg at 3:10, 10mg at 11:45) | **Blocking**, both values shown with timestamps |
+| 8 | **Cross-turn association** — a sig, date or `change_kind` drawn from a different turn than the drug mention | Prefilled + flagged, shown **expanded** with both quotes and both timestamps. Never collapsed, never printed as fact unclicked. |
 
-Four dispositions exist: dropped silently, blocking queue item, prefilled and
+Four dispositions exist: dropped, blocking queue item, prefilled and
 flagged for one-click confirm, or printed as fact.
 
 **Only two blocking cases.** Everything else is glance-and-accept, because in
@@ -250,6 +323,28 @@ wrong dose**. Tune the confidence threshold aggressively toward flagging and
 say so as a deliberate choice.
 
 Notes:
+- **Category 1 is dropped but counted, and this is a change from the original
+  reasoning.** "Deletion, not disclosure" is right about the *item* and wrong
+  about the *number*. A silently deleted medication is indistinguishable from
+  one the model never found, and D9 collapses everything non-blocking — so an
+  omission is invisible in a 60-second review, on a page that looks complete.
+  The header reads *"14 confirmed · 2 need your ear · 1 discarded"*. The
+  clinician never sees the fabricated text, which is the part that mattered.
+- **Category 8 is the one the architecture cannot verify.** `str.find` proves
+  a quote is real; it does not prove the quote was attached to the right drug.
+  The model can pull a genuine *"twice daily"* from drug A's turn and nest it
+  under drug B — every span verifies, the card is wrong. This is the residual
+  risk in the whole design and it is why association is surfaced expanded
+  rather than left to the clinician's assumed diligence. Not blocking:
+  blocking it would cost D9's budget on the common case, where the sig and the
+  mention share a turn and nothing needs a second look.
+- Category 2 now reads **segment-level** signals, not just per-word ones.
+  Whisper large-v3 invents text over silence, and an exam room has plenty of
+  it. Those inventions land in `transcript_text`, which makes them *verifiable
+  spans* — `str.find` will happily confirm them. Segment `no_speech_prob` and
+  `compression_ratio` (> ~2.4) are the standard heuristics, and B4's rule that
+  a word with no diarization interval is dropped removes most of them before
+  D16 ever runs.
 - Category 6 is arguably our most valuable output. *"You told the patient
   you'd adjust the dose and never specified it"* is a genuine catch.
 - Category 7: surface both, let the doctor pick. Silently choosing the later
@@ -288,8 +383,16 @@ visit date. Never read mtime again.
 - *Why persist:* `cp` without `-p`, any re-encode, and any cloud sync resets
   mtime. Persisting at ingest keeps D18 correct under all of them.
 - Print **both** the resolved date and the original phrasing — *"three weeks
-  from today, which is Friday, October 10"* — because a patient reading a bare
-  date has no way to catch an error, and reading both lets them.
+  from today, which is Friday, October 9"* (from a visit on Friday,
+  September 18, 2026) — because a patient reading a bare date has no way to
+  catch an error, and reading both lets them.
+- **Demo trap, and the reason that example changed.** Any whole number of
+  weeks from a Saturday is a Saturday. The hackathon is Sept 19–20, 2026,
+  both weekend days, so a recording made during the event plus *"in two
+  weeks"* or *"in three weeks"* resolves to a Saturday follow-up on the
+  printed page. Either pin the demo session's `visit_date` to a weekday, or
+  write a non-multiple-of-seven interval into the script (1d). Check it
+  against a calendar before recording, not after.
 
 ### 3.4 Speech processing
 
@@ -384,6 +487,18 @@ contrib integration, and cp314 arm64 wheels published 2026-09-15.
   Ollama uses xgrammar internally anyway; calling it directly removes the
   layer that breaks.
 
+**If xgrammar cannot compile our schema, we are not dead.** This is the only
+unverified assumption in the build with no documented fallback, and Track C
+dies without one. `VisitExtraction` is a nested Pydantic model, so it emits
+`$defs`/`$ref`; `strict_mode=True` is particular; and the cp314 wheel is days
+old. **Smoke-test `compile_json_schema` against the real schema in hour one**
+(§9), not at hour ten.
+
+Fallback: post-hoc `json.loads` with one reparse retry. We lose D13's *first*
+guarantee — well-formedness — and keep the second, which is the one that
+matters. Span verification is what makes the output true; the grammar only
+makes it parseable. Degraded and honest, like gate 0g.
+
 **D24 — Extraction model: build on 9B, demo on the MoE.**
 
 With xgrammar handling structure, the model's job shrinks sharply. It is not
@@ -418,11 +533,23 @@ one.**
 
 **D25 — Print locally. Mobile deferred.** *(Collision 2)*
 
-Printing keeps the artifact on-device. Mobile delivery of the patient copy is
-explicit future work, not a gap.
+Printing keeps the artifact inside the practice. Mobile delivery of the patient
+copy is explicit future work, not a gap.
 
-**D26 — Digital chart copy is a local FHIR `DocumentReference`, and is
-byte-identical to the printed copy.** *(Q17a, Collision 3)*
+- **Say "inside the practice", not "on-device".** A network printer is a hop,
+  and it spools. It is the provider's own equipment, which is the same
+  argument D26 makes about the chart — but the precise phrasing is what keeps
+  the claim true, and this document is otherwise careful about exactly that.
+  Demo over USB or AirPrint to a local printer if one is in the room.
+
+**D26 — Digital chart copy is a local FHIR `DocumentReference` whose embedded
+content is byte-for-byte the document we printed.** *(Q17a, Collision 3)*
+
+(Phrased carefully: a FHIR resource and a sheet of paper are different
+encodings, so "byte-identical to the printed copy" cannot be literally true.
+What *is* true, and is the actual guarantee, is that the bytes rendered for
+print are the exact bytes stored in `content.attachment` — one render, two
+destinations, no second code path to drift.)
 
 Rehearse this sentence, because it resolves the apparent conflict with D1:
 
@@ -458,7 +585,8 @@ reachable inside 24 hours.
 
 ```
 transcript drug mention
-  -> fuzzy match against RXNCONSO names (~246,241 strings, all TTYs)
+  -> fuzzy match against the SPOKEN-NAME index (18,094 strings — NOT all
+     246,241; see TOOLS.md §1 and the landmine in §7)
   -> RxCUI
   -> RXNSAT.SPL_SET_ID          <-- 1.7M rows over 21,594 RxCUIs
   -> openFDA label set_id
@@ -602,9 +730,44 @@ Each of these has already cost someone time. None should cost it twice.
   That workaround is adequate for v1 but fragile against format variation.
   See TOOLS.md §1 "Resolution algorithm", step 6.
 
+**RxNorm TTYs are not what their names suggest — measured, not assumed**
+
+Counted directly off `RXNCONSO.RRF` (`LAT='ENG'`, `SUPPRESS != 'Y'`):
+
+Matching `\d+\s*(MG|ML|MCG|UNT|%|/)`, case-insensitive:
+
+| TTY | rows | dose-bearing | |
+|---|---|---|---|
+| `IN` | 5,844 | 42 | 0.7% |
+| `BN` | 4,134 | 27 | 0.7% |
+| `PIN` | 1,943 | 43 | 2.2% |
+| **`SY`** | **28,329** | **25,427** | **89.8%** |
+| **`TMSY`** | **9,739** | **6,468** | **66.4%** |
+| **`PSN`** | **21,305** | **20,193** | **94.8%** |
+
+- **`SY` and `TMSY` are overwhelmingly product strings**, not synonyms a
+  clinician would say — `metoprolol succinate 100 MG 24 HR Extended Release
+  Oral Capsule` is an `SY`. Putting them in a "what clinicians say" index
+  defeats the reason `SCD`/`SBD` were excluded from it. **Filter them by dose
+  pattern at build time.**
+- **`PSN` is 94.3% dose-bearing** and belongs in the product index, not the
+  name index.
+- **`PIN` (precise ingredient) is the TTY the design was missing.** Salt forms
+  live there — `metoprolol succinate` is `PIN` 221124, `metoprolol tartrate` is
+  `PIN` 203191 — and `PIN` was in neither index. See TOOLS.md §1.
+- **Apply the dose filter to `SY`/`TMSY` only.** It would also drop 42 `IN`,
+  27 `BN` and 43 `PIN` rows, which are real ingredient names that happen to
+  carry a numeral. Those three TTYs go in whole.
+
+Net: the spoken-name index is **18,094** strings — IN 5,844 + BN 4,134 +
+PIN 1,943 + SY 2,902 + TMSY 3,271 — not the 48,046 the unfiltered TTY list
+implies, and certainly not 246,241.
+
 **Repo hygiene**
 - `.gitignore` the data before `git init`: `*.zip`, `rrf/`, the openFDA
-  directory. 1.85 GB of reference data does not belong in git history.
+  directory, **and `logs/` / `*.log` / `*.jsonl`** — D2's retention claim
+  covers logs, and so must the ignore file. 1.85 GB of reference data does not
+  belong in git history, and neither does a transcript fragment.
 
 ---
 
@@ -630,6 +793,18 @@ never created PHI.
 **Script constraint:** use drugs verified to resolve against RxNorm, and — per
 D19 and §6 — **two speakers only.**
 
+**Budget the wall clock, not just the review.** D9's 60 seconds is the
+*clinician's* time. Nothing in this spec budgets the pipeline's. The live run
+is model loads (several GB of weights) + Whisper + diarization + **one
+constrained generation per turn** across 40–60 turns — plausibly four to six
+minutes, against a demo slot that is usually three to five. Measure it
+end to end at 3b, not at 4b. If it does not fit, start the run under the
+intro slide; that is honest and it is not the same as pre-computing.
+
+Related: Whisper (3.08 GB) and a 20.43 GB MoE against a ~36 GB working set do
+not coexist. Stages run sequentially (§2) — so free each model before loading
+the next, explicitly. MLX will not do it for you in time.
+
 **Start these downloads now.** They are the only things in this project that
 cleverness cannot speed up later: PyTorch (1–2 GB) and openFDA (1.77 GB).
 
@@ -639,6 +814,9 @@ cleverness cannot speed up later: PyTorch (1–2 GB) and openFDA (1.77 GB).
 
 Do these before building on top of the assumption.
 
+- [ ] **`compile_json_schema(VisitExtraction, strict_mode=True)` actually
+      compiles** — hour one, needs no audio, no fixture, no model. The only
+      track-killing assumption in the build (D23)
 - [ ] pyannote 4.0.7 imports and diarizes a 30-second clip on Python 3.14
       (nobody has publicly reported this combination)
 - [ ] MPS diarization output matches CPU on the same file
@@ -648,6 +826,9 @@ Do these before building on top of the assumption.
       (unmeasured; involves a CPU<->GPU hop each step)
 - [ ] 8-bit 9B vs 4-bit 27B on verbatim quote fidelity (D24 hypothesis)
 - [ ] Demo script drugs all resolve against RXNCONSO
+- [ ] The spoken-name index contains no dose-bearing strings after filtering
+      (§7) — grep the built index for `\d+ *(MG|ML|MCG)` and expect zero
+- [ ] Every follow-up date in the script lands on a **weekday** (D18)
 
 ---
 
@@ -681,6 +862,7 @@ Do these before building on top of the assumption.
 | D24 | 9B to build, MoE to demo | — |
 | D25 | Print locally, mobile deferred | — |
 | D26 | Local FHIR DocumentReference, identical to print | Q17a |
+| D27 | Patient consents to the recording; the artifact proves it | — |
 
 See also [PRESENTATION-NOTES.md](PRESENTATION-NOTES.md) for what must be said
 on stage.

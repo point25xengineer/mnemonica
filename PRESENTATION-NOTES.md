@@ -7,9 +7,11 @@ Added as design decisions surface; check this before the pitch.
 
 State plainly what our drug coverage is and is not:
 
-- Drug names resolve against **RxNorm Current Prescribable Content**
-  (~246,241 name strings / 5,844 ingredients / 4,134 brand names).
-  Public domain, no UMLS account.
+- Drug names resolve against **RxNorm Current Prescribable Content**:
+  246,241 English non-suppressed rows in the file, of which our spoken-name
+  index is **18,094** — 5,844 ingredients, 4,134 brand names, 1,943 precise
+  ingredients, plus filtered synonyms. Public domain, no UMLS account.
+  Quote 18,094 if asked what we search; 246,241 is the corpus, not the index.
 - This is the *prescribable* subset: suppressed, obsolete, veterinary-only
   and non-US drugs are deliberately excluded.
 - Clinical label text is cited from **openFDA drug/label** (262,883 records, CC0).
@@ -38,6 +40,19 @@ but have the answer ready.
 Fully local: no audio, transcript or note leaves the device. No BAA needed
 because no third party is involved. Demo audio is teammate role-play, not
 real patient data — we never created PHI.
+
+**Consent (D27) — expect this question, it is the first one after privacy.**
+The patient consents before recording; `Session.consent` is required and the
+printed page states it. Massachusetts is an all-party-consent jurisdiction and
+its wiretap statute is criminal rather than civil, which is worth knowing given
+where we are standing. Our demo audio is teammate role-play, so the demo itself
+was never in scope for it — but the *product* needs the step, and it has one.
+
+**Retention covers derived artifacts, not just the `.wav`.** Logs, ffmpeg
+scratch files and tracebacks carry transcript text. The sweep runs against a
+session directory. *"Audio exists until the doctor signs, or 24 hours"* is a
+claim that survives exactly one follow-up question about logs, so have the
+answer.
 
 ## 4. Dependency network audit — we found and killed a leak
 
@@ -94,10 +109,19 @@ we might not be able to.
 
 ## 7. Biometric data note
 
-The clinician's enrolled voice embedding is a biometric identifier. It is
-stored locally, never transmitted, and belongs to the clinician (not the
-patient). Worth one sentence if privacy comes up — it shows we know the
-difference between "local" and "harmless."
+Voice embeddings are biometric identifiers — **both of them**, which is the
+precise version of this answer.
+
+The clinician's enrolled embedding is the obvious one and belongs to the
+clinician, not the patient. But `speaker_embeddings` carries a vector per
+cluster: we have to embed the patient's voice to compare clusters against the
+enrollment at all. So the pipeline does compute a patient voiceprint,
+transiently. **It is never persisted, never logged, and `Session` has no field
+for it.**
+
+Say it that way. "The embedding belongs to the clinician" is not quite true,
+and the point being made is that we know the difference between *local* and
+*harmless*.
 
 ## 8. Deferred, on purpose (have these ready as "future work")
 
@@ -106,3 +130,29 @@ difference between "local" and "harmless."
 - Drug-drug interaction checking (see item 1 for why — this is a
   deliberate omission, not a gap).
 - Real EHR integration; v1 writes a local FHIR DocumentReference.
+
+## 9. We audited our own knowledge base, not just our dependencies
+
+Item 4 is a dependency audit. This is the data audit, and it is the better
+story because it caught a clinical error rather than a privacy one.
+
+We counted what is actually in RxNorm instead of trusting the TTY names:
+
+- **`SY` is 89.8% dose-bearing product strings**, `TMSY` 66.4%, `PSN` 94.8%.
+  A "synonym" row is `metoprolol succinate 100 MG 24 HR Extended Release Oral
+  Capsule`. Indexing those as spoken names would have flooded our fuzzy matcher
+  with 31,895 strings that carry a dose — in the index built to keep dose out.
+- **`PIN` is where salt forms live, and we had not indexed it.** `metoprolol`
+  is `IN` 6918; `metoprolol succinate` is `PIN` 221124, `metoprolol tartrate`
+  is `PIN` 203191. So *"metoprolol"* matched the bare ingredient exactly and
+  returned a confident answer — hiding that **succinate is extended-release
+  once daily and tartrate is immediate-release twice daily.** Same spoken word,
+  different dosing schedule.
+- We precomputed the **32 ingredients** (of 5,844) where a bare name has two or
+  more salt forms. Say *"metoprolol"* and we resolve the ingredient and flag
+  that the salt was not specified — not an error, a finding, exactly like
+  "take as directed."
+
+The line: *we found this by counting our own data, which is the only way to
+find it. A matcher that looks fine on a demo is the thing we were most afraid
+of shipping.*

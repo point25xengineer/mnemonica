@@ -33,11 +33,18 @@ class Turn(BaseModel):
     words: list[Word]
     text: str
 
+class Consent(BaseModel):
+    """D27 — required. A session cannot reach review without it."""
+    obtained: bool
+    method: Literal["verbal", "written"]
+    obtained_at: datetime
+
 class Session(BaseModel):
     visit_date: date          # D18 — mtime read ONCE at ingest, then persisted
     audio_path: Path
     transcript_text: str      # what span verification searches (D14)
     turns: list[Turn]
+    consent: Consent          # D27 — required, captured BEFORE recording
 ```
 
 Two things worth saying out loud when you agree it:
@@ -47,6 +54,9 @@ Two things worth saying out loud when you agree it:
   `resolve_medication` and span verification search.
 - `visit_date` is persisted, not recomputed. `cp` without `-p` resets mtime,
   and so does any re-encode — read it once at ingest and never again.
+- `consent` is **required now, even though nothing populates it today**.
+  Adding a required field to `Session` at hour 14 means touching four people's
+  call sites, which is the hour-18 failure this meeting exists to prevent.
 
 **Done when:** `contracts.py` exists, is committed, and all four owners have
 read it.
@@ -74,11 +84,24 @@ areas, minimal merge conflicts.
 
 **Done when:** the tree exists with `__init__.py` files and is committed.
 
-## 1c — Author the golden fixture · HUMAN · ~45 min
+## 1c — Author the golden fixtures · HUMAN · ~60 min
 
-**The unlock.** A hand-written `Session` JSON means Tracks C and D build and
-test against realistic input before any audio exists — so a Phase 0 failure
-idles one person instead of three.
+**The unlock.** Hand-written JSON means Tracks C and D build and test against
+realistic input before any audio exists — so a Phase 0 failure idles one person
+instead of three.
+
+**Two files, and the second one is not optional.**
+
+| File | Shape | Unblocks |
+|---|---|---|
+| **1c-i** `fixtures/golden_visit.json` | `Session` — turns, words, offsets | Track C |
+| **1c-ii** `fixtures/golden_extraction.json` | dispositioned items, as C5 would emit them | **Track D** |
+
+A `Session` contains turns and words. It contains no extracted items and no
+dispositions — so Track D, whose first real screen is a *review list*, cannot
+render anything from 1c-i alone and ends up blocked on Track C. That is the
+exact dependency this step exists to break, just moved one person over. Write
+both.
 
 Write it by hand: real turns, plausible timestamps, per-word probabilities
 that vary. Mirror the 1d script exactly, so the fixture doubles as a
@@ -89,16 +112,24 @@ Plant one case per D16 category so the fixture is also the test plan:
 
 | D16 | Plant |
 |---|---|
+| 1 fabrication | (not plantable in the fixture — C4 provokes it with a fake quote) |
 | 2 low confidence | `probability` ≈ 0.4 on a dose numeral |
 | 3 ambiguous attribution | a turn with `role="unknown"` containing a dose |
 | 4 unresolved drug | "your blood pressure pill" |
 | 5 not specified | "just take it as directed" |
 | 6 loose thread | "we'll adjust your dose" — never revisited |
 | 7 contradiction | two different doses for one drug, different timestamps |
+| **8 cross-turn association** | **a drug named in one turn, its sig stated several turns later with another drug mentioned in between** |
 | fuzzy match | `metropolol` — a plausible mistranscription |
+| **salt unspecified** | **bare "metoprolol", no salt named — A5.5's flag** |
 
-**Done when:** `fixtures/golden_visit.json` validates against `Session`, and
-every row above is present and findable.
+Category 8 is the one to plant carefully: two drugs in play, and a `"twice
+daily"` that *could* plausibly attach to either. That is the failure span
+verification cannot see, so the fixture is the only place it gets tested.
+
+**Done when:** `golden_visit.json` validates against `Session`,
+`golden_extraction.json` carries a dispositioned item for every row above, and
+every row is present and findable.
 
 ## 1d — Write the role-play script · HUMAN · ~45 min
 
@@ -111,6 +142,13 @@ entry.
 
 Write real disfluency in — overlaps, restarts, "um". A clean script makes
 accuracy look fake-good and then collapses on stage.
+
+**Check your follow-up dates against a calendar before recording.** Sept 19–20,
+2026 are Saturday and Sunday, and *any* whole number of weeks from a Saturday
+is a Saturday — so "come back in two weeks" and "in three weeks" both print a
+weekend appointment on a medical document. Either pin the session's
+`visit_date` to a weekday or write a non-multiple-of-seven interval into the
+script.
 
 **Done when:** the script is committed, every drug is verified, and it matches
 the fixture turn for turn.
@@ -136,6 +174,7 @@ is clean single-speaker audio.
 
 - [ ] `contracts.py` committed and read by all four owners
 - [ ] skeleton committed
-- [ ] fixture validates and contains all seven D16 cases
+- [ ] `golden_visit.json` validates and contains all eight D16 cases
+- [ ] `golden_extraction.json` exists — **Track D is blocked without it**
 - [ ] script committed, drugs verified, mirrors the fixture
 - [ ] three recordings exist, including the enrollment sample

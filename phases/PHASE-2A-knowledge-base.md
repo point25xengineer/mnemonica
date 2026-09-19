@@ -40,14 +40,56 @@ trailing dose fragments (numerals + `mg`/`milligram`/`mcg`/`ml`/`units`) →
 strip trailing form words (`tablet`/`pill`/`capsule`).
 
 Emit a **second, salt-stripped key**: remove `succinate`, `tartrate`,
-`hydrochloride`/`hcl`, `sodium`, `maleate`, `besylate`. RxNorm `IN` entries are
-often salt forms, so "metoprolol" must reach both *metoprolol succinate* and
-*metoprolol tartrate* — different RXCUIs, so this is a genuine `ambiguous`
-result, not something to resolve silently.
+`hydrochloride`/`hcl`, `sodium`, `maleate`, `besylate` — so a spoken
+*"metoprolol succinate"* can also reach bare `metoprolol`.
 
 Treat `ER`/`XR`/`SR`/`XL` the same: strip to base, keep the modifier.
 
+> **The rationale here used to be backwards.** It claimed `IN` entries are
+> often salt forms, so "metoprolol" would land `ambiguous` between two RXCUIs.
+> Measured against this release: `metoprolol` **is** an `IN` (6918), and the
+> salt forms are `PIN` — 221124 and 203191. So the salt-stripped key never
+> fired and the ambiguity never appeared. A3.5 and A5.5 are the fix.
+
 **Done when:** round-trip tests pass on a table of known variants.
+
+## A3.5 — Fix the index composition · do this BEFORE A4
+
+Counted off `RXNCONSO.RRF` (`LAT='ENG'`, `SUPPRESS != 'Y'`), matching
+`\d+\s*(MG|ML|MCG|UNT|%|/)` case-insensitively:
+
+| TTY | rows | dose-bearing | |
+|---|---|---|---|
+| `IN` | 5,844 | 42 | 0.7% |
+| `BN` | 4,134 | 27 | 0.7% |
+| `PIN` | 1,943 | 43 | 2.2% |
+| **`SY`** | **28,329** | **25,427** | **89.8%** |
+| **`TMSY`** | **9,739** | **6,468** | **66.4%** |
+| **`PSN`** | **21,305** | **20,193** | **94.8%** |
+
+Two things to change, and both are one predicate each:
+
+**1. Filter `SY`/`TMSY` by that dose pattern.** A real `SY` row is
+`metoprolol succinate 100 MG 24 HR Extended Release Oral Capsule` — an `SCD`
+string wearing a different TTY. Unfiltered, they put 31,895 dose-bearing
+strings into the index that exists specifically to keep dose *out* of name
+matching. Since A6 rescores with Jaro-Winkler, which weights **prefix**
+agreement, all of them score high against the bare ingredient and the margin
+test returns `ambiguous` on drugs that should be trivial.
+
+Apply the filter to `SY`/`TMSY` **only** — it would also drop 42 `IN`, 27 `BN`
+and 43 `PIN` rows that are real names containing a numeral.
+
+**2. Add `PIN`.** It was in neither index, and it is where salt forms live.
+`PSN` goes to the *product* index despite its name — 94.8% of it carries a
+dose.
+
+Resulting spoken-name index: **18,094** strings.
+
+    IN 5,844 + BN 4,134 + PIN 1,943 + SY 2,902 + TMSY 3,271
+
+**Done when:** the built index has 18,094 rows and grepping it for
+`\d+ *(MG|ML|MCG)` returns nothing.
 
 ## A4 — Indexes
 
@@ -56,7 +98,7 @@ Three, all precomputed at build time: exact hash, salt-stripped hash, and
 
 Double Metaphone, not Soundex — Soundex buckets are too lossy at 246k strings.
 
-**Done when:** all three built and persisted.
+**Done when:** all three built and persisted over A3.5's 18,094 strings.
 
 ## A5 — Frequency prior
 
@@ -64,17 +106,47 @@ Count `SCD`/`SBD` products per ingredient. Widely prescribed drugs have many
 marketed products, so product count is a serviceable prescribing-frequency
 proxy — computable offline from data you already have.
 
-**Do not skip this.** Without it, fuzzy matching over 246k strings ranks
-obscure entries above obvious answers, and it reads as a broken matcher.
+**Do not skip this.** Without it, fuzzy matching ranks obscure entries above
+obvious answers, and it reads as a broken matcher.
 
 **Done when:** every ingredient has a score, and common drugs outrank obscure
 ones on a spot check.
+
+## A5.5 — The salt table
+
+Precompute, offline, every `IN` concept having **two or more** distinct `PIN`
+salt children. Measured against this release: **32 ingredients**, out of 5,844.
+Metoprolol is one.
+
+Why it matters, in one line: **succinate is extended-release once daily;
+tartrate is immediate-release twice daily.** Same spoken word, different dosing
+schedule. Without this table, *"metoprolol"* hits `IN` 6918 on A6's stage-1
+exact lookup and returns `resolved` / `match_type="exact"` — a confident,
+silent answer that buries the distinction.
+
+With it:
+
+- spoken *"metoprolol succinate"* → exact `PIN` hit. Specified. No flag.
+- spoken *"metoprolol"* → exact `IN` hit, ingredient is on the table →
+  `resolved`, `salt_unspecified=True`, both salts in `salt_candidates`.
+
+Deliberately **not** `ambiguous`. The resolution succeeded — the ingredient
+really is metoprolol and the clinician really did not say which salt. That is
+A9's *"not specified is a finding, not a failure"* applied to a different
+field.
+
+32 of 5,844 means this fires rarely enough to mean something. It is one
+`GROUP BY` at ingest.
+
+**Done when:** the table has ~32 rows, bare `metoprolol` sets
+`salt_unspecified`, and `metoprolol succinate` does not.
 
 ## A6 — `resolve_medication`
 
 Staged, per TOOLS.md §1:
 
-1. exact hash lookup → `match_type="exact"`
+1. exact hash lookup → `match_type="exact"`, then **check A5.5's salt table
+   and set `salt_unspecified`**
 2. deterministic variants (salt-stripped, release-modifier-stripped)
 3. **Double Metaphone candidate generation** — Whisper's errors are acoustic,
    not orthographic, so recall must be phonetic. This recovers
@@ -95,7 +167,9 @@ behavior:
 | nothing above threshold | `unresolved` |
 
 **Done when:** the fixture's `metropolol` resolves with `match_type="fuzzy"`,
-and a deliberately ambiguous input returns two candidates rather than one.
+a deliberately ambiguous input returns two candidates rather than one, and bare
+`metoprolol` comes back `resolved` **with `salt_unspecified=True`** rather than
+a confident bare-ingredient answer.
 
 ## A7 — Brand → ingredient
 
@@ -147,8 +221,13 @@ Handle **past** direction: "you started that three months ago" is valid and
 appears in real histories.
 
 `display_string` carries **both** forms — *"three weeks from today, which is
-Friday, October 10"* — because a patient reading a bare date can't catch an
-error, and reading both lets them.
+Friday, October 9"* (from a visit on Friday, September 18, 2026) — because a
+patient reading a bare date can't catch an error, and reading both lets them.
+
+The old example read *Friday, October 10*; October 10, 2026 is a **Saturday**.
+A wrong day-of-week is exactly what printing both forms is meant to let a
+patient catch, so get your own examples right. Unit-test day-of-week, not just
+the date.
 
 **Done when:** all five statuses reachable, including `unanchored` for
 "the week before your procedure".
@@ -172,7 +251,9 @@ demonstrating itself. It is also the most likely thing to get cut for time.
 
 ## Track A is done when
 
+- [ ] the spoken-name index is 18,094 rows with no dose-bearing strings (A3.5)
 - [ ] `resolve_medication` handles exact, fuzzy and ambiguous correctly
+- [ ] bare `metoprolol` returns `salt_unspecified=True` with both salts (A5.5)
 - [ ] `parse_sig` distinguishes `not_specified` from `unparseable`
 - [ ] `resolve_date` anchors to `visit_date` and handles past direction
 - [ ] cross-validation flags the planted bad strength

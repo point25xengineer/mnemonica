@@ -3,7 +3,7 @@
 **This file is the single source of truth for build state.** Everyone syncs
 here. If it isn't ticked here, it isn't done.
 
-Architecture decisions live in [SPEC.md](SPEC.md) (**D1**–**D26**). Tool
+Architecture decisions live in [SPEC.md](SPEC.md) (**D1**–**D27**). Tool
 contracts live in [TOOLS.md](TOOLS.md). Step-by-step detail lives in
 [phases/](phases/). This file tracks *progress*, not design.
 
@@ -36,10 +36,10 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 |---|---|---|---|
 | Phase 0 — environment | | 0 / 8 | not started |
 | Phase 1 — foundations | | 0 / 5 | not started |
-| Track A — knowledge base | | 0 / 11 | **can start now** |
+| Track A — knowledge base | | 0 / 13 | **can start now** |
 | Track B — audio | | 0 / 6 | waits on 0g, 0h, 1e |
-| Track C — extraction | | 0 / 5 | waits on 1a, 1c |
-| Track D — interface | | 0 / 9 | waits on 1a, 1c |
+| Track C — extraction | | 0 / 6 | waits on 1a, 1c |
+| Track D — interface | | 0 / 10 | waits on 1a, **1c-ii** |
 | Phase 3 — integration | | 0 / 5 | waits on all tracks |
 | Phase 4 — demo | | 0 / 4 | waits on Phase 3 |
 
@@ -50,6 +50,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | **0g** | pyannote imports + runs on Python 3.14? | — | | fail → Track B goes single-speaker, every dose blocking |
 | **0h** | MPS turn boundaries match CPU? | — | | fail → CPU only, ~8 min per 15 min audio |
 | **B5** | word offsets good enough for click-to-play? | — | | fail → check you're on large-v3, not turbo |
+| **C2** | does `compile_json_schema(VisitExtraction)` compile at all? | — | | fail → post-hoc parse + retry; span verification still holds |
 | **C3** | verbatim quote fidelity holding? | — | | fail → 8-bit 9B, then 35B MoE |
 | **3c** | thresholds calibrated? | — | | no labeled data — bias toward flagging |
 
@@ -61,7 +62,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 - [ ] **0b** pip install the stack · CLOCK
 - [ ] **0c** ffmpeg resolves
 - [ ] **0d** openFDA downloaded, 14 parts / 1.77 GB · CLOCK
-- [ ] **0e** `PYANNOTE_METRICS_ENABLED=false` in profile **and** in code
+- [ ] **0e** `PYANNOTE_METRICS_ENABLED=false` in profile **and** in code *(set it above the pyannote import — it is read at import time)*, plus `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` once weights are cached
 - [ ] **0f** diarization model loads (ungated mirror, no token)
 - [ ] **0g** GATE — pyannote on Python 3.14
 - [ ] **0h** GATE — MPS output matches CPU
@@ -70,7 +71,8 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 
 - [ ] **1a** HUMAN — data contract agreed, `contracts.py` committed
 - [ ] **1b** repo skeleton committed
-- [ ] **1c** HUMAN — golden fixture, all 7 D16 cases planted
+- [ ] **1c-i** HUMAN — `fixtures/golden_visit.json` (`Session`), all **8** D16 cases planted
+- [ ] **1c-ii** HUMAN — `fixtures/golden_extraction.json` (dispositioned items) — **Track D is blocked without this**; a `Session` has no items to render
 - [ ] **1d** HUMAN — role-play script, drugs verified, 2 speakers
 - [ ] **1e** HUMAN — clip + long visit + 10 s enrollment recorded
 
@@ -83,9 +85,11 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 - [ ] **A1** RXNCONSO → SQLite (watch the trailing pipe)
 - [ ] **A2** RXNSAT `SPL_SET_ID` slice
 - [ ] **A3** normalization + salt-stripped key
+- [ ] **A3.5** filter `SY`/`TMSY` by dose pattern, add `PIN` → **18,094-string** name index *(do this BEFORE A4 — see SPEC §7)*
 - [ ] **A4** indexes: exact, salt-stripped, Double Metaphone
 - [ ] **A5** frequency prior from product counts
-- [ ] **A6** `resolve_medication` + margin test
+- [ ] **A5.5** salt table — the **32** `IN` concepts with 2+ `PIN` children
+- [ ] **A6** `resolve_medication` + margin test + `salt_unspecified`
 - [ ] **A7** brand → ingredient via SBD brackets
 - [ ] **A8** openFDA → SQLite FTS5 *(needs 0d)*
 - [ ] **A9** `parse_sig` — `not_specified` ≠ `unparseable`
@@ -108,38 +112,44 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 *Owner:* ____  ·  *Needs 1a, 1c. Builds on the fixture, not on Track B.*
 
 - [ ] **C1** schemas — no free-text field anywhere
-- [ ] **C2** xgrammar compile + logits processor
+- [ ] **C2** GATE — xgrammar compiles the real `VisitExtraction`, + logits processor
 - [ ] **C3** GATE — turn-chunked prompt, verbatim fidelity on 9B
 - [ ] **C4** span verification, offsets by `str.find`
-- [ ] **C5** all 7 D16 dispositions fire on the fixture
+- [ ] **C4.5** association check — mention turn vs sig/date turn (**D16 cat 8**)
+- [ ] **C5** all **8** D16 dispositions fire on the fixture
 
 ## Track D — Review UI + output · [phases/PHASE-2D-interface.md](phases/PHASE-2D-interface.md)
 
 *Owner:* ____  ·  *Needs 1a, 1c. Builds on the fixture, not on Track B.*
 
-- [ ] **D1** localhost app shell
-- [ ] **D2** review list — only blocking items demand attention
-- [ ] **D3** click-a-line → audio playback (clinician only)
-- [ ] **D4** blocking-item resolution, keyboard-only
-- [ ] **D5** action card templates
-- [ ] **D6** extractive summary — no generated prose
-- [ ] **D7** print stylesheet, 18px+, clinician footer
-- [ ] **D8** approve → shred audio, write FHIR, print
-- [ ] **D9** 24 h expiry sweep for unapproved sessions
+Steps are **U**1–U10. `D1`–`D27` are SPEC decision IDs; this track used to
+number its steps D1–D9 too, which made *"D8 — approve: shred the audio (D2)"*
+mean two different documents in one sentence.
+
+- [ ] **U1** localhost app shell
+- [ ] **U2** consent capture at session start (**D27**) — required before recording
+- [ ] **U3** review list — only blocking items demand attention; header shows the **discarded count** (D16 cat 1)
+- [ ] **U4** click-a-line → audio playback (clinician only)
+- [ ] **U5** blocking-item resolution, keyboard-only
+- [ ] **U6** action card templates — `change_kind` never printed as fact unless derived
+- [ ] **U7** extractive summary — no generated prose
+- [ ] **U8** print stylesheet, 18px+, clinician footer **+ consent line**
+- [ ] **U9** approve → shred audio **and logs**, write FHIR, print
+- [ ] **U10** 24 h expiry sweep — **exempt pre-computed demo sessions (4a)**
 
 ---
 
 ## Phase 3 — Integration · [phases/PHASE-3-integration.md](phases/PHASE-3-integration.md)
 
 - [ ] **3a** swap fixture for real Track B output
-- [ ] **3b** first end-to-end run
+- [ ] **3b** first end-to-end run — **stopwatch the whole pipeline**, not just the review → ____ s
 - [ ] **3c** HUMAN GATE — tune thresholds
-- [ ] **3d** D16 sweep, all 7 categories on real audio
+- [ ] **3d** D16 sweep, all **8** categories on real audio
 - [ ] **3e** time the review against the 60 s target → ____ s
 
 ## Phase 4 — Demo · [phases/PHASE-4-demo.md](phases/PHASE-4-demo.md)
 
-- [ ] **4a** pre-compute the long file
+- [ ] **4a** pre-compute the long file — **and exempt it from U10's sweep**, or it deletes itself before the demo
 - [ ] **4b** Wi-Fi off, full run, no outbound attempts
 - [ ] **4c** HUMAN — rehearse the five judge questions
 - [ ] **4d** re-verify every script drug against the final build
@@ -172,6 +182,12 @@ Format: `HH:MM · <step> · <what happened>`
 
 ```
 21:55 · 0a · repo pushed to github.com/point25xengineer/visit-notes (private)
+18:25 · spec · review pass landed. SPEC/TOOLS/phases corrected against the
+        actual RxNorm release. Headlines: name index was 67% dose-bearing
+        product strings (A3.5); PIN was unindexed so metoprolol succinate vs
+        tartrate resolved silently to the bare ingredient (A5.5); D16 gained
+        category 8 (cross-turn association); D27 added (patient consent);
+        Track D steps renamed U1-U10. Nothing was deleted — see git diff.
 ```
 
 ---
@@ -190,6 +206,13 @@ Format: `HH:MM · <step> · <what happened>`
 | 8 | Cross-validation vs available strengths |
 | 9 | FHIR `DocumentReference` |
 | 10 | Pre-computed long file |
+
+**Cutting 5 removes a safety property, not a feature.** Without diarization
+there is no clinician attribution, so D19's rule — a dose may only be extracted
+from a clinician turn — has nothing to stand on, and the companion's *"should I
+take four?"* can print as fact. If you cut it, adopt gate 0g's degraded mode in
+the same breath: **every dose becomes a D16 category 3 blocking item**, and say
+so on stage.
 
 Never in scope: live recording, interaction checking, mobile delivery,
 3+ speakers.

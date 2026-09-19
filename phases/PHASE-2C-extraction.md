@@ -56,7 +56,30 @@ ignoring* the `format` schema.
 `numpy()` → `mx.array` each token, which is a CPU↔GPU hop per step. If decode
 feels slow, that's the first place to look.
 
-**Done when:** malformed JSON is impossible — try to provoke it and fail.
+### GATE C2 — do this in your first hour
+
+Compile the **real** schema before you write a prompt, load a model, or read
+the fixture:
+
+```python
+compiler.compile_json_schema(VisitExtraction, strict_mode=True)
+```
+
+It needs nothing else, and it is the only assumption in the build that can kill
+an entire track. `VisitExtraction` is nested Pydantic, so it emits `$defs` and
+`$ref`; `strict_mode` is particular; the cp314 wheel is days old. Also check
+that an **empty** result is reachable — a turn with nothing in it must be able
+to produce empty lists, or constrained decoding will force the model to invent
+something to satisfy the grammar.
+
+**Pass:** it compiles, and a no-content turn yields all-empty lists.
+**Fail:** post-hoc `json.loads` + one reparse retry. You lose D13's *first*
+guarantee — well-formedness — and keep the second. Span verification is what
+makes the output true; the grammar only makes it parseable. Degraded and
+honest, exactly like gate 0g. Record the result in PLAN.md either way.
+
+**Done when:** the real schema compiles (or the fallback is in place and
+logged), and malformed JSON is impossible — try to provoke it and fail.
 
 ## C3 — Extraction prompt · GATE
 
@@ -109,12 +132,39 @@ The zero-match case is D16 category 1. It never surfaces to the clinician,
 never gets a badge, never gets a queue entry. The correct response to detected
 fabrication is deletion, not disclosure.
 
-**Done when:** a deliberately fabricated quote is dropped, and a real one
-resolves to correct offsets.
+The drop is **counted**, and the count reaches the UI (U3). The clinician
+never sees the fabricated text — that part of "deletion, not disclosure" still
+holds — but a silently deleted medication is indistinguishable from one the
+model never found, and D9 collapses everything non-blocking, so an omission
+would otherwise be invisible on a page that looks complete.
+
+**Done when:** a deliberately fabricated quote is dropped, the drop count
+increments, and a real one resolves to correct offsets.
+
+## C4.5 — Association check · new, and it is the one nothing else covers
+
+For each `MedicationItem`, compare the turn its `mention_quote` resolved to
+against the turns its `sig`, `start_or_stop` and `change_evidence_quote`
+resolved to. **Different turns → D16 category 8.**
+
+This is the failure span verification structurally cannot see. The model can
+take a genuine *"twice daily"* from drug A's turn and nest it under drug B —
+every quote passes C4, every offset is real, and the action card is wrong. No
+tool downstream can detect it, because nothing downstream knows what the
+association was *supposed* to be. It is caught here by comparing offsets, or it
+is not caught.
+
+Not blocking: the common case is a sig and a mention sharing a turn, and
+blocking that would spend D9's whole budget on the safe path. It is
+**prefilled, flagged, and rendered expanded** with both quotes and both
+timestamps (U3), so the clinician's eye lands on it without a keystroke.
+
+**Done when:** the fixture's planted cross-turn case is flagged category 8, and
+a same-turn medication is not.
 
 ## C5 — Dispositions
 
-Assign across all seven D16 categories. The full table is SPEC.md D16; the
+Assign across all **eight** D16 categories. The full table is SPEC.md D16; the
 rules that matter most:
 
 - **Categories 2/3/4 and 5/6/7 must never look the same.** "I couldn't hear
@@ -126,6 +176,15 @@ rules that matter most:
   told the patient you'd adjust the dose and never specified it"*
 - Category 7: surface both values with both timestamps. Silently choosing the
   later one is a defensible heuristic and an indefensible product decision
+- Category 8 (cross-turn association) renders **expanded**, never collapsed
+- Category 2 now reads **segment-level** `no_speech_prob` and
+  `compression_ratio`, not just per-word `probability` — Whisper's silence
+  hallucinations are verifiable spans, so C4 cannot catch them
+- **`change_kind` is derived, not trusted, wherever it can be.** Two parsed
+  doses for one drug → `increased`/`decreased` is arithmetic; set
+  `change_kind_derived=True` and print as fact. Otherwise it is prefilled and
+  flagged. It is the verb of the headline sentence on the action card, and a
+  closed enum guarantees well-formed, not correct
 
 Thresholds get tuned in 3c, not here. Wire them as constants you can move.
 
@@ -139,5 +198,7 @@ each in its correct disposition.
 - [ ] malformed JSON is structurally impossible
 - [ ] fabricated quotes are dropped silently
 - [ ] offsets are computed, never model-supplied
-- [ ] all seven D16 categories fire correctly on the fixture
+- [ ] all eight D16 categories fire correctly on the fixture
+- [ ] cross-turn association is detected (C4.5) and same-turn is not flagged
+- [ ] the discarded count is exposed to the UI
 - [ ] the chosen model is recorded, with the fidelity number that chose it

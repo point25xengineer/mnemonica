@@ -32,13 +32,28 @@ You get `WordTiming(word, tokens, start, end, probability)` per word, plus
 `avg_logprob`, `compression_ratio`, `no_speech_prob` per segment. The per-word
 `probability` is what feeds D16 category 2.
 
-**Optional upstream win:** seed `initial_prompt` with the ~50 drug names most
-likely to appear (or the ones in the script). Whisper produces correct
-spellings more often, so Track A's fuzzy stage fires less. Prompt context is
-~224 tokens, so this is a targeted bias, not the whole vocabulary.
+**Optional upstream win:** seed `initial_prompt` with the ~50 most commonly
+prescribed drug names. Whisper produces correct spellings more often, so Track
+A's fuzzy stage fires less. Prompt context is ~224 tokens, so this is a
+targeted bias, not the whole vocabulary.
+
+**Use the generic top-50 — never the demo script's own drugs.** Two reasons,
+and the second is the one that bites: priming on the script overfits the demo
+so measured accuracy means nothing, *and* it suppresses the `metropolol` →
+*metoprolol* mistranscription that is demo beat #2. You would be priming away
+the error you are about to show off catching.
+
+**Keep the segment-level fields.** `no_speech_prob` and `compression_ratio`
+are not decoration — D16 category 2 now reads them, because Whisper large-v3
+invents text over silence and an exam room has plenty of it. Those inventions
+land in `transcript_text`, which makes them **verifiable spans**: `str.find`
+will confirm them and span verification cannot help. The standard heuristic is
+`compression_ratio` > ~2.4 or a high `no_speech_prob`; B4's drop rule catches
+most of the rest.
 
 **Done when:** `Word` records populate with sane timestamps and varied
-probabilities.
+probabilities, and segment-level fields are carried through rather than
+discarded.
 
 ## B2 — Diarization
 
@@ -83,11 +98,19 @@ Interval lookup from `exclusive_speaker_diarization`. Build
 `Session.transcript_text` by concatenation, and set each word's `char_offset`
 as its index into that exact string.
 
+**A word with no overlapping diarization interval is DROPPED, not snapped to
+the nearest speaker.** It never enters `transcript_text` and never gets an
+offset. This is three lines and it is the cheapest anti-hallucination measure
+in the build: Whisper's silence inventions occur exactly where pyannote found
+no speech, so exclusive diarization removes most of them for free — before
+they can become quotable spans. Compute `char_offset` *after* dropping.
+
 **This is the bridge to D14.** If `char_offset` doesn't index into the same
 string that span verification searches, every citation silently breaks.
 
 **Done when:** `transcript_text[w.char_offset:w.char_offset+len(w.text)] ==
-w.text` holds for every word. Assert it.
+w.text` holds for every word. Assert it. And a clip with 20 seconds of silence
+produces no words over that stretch.
 
 ## B5 — Emit `Session` · GATE
 
@@ -101,6 +124,11 @@ accurate enough for click-to-play.
 
 This is a judgment call, not a metric. If offsets are sloppy, the first thing
 to check is that you are on `large-v3-mlx` and not turbo.
+
+**Free the models between stages.** Whisper is 3.08 GB and the MoE is
+20.43 GB against a ~36 GB practical working set. Stages run sequentially
+(SPEC §2), so drop references and clear the MLX cache before loading the next
+model rather than trusting it to happen in time.
 
 **Done when:** the fixture and the real output agree on structure, and
 playback lands on the right words.
@@ -137,6 +165,7 @@ correctness, because nothing unattributed is ever printed as fact.
 
 - [ ] `Session` validates against `contracts.py`
 - [ ] the char_offset assertion passes for every word
+- [ ] words outside every diarization interval are dropped, not reassigned
 - [ ] clinician role assigned correctly, override works
 - [ ] playback lands on the right words for five random citations
 - [ ] `visit_date` persisted, not recomputed

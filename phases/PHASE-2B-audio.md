@@ -1,0 +1,142 @@
+# Phase 2 · Track B — Audio pipeline
+
+**Goal:** audio in, `Session` out — words with timestamps and confidence,
+grouped into turns with roles assigned.
+
+**Blocked by:** gates 0g and 0h, plus recording 1e. **Blocks:** Phase 3 only —
+Tracks C and D build on the fixture, not on you.
+
+---
+
+## B1 — Whisper → `Word[]`
+
+```python
+import mlx_whisper
+r = mlx_whisper.transcribe(
+    path,
+    path_or_hf_repo="mlx-community/whisper-large-v3-mlx",
+    word_timestamps=True,
+)
+```
+
+**Use `whisper-large-v3-mlx` (3.08 GB), not turbo** — D21. Neither ships
+`alignment_heads`, so mlx-whisper falls back to "last half of decoder layers"
+for the DTW alignment that produces word timestamps. On large-v3 that's 16
+layers; **on turbo it's 2**, because turbo has only 4 decoder layers total.
+Your entire provenance chain is word offsets. The 1.5 GB saving is not worth
+it.
+
+Pass the model ID explicitly — the in-code default differs from the README.
+
+You get `WordTiming(word, tokens, start, end, probability)` per word, plus
+`avg_logprob`, `compression_ratio`, `no_speech_prob` per segment. The per-word
+`probability` is what feeds D16 category 2.
+
+**Optional upstream win:** seed `initial_prompt` with the ~50 drug names most
+likely to appear (or the ones in the script). Whisper produces correct
+spellings more often, so Track A's fuzzy stage fires less. Prompt context is
+~224 tokens, so this is a targeted bias, not the whole vocabulary.
+
+**Done when:** `Word` records populate with sane timestamps and varied
+probabilities.
+
+## B2 — Diarization
+
+```python
+pipeline = Pipeline.from_pretrained("pyannote-community/speaker-diarization-community-1")
+out = pipeline(path, num_speakers=2)
+turns = out.exclusive_speaker_diarization
+```
+
+Use **`exclusive_speaker_diarization`** — new in 4.0, built for downstream
+transcription. It strips overlapping speech, so assigning each word to a
+speaker is an unambiguous interval lookup rather than a tie-break.
+
+`num_speakers=2` per D19/Q22c. Accepted limitation: a third voice is merged
+into an existing cluster rather than detected. B6 mitigates.
+
+Remember the 4.x breaks: `DiarizeOutput` not `Annotation`; `token=` not
+`use_auth_token=`; `legacy=True` if you want the old shape.
+
+**Done when:** two clusters with sensible boundaries on the recorded clip.
+
+## B3 — Enrollment match → `role`
+
+pyannote emits anonymous `SPEAKER_00` / `SPEAKER_01` with **no role
+identification** — named-speaker voiceprinting is a paid cloud feature. But
+4.x exposes `out.speaker_embeddings`, an array aligned to
+`speaker_diarization.labels()`. That's the intended hook.
+
+Embed the 10-second enrollment sample from 1e, compare against each cluster
+embedding, assign `role="clinician"` to the nearest and `role="other"` to the
+rest.
+
+Keep a manual "that's me" override (D20, Q15c) — embeddings fail on colds,
+masks and speakerphone.
+
+**Done when:** the clinician's cluster is identified correctly, and the
+override flips it.
+
+## B4 — Word → turn assignment
+
+Interval lookup from `exclusive_speaker_diarization`. Build
+`Session.transcript_text` by concatenation, and set each word's `char_offset`
+as its index into that exact string.
+
+**This is the bridge to D14.** If `char_offset` doesn't index into the same
+string that span verification searches, every citation silently breaks.
+
+**Done when:** `transcript_text[w.char_offset:w.char_offset+len(w.text)] ==
+w.text` holds for every word. Assert it.
+
+## B5 — Emit `Session` · GATE
+
+Persist `visit_date` from the audio file's mtime **once, at ingest** (D18).
+Never read mtime again — `cp` without `-p` resets it, and so does any
+re-encode.
+
+**GATE:** run B1–B5 on the recorded clip and diff against fixture 1c. Then
+listen to five random citations and decide whether the word offsets are
+accurate enough for click-to-play.
+
+This is a judgment call, not a metric. If offsets are sloppy, the first thing
+to check is that you are on `large-v3-mlx` and not turbo.
+
+**Done when:** the fixture and the real output agree on structure, and
+playback lands on the right words.
+
+## B6 — Unexpected-speaker check
+
+After B3, check each cluster's distance from its assigned identity. If a
+cluster's internal variance or distance is implausible, flag the session
+`"unexpected speaker — review manually"`.
+
+This converts the D19 silent-misattribution risk into a D16 blocking item.
+~10 lines, and it's the difference between "we don't handle 3 speakers" and
+"we detect when we might not be able to" — which is what
+PRESENTATION-NOTES item 6 commits you to saying.
+
+**Done when:** a deliberately 3-speaker test file raises the flag.
+
+---
+
+## If gate 0g failed
+
+Single-speaker mode:
+
+- skip B2, B3, B6 entirely
+- all turns get `role="unknown"`
+- **every dose becomes a D16 category 3 blocking item** — the clinician
+  confirms each one
+- say so on stage; the review flow already absorbs it
+
+You lose the "companion asks four, doctor says two" beat. You do not lose
+correctness, because nothing unattributed is ever printed as fact.
+
+## Track B is done when
+
+- [ ] `Session` validates against `contracts.py`
+- [ ] the char_offset assertion passes for every word
+- [ ] clinician role assigned correctly, override works
+- [ ] playback lands on the right words for five random citations
+- [ ] `visit_date` persisted, not recomputed

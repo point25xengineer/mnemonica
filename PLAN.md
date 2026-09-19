@@ -51,7 +51,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | Track | Owner | Progress | State |
 |---|---|---|---|
 | Phase 0 — environment | | 0 / 8 | not started |
-| Phase 1 — foundations | | 0 / 5 | not started |
+| Phase 1 — foundations | Evan + agent | 2 / 6 | in progress |
 | Track A — knowledge base | | 0 / 13 | **can start now** |
 | Track B — audio | | 0 / 6 | waits on 0g, 0h, 1e |
 | Track C — extraction | | 0 / 6 | waits on 1a, 1c |
@@ -89,8 +89,8 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 
 ## Phase 1 — Foundations · [phases/PHASE-1-foundations.md](phases/PHASE-1-foundations.md)
 
-- [ ] **1a** HUMAN — data contract agreed, `contracts.py` committed
-- [ ] **1b** repo skeleton committed
+- [x] **1a** HUMAN — data contract agreed, `contracts.py` committed
+- [x] **1b** repo skeleton committed
 - [ ] **1c-i** HUMAN — `fixtures/golden_visit.json` (`Session`), all **8** D16 cases planted
 - [ ] **1c-ii** HUMAN — `fixtures/golden_extraction.json` (dispositioned items) — **Track D is blocked without this**; a `Session` has no items to render
 - [ ] **1d** HUMAN — role-play script, drugs verified, 2 speakers
@@ -208,6 +208,25 @@ Format: `HH:MM · <step> · <what happened>`
         tartrate resolved silently to the bare ingredient (A5.5); D16 gained
         category 8 (cross-turn association); D27 added (patient consent);
         Track D steps renamed U1-U10. Nothing was deleted — see git diff.
+18:55 · 1b · skeleton committed: visitnotes/{audio,tools,kb,extract,verify,
+        render,ui}, fixtures/, tests/, all with __init__.py.
+18:55 · 1a · contracts.py committed and merged to main — rebase before your
+        next commit. Three additions beyond the PHASE-1 sketch, all agreed:
+        (1) Turn.char_start/char_end + Session.turn_at_offset(), so C4.5 can
+        ask "which turn did this quote come from" without scanning words —
+        D16 cat 8 is the residual risk and should not rest on a hand-rolled
+        loop. (2) Word.text excludes whitespace and the offset contract is
+        exact: transcript_text[off:off+len(text)] == text, validated for
+        every word on construction. mlx-whisper emits " metoprolol" with a
+        leading space; unspecified, B strips it and C does not and every
+        citation is off by one silently. This validator IS B4's assertion,
+        and it runs when golden_visit.json loads. (3) Consent rejects
+        obtained=False (D27).
+18:55 · 1a · Session gained session_dir, and audio_path is validated to live
+        inside it. D2/D3 retention covers logs, ffmpeg scratch and tracebacks
+        — all PHI. audio_path alone invites unlink(audio_path) at U9, which
+        shreds the .wav and leaves the log beside it. U9's owner: shred the
+        directory. 13 tests in tests/test_contracts.py cover all of it.
 ```
 
 ---

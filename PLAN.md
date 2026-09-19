@@ -262,6 +262,15 @@ Format: `HH:MM · <step> · <what happened>`
         — all PHI. audio_path alone invites unlink(audio_path) at U9, which
         shreds the .wav and leaves the log beside it. U9's owner: shred the
         directory. 13 tests in tests/test_contracts.py cover all of it.
+19:07 · 0e · whisper-large-v3-mlx (2.9 GB) pre-cached and verified with
+        HF_HUB_OFFLINE=1: transcribes at 4.9x real-time with word timestamps.
+        Both models now load with the network off, so 4b cannot be ambushed
+        by a lazy fetch on stage. Track B: use path_or_hf_repo=
+        'mlx-community/whisper-large-v3-mlx' — NOT turbo.
+19:07 · 0e · Track B, empirical confirmation of 1a's offset contract: whisper
+        emits words WITH a leading space (' Good', ' morning.'). 1a specified
+        Word.text excludes whitespace, so B4 must strip and shift char_offset
+        by the same amount. The contract validator catches it if you don't.
 ```
 
 ---

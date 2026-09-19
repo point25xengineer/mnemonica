@@ -1,7 +1,9 @@
 # Reference data — 1.85 GB, all publicly redownloadable. Never commit.
 *.zip
-rrf/
-openfda/
+# No trailing slash — these are symlinks into ../vn-shared on this machine,
+# and `rrf/` does not match a symlink named rrf.
+rrf
+openfda
 data/
 *.db
 *.sqlite

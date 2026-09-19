@@ -8,6 +8,38 @@ Tracks C and D build on the fixture, not on you.
 
 ---
 
+## Phase 0 results — read before B1 *(recorded by Phase 0; see PLAN.md Log)*
+
+**0g PASS.** pyannote 4.0.7 diarizes end to end on Python 3.14.7. Single-speaker
+fallback is **not** in play — build the full diarization path. Confirmed API
+shape: `pipeline(...)` returns a `DiarizeOutput`, so reach through
+`out.speaker_diarization` before `.itertracks(yield_label=True)`, or pass
+`legacy=True`. The kwarg is `token=`.
+
+**0h PASS — use MPS.** Same clip on `cpu` and `mps` gave a worst boundary delta
+of **0.0 ms** with identical labels. Throughput was 4.9× real-time on MPS and
+3.5× on CPU — both far above the ~0.55× the plan budgeted, so CPU is a usable
+fallback and the long demo file is affordable either way. The gate ran on a
+28 s synthetic clip; re-run `phase0/gate_0g_0h.py` against 1e's real recording
+before trusting MPS at 15-minute length.
+
+**Do not call `pipeline(path)`.** torchcodec cannot decode on this machine —
+its `libtorchcodec_core*.dylib` needs FFmpeg *shared* libraries and
+`imageio-ffmpeg` ships only a static CLI. Every file-path decode raises
+`OSError`. Load the audio yourself and pass
+`{"waveform": (channel, time) float32 tensor, "sample_rate": int}` — pyannote's
+own documented workaround, and it keeps D1 intact. There is a stdlib-only
+`load_wav` in [`phase0/gate_0g_0h.py`](../phase0/gate_0g_0h.py); lift it.
+Whisper is unaffected — it shells out to the ffmpeg CLI, which resolves.
+
+**Environment.** One shared venv:
+`/Users/evancanty/vn-shared/.venv/bin/python`. Run
+`python phase0/check_env.py` first. Start every entry point with
+`import env_guard` **above** the pyannote import — it raises if you don't.
+`whisper-large-v3-mlx` is pre-cached, so `HF_HUB_OFFLINE=1` will not bite you.
+
+---
+
 ## B1 — Whisper → `Word[]`
 
 ```python

@@ -159,12 +159,31 @@ toward the shorter demo clip.
 
 ## Phase 0 is done when
 
-- [ ] every package imports
-- [ ] ffmpeg resolves
-- [ ] openFDA downloaded
-- [ ] telemetry disabled in profile and code, **set above the pyannote import**
-- [ ] `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` set, weights pre-cached
-- [ ] every openFDA part passes `unzip -t`
-- [ ] 0g answered, and if it failed, single-speaker mode is written into
-      PHASE-2B as the plan rather than a surprise
-- [ ] 0h answered, and the device choice is recorded somewhere Track B reads
+- [x] every package imports
+- [x] ffmpeg resolves *(CLI yes; torchcodec's shared libs no — see below)*
+- [x] openFDA downloaded
+- [x] telemetry disabled in profile and code, **set above the pyannote import**
+- [x] `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` set, weights pre-cached
+- [x] every openFDA part passes `unzip -t`
+- [x] 0g answered — **pass**, full diarization path, no single-speaker fallback
+- [x] 0h answered — **pass**, MPS, recorded in PLAN.md and at the top of
+      PHASE-2B-audio.md where Track B reads it
+
+---
+
+## What Phase 0 actually left behind
+
+| | |
+|---|---|
+| `/Users/evancanty/vn-shared/.venv` | the one venv — run everything with its `bin/python` |
+| `/Users/evancanty/vn-shared/openfda` | 1.8 GB, 14/14 `unzip -t` clean. Symlinked as `./openfda` |
+| `/Users/evancanty/vn-shared/rrf` | RxNorm, unzipped and flattened (`RXNCONSO.RRF` at top level). Symlinked as `./rrf` |
+| `env_guard.py` | import it **first**, above pyannote. Raises if you import it late |
+| `phase0/check_env.py` | one command, every Phase 0 check |
+| `phase0/gate_0g_0h.py` | re-run the gates on real audio when 1e lands |
+
+**The one surprise: torchcodec cannot decode audio here.** `imageio-ffmpeg`
+gives a static CLI, and torchcodec needs FFmpeg *shared* libraries
+(`libavutil.56`–`.61`). There is no Homebrew on this machine. pyannote must be
+fed `{"waveform", "sample_rate"}` dicts — its own documented workaround, no new
+dependency, and D1 stays intact. Logged under Deviations in PLAN.md.

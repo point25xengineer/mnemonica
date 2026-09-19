@@ -1,0 +1,34 @@
+# Reference data — 1.85 GB, all publicly redownloadable. Never commit.
+*.zip
+rrf/
+openfda/
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Audio and derived PHI-shaped artifacts. Never commit, even role-play.
+*.wav
+*.mp3
+*.m4a
+*.flac
+transcripts/
+sessions/
+out/
+
+# Models
+*.bin
+*.safetensors
+*.gguf
+models/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store

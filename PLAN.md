@@ -50,10 +50,10 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 
 | Track | Owner | Progress | State |
 |---|---|---|---|
-| Phase 0 — environment | agent-phase-0 | 1 / 8 | in progress |
+| Phase 0 — environment | agent-phase-0 | 8 / 8 | **done** |
 | Phase 1 — foundations | | 0 / 5 | not started |
 | Track A — knowledge base | | 0 / 13 | **can start now** |
-| Track B — audio | | 0 / 6 | waits on 0g, 0h, 1e |
+| Track B — audio | | 0 / 6 | 0g/0h **pass** — waits on 1e only |
 | Track C — extraction | | 0 / 6 | waits on 1a, 1c |
 | Track D — interface | | 0 / 10 | waits on 1a, **1c-ii** |
 | Phase 3 — integration | | 0 / 5 | waits on all tracks |
@@ -67,8 +67,8 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 
 | Gate | Question | Result | Decided by | Consequence |
 |---|---|---|---|---|
-| **0g** | pyannote imports + runs on Python 3.14? | — | | fail → Track B goes single-speaker, every dose blocking |
-| **0h** | MPS turn boundaries match CPU? | — | | fail → CPU only, ~8 min per 15 min audio |
+| **0g** | pyannote imports + runs on Python 3.14? | **pass** | agent-phase-0 | fail → Track B goes single-speaker, every dose blocking |
+| **0h** | MPS turn boundaries match CPU? | **pass** — 0.0 ms delta, use MPS | agent-phase-0 | fail → CPU only, ~8 min per 15 min audio |
 | **B5** | word offsets good enough for click-to-play? | — | | fail → check you're on large-v3, not turbo |
 | **C2** | does `compile_json_schema(VisitExtraction)` compile at all? | — | | fail → post-hoc parse + retry; span verification still holds |
 | **C3** | verbatim quote fidelity holding? | — | | fail → 8-bit 9B, then 35B MoE |
@@ -79,13 +79,13 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 ## Phase 0 — Environment · [phases/PHASE-0-environment.md](phases/PHASE-0-environment.md)
 
 - [x] **0a** repo init, specs committed
-- [ ] **0b** pip install the stack · CLOCK
-- [ ] **0c** ffmpeg resolves
-- [ ] **0d** openFDA downloaded, 14 parts / 1.77 GB · CLOCK
-- [ ] **0e** `PYANNOTE_METRICS_ENABLED=false` in profile **and** in code *(set it above the pyannote import — it is read at import time)*, plus `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` once weights are cached
-- [ ] **0f** diarization model loads (ungated mirror, no token)
-- [ ] **0g** GATE — pyannote on Python 3.14
-- [ ] **0h** GATE — MPS output matches CPU
+- [x] **0b** pip install the stack · CLOCK
+- [x] **0c** ffmpeg resolves
+- [x] **0d** openFDA downloaded, 14 parts / 1.77 GB · CLOCK
+- [x] **0e** `PYANNOTE_METRICS_ENABLED=false` in profile **and** in code *(set it above the pyannote import — it is read at import time)*, plus `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` once weights are cached
+- [x] **0f** diarization model loads (ungated mirror, no token)
+- [x] **0g** GATE — pyannote on Python 3.14
+- [x] **0h** GATE — MPS output matches CPU
 
 ## Phase 1 — Foundations · [phases/PHASE-1-foundations.md](phases/PHASE-1-foundations.md)
 
@@ -192,7 +192,7 @@ SPEC.md — this table is the record, not the decision.*
 
 | Decision | What we did instead | Why | Who |
 |---|---|---|---|
-| — | — | — | — |
+| 0c / D1 | pyannote is fed `{"waveform", "sample_rate"}` dicts, not file paths | torchcodec's `libtorchcodec_core*.dylib` needs FFmpeg **shared** libs (`libavutil.56`–`.61`); `imageio-ffmpeg` ships only a static CLI, and there is no Homebrew on this machine. Every file-path decode raises `OSError`. The waveform dict is pyannote's own documented workaround (`core/io.py:49`) and adds no dependency — which also keeps D1 intact. Whisper is unaffected: it shells out to the ffmpeg CLI, which resolves. | agent-phase-0 |
 
 ---
 
@@ -208,6 +208,41 @@ Format: `HH:MM · <step> · <what happened>`
         tartrate resolved silently to the bare ingredient (A5.5); D16 gained
         category 8 (cross-turn association); D27 added (patient consent);
         Track D steps renamed U1-U10. Nothing was deleted — see git diff.
+18:52 · 0b · stack installed into ONE shared venv at ../vn-shared/.venv (not
+        four). All of mlx 0.32.2 / mlx-lm 0.31.3 / xgrammar 0.2.7 /
+        mlx-whisper 0.4.3 / pyannote.audio 4.0.7 / transformers 5.17.0 /
+        torch 2.14.0 import clean on Python 3.14.7. cp314 wheels all present.
+18:52 · 0c · ffmpeg 7.1 via imageio-ffmpeg, symlinked to ~/.local/bin/ffmpeg
+        (already on PATH). BUT torchcodec cannot decode: it wants FFmpeg
+        SHARED libs and the static CLI is not one. See Deviations — pyannote
+        gets waveform dicts. Track B: do not call pipeline(path).
+18:53 · 0d · openFDA 1.8 GB, 14/14 parts, every one passes `unzip -t`, all
+        real zips not HTML error pages. In ../vn-shared/openfda, symlinked in.
+18:53 · 0e · PYANNOTE_METRICS_ENABLED=false + HF_HUB_OFFLINE/TRANSFORMERS_
+        OFFLINE in ~/.zshrc, and in code as env_guard.py, which also RAISES if
+        imported after pyannote/torch — the setting is read at import time, so
+        a late import silently does nothing. Verified both ways: guarded
+        is_metrics_enabled() is False, unguarded it is True. PRESENTATION-NOTES
+        item 4 reads true.
+18:53 · 0f · speaker-diarization-community-1 loads from the ungated mirror,
+        no token, no gate form. Weights cached, and it loads again with
+        HF_HUB_OFFLINE=1 — 4b's Wi-Fi-off risk is retired for diarization.
+18:54 · 0g · GATE PASS. Diarized a 28 s two-speaker clip end to end on 3.14.
+        3 turns, boundaries clean, speakers A/B/A as spoken. API notes for
+        Track B: result is DiarizeOutput, use `.speaker_diarization` before
+        .itertracks(); kwarg is token=. Caveat: clip is macOS `say` TTS, not
+        real speech — 1e's recording should re-confirm. Single-speaker
+        fallback NOT needed.
+18:54 · 0h · GATE PASS. Same clip, cpu vs mps: worst boundary delta 0.0 ms,
+        labels identical. USE MPS. 4.9x real-time on MPS vs 3.5x on CPU —
+        both far better than the ~0.55x the plan budgeted, so the long demo
+        file is affordable. Re-run on 1e's 15-min recording before trusting
+        it at length.
+18:55 · 0x · Track A unblock: the briefing says RxNorm is unzipped on disk;
+        it was still a .zip. Unzipped to ../vn-shared/rrf (RXNCONSO.RRF etc.
+        at the top level, nesting flattened) and symlinked as ./rrf, with
+        ./openfda alongside. `phase0/check_env.py` runs every Phase 0 check
+        in one command — run it before starting a track.
 ```
 
 ---

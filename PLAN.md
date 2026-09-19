@@ -94,7 +94,7 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 - [x] **1b** repo skeleton committed
 - [ ] **1c-i** HUMAN — `fixtures/golden_visit.json` (`Session`), all **8** D16 cases planted
 - [ ] **1c-ii** HUMAN — `fixtures/golden_extraction.json` (dispositioned items) — **Track D is blocked without this**; a `Session` has no items to render
-- [ ] **1d** HUMAN — role-play script, drugs verified, 2 speakers
+- [~] **1d** HUMAN — role-play script, drugs verified, 2 speakers *(committed; stays `[~]` until 1c mirrors it turn for turn)*
 - [ ] **1e** HUMAN — clip + long visit + 10 s enrollment recorded
 
 ---
@@ -301,6 +301,16 @@ Format: `HH:MM · <step> · <what happened>`
         emits words WITH a leading space (' Good', ' morning.'). 1a specified
         Word.text excludes whitespace, so B4 must strip and shift char_offset
         by the same amount. The contract validator catches it if you don't.
+19:05 · 1d · script committed: fixtures/roleplay_script.md, 39 turns, ~3:30,
+        hypertension follow-up, 2 speakers. Drugs verified against this
+        RxNorm release before writing, not after: metoprolol IN 6918,
+        succinate PIN 221124, tartrate PIN 203191, lisinopril IN 29046, all
+        SAB=RXNORM and unsuppressed. Nobody says a salt anywhere in the
+        script — that is the A5.5 plant. Follow-up is TEN days, not two
+        weeks: every multiple of seven from the hackathon weekend lands on a
+        weekend, and ten days is a weekday from Fri/Sat/Sun alike, so the
+        printed page is safe whichever anchor D18's mtime actually reads.
+        Stays [~] until 1c mirrors it turn for turn.
 ```
 
 ---

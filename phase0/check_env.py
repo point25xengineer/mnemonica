@@ -53,10 +53,23 @@ def mps():
 
 
 def weights_cached():
+    """0i — every model LOADS with the network off, not merely sits on disk.
+
+    HF_HUB_OFFLINE=1 does not prevent a download; it turns one into a hard
+    failure. This is what makes that flag safe to leave on.
+    """
     os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
     from pyannote.audio import Pipeline
     Pipeline.from_pretrained("pyannote-community/speaker-diarization-community-1")
-    return "diarization weights load offline"
+
+    from huggingface_hub import snapshot_download
+    for repo in ("mlx-community/whisper-large-v3-mlx",
+                 "mlx-community/Qwen3.5-9B-4bit"):
+        snapshot_download(repo)  # raises offline if anything is missing
+
+    return "all 3 models resolve offline (0i)"
 
 
 check("telemetry", telemetry_off)

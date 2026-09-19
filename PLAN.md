@@ -50,7 +50,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 
 | Track | Owner | Progress | State |
 |---|---|---|---|
-| Phase 0 — environment | agent-phase-0 | 8 / 8 | **done** |
+| Phase 0 — environment | agent-phase-0 | 9 / 9 | **done** |
 | Phase 1 — foundations | Evan + agent | 2 / 6 | in progress |
 | Track A — knowledge base | | 0 / 13 | **can start now** |
 | Track B — audio | | 0 / 6 | 0g/0h **pass** — waits on 1e only |
@@ -82,8 +82,9 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 - [x] **0b** pip install the stack · CLOCK
 - [x] **0c** ffmpeg resolves
 - [x] **0d** openFDA downloaded, 14 parts / 1.77 GB · CLOCK
-- [x] **0e** `PYANNOTE_METRICS_ENABLED=false` in profile **and** in code *(set it above the pyannote import — it is read at import time)*, plus `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` once weights are cached
+- [x] **0e** `PYANNOTE_METRICS_ENABLED=false` in profile **and** in code *(set it above the pyannote import — it is read at import time)*, plus `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` once weights are cached *(**0i** is what caches them — the flag alone turns a lazy fetch into a hard failure, it does not prevent one)*
 - [x] **0f** diarization model loads (ungated mirror, no token)
+- [x] **0i** all three model weights pre-cached, each verified to **load** offline · CLOCK
 - [x] **0g** GATE — pyannote on Python 3.14
 - [x] **0h** GATE — MPS output matches CPU
 
@@ -267,6 +268,35 @@ Format: `HH:MM · <step> · <what happened>`
         Both models now load with the network off, so 4b cannot be ambushed
         by a lazy fetch on stage. Track B: use path_or_hf_repo=
         'mlx-community/whisper-large-v3-mlx' — NOT turbo.
+19:35 · 0i · NEW STEP, and it closes a real hole: 0e's HF_HUB_OFFLINE=1 does
+        not prevent a runtime download, it converts one into a hard failure.
+        It was written assuming a caching step that did not exist. 0i is that
+        step. All three models now cached AND verified to load offline, 8.4 GB
+        of blobs: pyannote 31 MB, whisper-large-v3-mlx 3.08 GB (already done
+        at 19:07), Qwen3.5-9B-4bit 5.98 GB (new — was absent entirely). B1 and
+        C3 will no longer discover a 6 GB download mid-build on venue Wi-Fi.
+        check_env.py now asserts all three, so this cannot silently regress.
+19:35 · 0i · Two traps, both recorded in PHASE-0 §0i. (1) `du -sh` on
+        ~/.cache/huggingface/hub/models--* reports ~20 KB for a fully cached
+        3 GB model — HF puts content in blobs/ and fills the snapshot dir with
+        symlinks. It is indistinguishable from a metadata-only stub. Use
+        `du -shL`, or just run check_env.py. (2) 0e put HF_HUB_OFFLINE=1 in
+        ~/.zshrc, so any shell opened after it inherits the flag and
+        snapshot_download FAILS instead of downloading — pull with
+        `env -u HF_HUB_OFFLINE -u TRANSFORMERS_OFFLINE`.
+19:35 · 0i · NOT pulled, deliberately: D24's demo candidate
+        Qwen3.6-35B-A3B-4bit (20.43 GB) and the 8-bit 9B fallback (~10 GB).
+        Both are contingent on C3's outcome and 30 GB of speculative download
+        is worse than the risk it hedges. Track C: if C3 picks either, pull it
+        THAT MOMENT, not on demo day.
+19:36 · 0i · Track C, worth knowing before C2: Qwen3.5-9B-4bit is a THINKING
+        model. Straight out of the box it answered a one-word prompt with
+        'Thinking Process:\n1. **Analyze the Request:**...'. Thinking tokens
+        and an xgrammar logits processor are a bad combination — the grammar
+        constrains the JSON, and the model wants to emit prose first.
+        tok.apply_chat_template(..., enable_thinking=False) is supported and
+        prefills an empty <think></think> block. Load+generate is 1.1s + 1.8s,
+        so C2 is cheap to iterate on.
 19:07 · 0e · Track B, empirical confirmation of 1a's offset contract: whisper
         emits words WITH a leading space (' Good', ' morning.'). 1a specified
         Word.text excludes whitespace, so B4 must strip and shift char_offset

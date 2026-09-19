@@ -110,6 +110,51 @@ auto-approval (instant), but it needs an account.
 
 **Done when:** the pipeline loads without a token.
 
+## 0i — Pre-download every model weight · CLOCK
+
+**0e's `HF_HUB_OFFLINE=1` is a promise that nothing fetches at runtime. This
+is the step that makes it true.** Without it the flag does not prevent a
+download — it converts one into a hard failure, at B1 and C3, mid-build.
+
+Three models, ~9 GB total, all of it lazy by default:
+
+| Model | Size | Wanted by | Decision |
+|---|---|---|---|
+| `pyannote-community/speaker-diarization-community-1` | 31 MB | B2 | **D19** |
+| `mlx-community/whisper-large-v3-mlx` | 3.08 GB | B1 | **D21** — not turbo |
+| `mlx-community/Qwen3.5-9B-4bit` | 5.98 GB | C3 | **D24** — build on 9B |
+
+```bash
+env -u HF_HUB_OFFLINE -u TRANSFORMERS_OFFLINE \
+  /Users/evancanty/vn-shared/.venv/bin/python -c "
+from huggingface_hub import snapshot_download
+for r in ['pyannote-community/speaker-diarization-community-1',
+          'mlx-community/whisper-large-v3-mlx',
+          'mlx-community/Qwen3.5-9B-4bit']:
+    print('CACHED', snapshot_download(r))
+"
+```
+
+**`env -u` is not decoration.** 0e puts `HF_HUB_OFFLINE=1` in `~/.zshrc`, so
+any shell opened afterwards inherits it and `snapshot_download` fails instead
+of downloading. **Order matters: 0i before the offline flags, or unset them
+for the pull.**
+
+**Do not measure the cache with `du -sh ~/.cache/huggingface/hub/models--*`.**
+HuggingFace stores content in `blobs/` and fills the snapshot directory with
+symlinks, so a fully cached 3 GB model reports **20 KB**. It looks exactly
+like a metadata-only stub. Use `du -shL` on the snapshot, or check
+`blobs/`.
+
+**Done when:** each model loads with `HF_HUB_OFFLINE=1` set — *loads*, not
+just present on disk. `phase0/check_env.py` asserts this.
+
+**Not pulled, deliberately:** D24's demo candidate
+`mlx-community/Qwen3.6-35B-A3B-4bit` (20.43 GB) and the 8-bit 9B fallback
+(~10 GB). Both are contingent on C3's outcome, and 30 GB of speculative
+download on venue Wi-Fi is worse than the risk it hedges. **If C3 chooses
+either one, pull it that moment** — not on demo day.
+
 ---
 
 ## 0g — GATE · pyannote on Python 3.14
@@ -163,7 +208,9 @@ toward the shorter demo clip.
 - [x] ffmpeg resolves *(CLI yes; torchcodec's shared libs no — see below)*
 - [x] openFDA downloaded
 - [x] telemetry disabled in profile and code, **set above the pyannote import**
-- [x] `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` set, weights pre-cached
+- [x] `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` set, **and 0i actually
+      cached the weights** — the flag alone turns a lazy fetch into a hard
+      failure, it does not prevent one
 - [x] every openFDA part passes `unzip -t`
 - [x] 0g answered — **pass**, full diarization path, no single-speaker fallback
 - [x] 0h answered — **pass**, MPS, recorded in PLAN.md and at the top of
@@ -181,6 +228,7 @@ toward the shorter demo clip.
 | `env_guard.py` | import it **first**, above pyannote. Raises if you import it late |
 | `phase0/check_env.py` | one command, every Phase 0 check |
 | `phase0/gate_0g_0h.py` | re-run the gates on real audio when 1e lands |
+| `~/.cache/huggingface` | all three models, ~9 GB, every one verified to load offline (0i). Shared across worktrees — do **not** set `HF_HOME` |
 
 **The one surprise: torchcodec cannot decode audio here.** `imageio-ffmpeg`
 gives a static CLI, and torchcodec needs FFmpeg *shared* libraries

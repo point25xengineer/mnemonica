@@ -11,18 +11,34 @@ contracts live in [TOOLS.md](TOOLS.md). Step-by-step detail lives in
 
 ## Protocol — read this before editing
 
-1. **Only edit your own track's section.** Four people editing one file
+1. **Check your blockers before you start, and re-check before each step.**
+   This file is the source of truth for *whether you can begin*, not just for
+   recording that you did. Your phase file's header names what blocks you;
+   confirm every one of those boxes is `[x]` and every gate you depend on
+   reads `pass` or `fail` — not `—`. Starting behind an unanswered gate is how
+   a track builds an afternoon of work on an assumption that was never true.
+2. **Only edit your own track's section.** Four people editing one file
    conflicts constantly. Your section is yours; everything else is read-only
    to you.
-2. **Tick the box the moment a step's acceptance criteria pass** — not when
+3. **Tick the box the moment a step's acceptance criteria pass** — not when
    you think it'll pass, not at the end of a batch. Someone downstream is
    reading this to decide whether they can start.
-3. **Append to the Log, never edit it.** Append-only merges cleanly; edits in
+4. **Append to the Log, never edit it.** Append-only merges cleanly; edits in
    place do not.
-4. **Record gate results immediately.** Gate outcomes change *other people's*
+5. **Record gate results immediately.** Gate outcomes change *other people's*
    plans. A failed 0g rewrites Track B's whole approach.
-5. **Pull before you push:** `git pull --rebase origin main`.
-6. **If you deviate from SPEC.md, log it and say why.** Then update SPEC.md.
+6. **Pull before you read, not just before you push.** `git pull --rebase
+   origin main` at the start of every step. Pulling only when you are ready to
+   write means working an hour against stale state — including a gate that
+   failed while you were building on it passing.
+7. **If a gate you depend on comes back `fail`, stop and re-read your phase
+   file.** Every gate has a documented degraded mode; it is the plan, not a
+   surprise. Do not keep going on the assumption it will be fixed.
+8. **If you are blocked, park properly.** Mark the step `[!]`, add a Blockers
+   row saying what you need and who can clear it, and then do the next step in
+   your track that is *not* blocked. Do not idle, and do not work around a
+   blocker by guessing at what the upstream step will produce.
+9. **If you deviate from SPEC.md, log it and say why.** Then update SPEC.md.
    Silent drift across eight files is how the architecture dies.
 
 Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
@@ -44,6 +60,10 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | Phase 4 — demo | | 0 / 4 | waits on Phase 3 |
 
 ## Gate results — record immediately, others depend on these
+
+**`—` means not answered, and not answered means do not proceed.** If your
+track waits on a gate, its row must say `pass` or `fail` before you start the
+steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 
 | Gate | Question | Result | Decided by | Consequence |
 |---|---|---|---|---|

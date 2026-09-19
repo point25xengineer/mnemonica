@@ -50,7 +50,10 @@ are the reason three tracks can run in parallel.
   A `Session` has no extracted items in it, so Track D cannot render a review
   list from `golden_visit.json` alone.
 
-**`git pull --rebase origin main` before you push.**
+**`git pull --rebase origin main` before you read, not just before you push.**
+Pulling only when you are ready to write means working against stale state —
+including a gate that failed while you were building on it passing. Run it at
+the start of every step. Worktrees and merge cadence are §7.
 
 ## 3. Non-negotiables
 
@@ -188,12 +191,110 @@ Four things the 60-second budget must **not** collapse away:
 
 ---
 
-## 5. First action
+## 5. Before you start — check you actually can
 
-Read the five files in §1, then **state your plan for your first three steps
-before writing any code.** Put your name in the Owner column of PLAN.md so
-nobody duplicates your work.
+Your phase file's header says **Blocked by:**. That is not background reading.
+
+1. `git pull --rebase origin main`.
+2. Open PLAN.md. Confirm every step named in your blocked-by line is `[x]`.
+3. Confirm every gate you depend on reads `pass` or `fail` in the Gate results
+   table. **`—` means nobody has checked yet — it does not mean fine.**
+4. If something is missing: mark your first step `[!]`, add a Blockers row
+   saying what you need and who can clear it, and start the highest step in
+   your track that *is* unblocked. Do not idle, and do not guess at what the
+   upstream step will produce.
+
+Re-check at the start of every step, not just once. Things clear while you
+work — and things fail while you work. If a gate you depend on comes back
+`fail`, stop and re-read your phase file: every gate has a documented degraded
+mode, and it is the plan rather than a surprise.
+
+Right now: Track A, Phase 0 and Phase 1 are unblocked. Track B waits on 0g/0h
+and recording 1e. Track C waits on 1a and fixture 1c-i. Track D waits on 1a and
+fixture **1c-ii**, which is a human task and does not exist yet.
+
+## 6. First action
+
+State your plan for your first three steps **before writing any code.** Put
+your name in the Owner column of PLAN.md so nobody duplicates your work.
 
 When you finish a step, tick it in PLAN.md and add one Log line. When you are
-blocked, mark the step `[!]` and add a row to the Blockers table saying what
-you need and who can clear it.
+blocked, mark the step `[!]` and add a row to the Blockers table.
+
+## 7. Worktrees, branches and merging
+
+**You get your own worktree and your own branch.** Several agents run at once,
+and a git repository has exactly one checked-out working tree and one index —
+two agents running `git add` in the same directory will commit each other's
+half-finished files. Worktrees give each of you a real directory with a real
+branch, sharing one `.git`.
+
+Set yours up once, from the main checkout:
+
+```bash
+git worktree add ../vn-track-a track-a
+cd ../vn-track-a
+```
+
+Use your own track's name: `track-a`, `track-b`, `track-c`, `track-d`,
+`phase-0`, `phase-1`.
+
+### Do not duplicate the big things
+
+Worktrees do not share untracked or ignored files, so a naive setup gives you
+four copies of a 1.85 GB dataset and four virtualenvs. Keep the heavy,
+gitignored things in **one** place beside the worktrees and point at them:
+
+```
+visit-notes/          <- main checkout, main branch
+vn-track-a/           <- worktree
+vn-track-b/           <- worktree
+vn-shared/            <- NOT a worktree: .venv, rrf/, openfda/, *.db
+```
+
+The HuggingFace cache is already shared (`~/.cache/huggingface`), so models
+download once. Do not set `HF_HOME` per worktree.
+
+### Merge early, and merge small
+
+**Merge to `main` when a step's acceptance criteria pass — not when your track
+is finished.** A branch that lives until hour 20 is one enormous conflict at
+hour 20, which is the single most predictable way to lose a hackathon night.
+
+```bash
+git pull --rebase origin main     # rebase first — conflicts surface small
+# run your track's checks
+git push origin track-a
+git switch main && git merge track-a && git push origin main
+```
+
+Rebase before you merge, always. It keeps history linear and it makes you
+resolve one step's worth of conflict instead of a track's worth.
+
+**`main` must always run.** It is what everyone else rebases onto, so do not
+merge a broken step to it. If your step is half-done, leave it on your branch.
+
+### The two shared files
+
+- **`contracts.py`** — changing it needs agreement first (§2). When it does
+  change, merge to `main` **immediately** and say so in the Log, because
+  everyone else needs to rebase before their next commit.
+- **`PLAN.md`** — everyone writes to it. The rules that make this survive are
+  *only edit your own section* and *append to the Log, never edit it*: they
+  keep your changes on disjoint lines so git merges them automatically. If you
+  do hit a PLAN.md conflict, **keep both sides** — it is a status file, not
+  code, and the other agent's tick is as true as yours.
+
+### Before Phase 3
+
+Everyone merges to `main` before 3a. Integration against four unmerged
+branches is not integration.
+
+### Cleanup
+
+```bash
+git worktree remove ../vn-track-a
+```
+
+Only after your branch is merged. `git worktree list` shows what is still
+out.

@@ -5,7 +5,7 @@ concurrently and should have separate owners and separate files.
 
 | File | Owner | Blocked by |
 |---|---|---|
-| [PHASE-0-environment.md](PHASE-0-environment.md) | | nothing |
+| [PHASE-0-environment.md](PHASE-0-environment.md) | agent-phase-0 | nothing |
 | [PHASE-1-foundations.md](PHASE-1-foundations.md) | | nothing (1a, 1b, 1c); 1e needs 1d |
 | [PHASE-2A-knowledge-base.md](PHASE-2A-knowledge-base.md) | | **nothing — start now** |
 | [PHASE-2B-audio.md](PHASE-2B-audio.md) | | gates 0g, 0h + recording 1e |

@@ -50,7 +50,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 
 | Track | Owner | Progress | State |
 |---|---|---|---|
-| Phase 0 — environment | | 0 / 8 | not started |
+| Phase 0 — environment | agent-phase-0 | 1 / 8 | in progress |
 | Phase 1 — foundations | | 0 / 5 | not started |
 | Track A — knowledge base | | 0 / 13 | **can start now** |
 | Track B — audio | | 0 / 6 | waits on 0g, 0h, 1e |

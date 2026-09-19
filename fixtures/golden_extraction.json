@@ -1,0 +1,636 @@
+{
+  "$fixture": "golden_extraction",
+  "$mirrors": "golden_visit.json",
+  "$note": "Hand-authored post-C5 output. Every quote was located with str.find over golden_visit.json's transcript_text and occurs exactly once, so offsets here are real, not asserted.",
+  "visit_date": "2026-09-18",
+  "header": {
+    "confirmed": 3,
+    "blocking": 1,
+    "needs_confirmation": 2,
+    "discarded": 1,
+    "loose_threads": 1
+  },
+  "medications": [
+    {
+      "id": "med-metoprolol",
+      "kind": "medication",
+      "disposition": "blocking",
+      "d16_categories": [
+        3,
+        7,
+        8
+      ],
+      "mention_quote": {
+        "text": "the metoprolol up to fifty milligrams",
+        "char_offset": 966,
+        "char_end": 1003,
+        "turn_id": 12,
+        "turn_role": "clinician",
+        "audio_start": 71.2,
+        "min_word_probability": 0.886
+      },
+      "medication": {
+        "status": "resolved",
+        "rxcui": "6918",
+        "canonical_name": "metoprolol",
+        "tty": "IN",
+        "ingredients": [
+          "metoprolol"
+        ],
+        "brand_names": [
+          "Lopressor",
+          "Toprol-XL"
+        ],
+        "is_brand": false,
+        "salt_unspecified": true,
+        "salt_candidates": [
+          "metoprolol succinate",
+          "metoprolol tartrate"
+        ],
+        "match_type": "exact",
+        "edit_distance": 0,
+        "match_confidence": 0.98,
+        "candidates": [],
+        "spl_set_ids": [
+          "00940cc5-d2eb-4841-9138-de97d7b1c674"
+        ],
+        "available_strengths": [
+          "25 MG Oral Tablet",
+          "50 MG Oral Tablet",
+          "75 MG Oral Tablet",
+          "100 MG Oral Tablet",
+          "10 MG/ML Oral Solution"
+        ],
+        "dose_forms": [
+          "Oral Tablet",
+          "Oral Solution"
+        ],
+        "source": "RxNorm Current Prescribable",
+        "source_release": "09012026"
+      },
+      "sig": [
+        {
+          "quote": {
+            "text": "up to fifty milligrams",
+            "char_offset": 981,
+            "char_end": 1003,
+            "turn_id": 12,
+            "turn_role": "clinician",
+            "audio_start": 71.2,
+            "min_word_probability": 0.886
+          },
+          "status": "parsed",
+          "dose_amount": 50.0,
+          "dose_unit": "mg",
+          "dose_form": null,
+          "route": "oral",
+          "frequency_per_day": null,
+          "interval_hours": null,
+          "timing": [],
+          "prn": false,
+          "prn_condition": null,
+          "unparsed_remainder": null,
+          "normalized_sig": "50 mg",
+          "parse_confidence": 0.94,
+          "source": "deterministic grammar",
+          "grammar_version": "0.1.0"
+        },
+        {
+          "quote": {
+            "text": "two of the twenty-fives",
+            "char_offset": 1378,
+            "char_end": 1401,
+            "turn_id": 19,
+            "turn_role": "unknown",
+            "audio_start": 111.0,
+            "min_word_probability": 0.864
+          },
+          "status": "parsed",
+          "dose_amount": 25.0,
+          "dose_unit": "mg",
+          "dose_form": "tablet",
+          "route": "oral",
+          "frequency_per_day": null,
+          "interval_hours": null,
+          "timing": [],
+          "prn": false,
+          "prn_condition": null,
+          "unparsed_remainder": null,
+          "normalized_sig": "2 x 25 mg",
+          "parse_confidence": 0.71,
+          "source": "deterministic grammar",
+          "grammar_version": "0.1.0",
+          "blocking_reason": "attribution_ambiguous"
+        },
+        {
+          "quote": {
+            "text": "twice a day, with food",
+            "char_offset": 1477,
+            "char_end": 1499,
+            "turn_id": 20,
+            "turn_role": "clinician",
+            "audio_start": 114.4,
+            "min_word_probability": 0.871
+          },
+          "status": "partial",
+          "dose_amount": null,
+          "dose_unit": null,
+          "dose_form": null,
+          "route": "oral",
+          "frequency_per_day": 2.0,
+          "interval_hours": null,
+          "timing": [
+            "with food"
+          ],
+          "prn": false,
+          "prn_condition": null,
+          "unparsed_remainder": null,
+          "normalized_sig": "twice daily with food",
+          "parse_confidence": 0.89,
+          "source": "deterministic grammar",
+          "grammar_version": "0.1.0"
+        },
+        {
+          "quote": {
+            "text": "the metropolol, twenty-five, twice a day",
+            "char_offset": 2084,
+            "char_end": 2124,
+            "turn_id": 28,
+            "turn_role": "clinician",
+            "audio_start": 178.2,
+            "min_word_probability": 0.66
+          },
+          "status": "parsed",
+          "dose_amount": 25.0,
+          "dose_unit": "mg",
+          "dose_form": null,
+          "route": "oral",
+          "frequency_per_day": 2.0,
+          "interval_hours": null,
+          "timing": [],
+          "prn": false,
+          "prn_condition": null,
+          "unparsed_remainder": null,
+          "normalized_sig": "25 mg twice daily",
+          "parse_confidence": 0.92,
+          "source": "deterministic grammar",
+          "grammar_version": "0.1.0"
+        }
+      ],
+      "start_or_stop": null,
+      "change_kind": "increased",
+      "change_evidence_quote": {
+        "text": "the metoprolol up to fifty milligrams",
+        "char_offset": 966,
+        "char_end": 1003,
+        "turn_id": 12,
+        "turn_role": "clinician",
+        "audio_start": 71.2,
+        "min_word_probability": 0.886
+      },
+      "change_kind_derived": true,
+      "change_kind_derivation": {
+        "from_dose": {
+          "amount": 25.0,
+          "unit": "mg",
+          "quote": {
+            "text": "twenty-five milligrams",
+            "char_offset": 755,
+            "char_end": 777,
+            "turn_id": 10,
+            "turn_role": "clinician",
+            "audio_start": 55.2,
+            "min_word_probability": 0.882
+          }
+        },
+        "to_dose": {
+          "amount": 50.0,
+          "unit": "mg",
+          "quote": {
+            "text": "up to fifty milligrams",
+            "char_offset": 981,
+            "char_end": 1003,
+            "turn_id": 12,
+            "turn_role": "clinician",
+            "audio_start": 71.2,
+            "min_word_probability": 0.886
+          }
+        },
+        "rule": "both doses parsed and resolved; 50 > 25"
+      },
+      "flags": [
+        {
+          "d16_category": 7,
+          "blocking": true,
+          "reason": "two different doses for one drug",
+          "render": "expanded",
+          "evidence": [
+            {
+              "text": "up to fifty milligrams",
+              "char_offset": 981,
+              "char_end": 1003,
+              "turn_id": 12,
+              "turn_role": "clinician",
+              "audio_start": 71.2,
+              "min_word_probability": 0.886
+            },
+            {
+              "text": "the metropolol, twenty-five, twice a day",
+              "char_offset": 2084,
+              "char_end": 2124,
+              "turn_id": 28,
+              "turn_role": "clinician",
+              "audio_start": 178.2,
+              "min_word_probability": 0.66
+            }
+          ]
+        },
+        {
+          "d16_category": 3,
+          "blocking": true,
+          "reason": "dose stated in a turn with no confident speaker role",
+          "render": "expanded",
+          "evidence": [
+            {
+              "text": "two of the twenty-fives",
+              "char_offset": 1378,
+              "char_end": 1401,
+              "turn_id": 19,
+              "turn_role": "unknown",
+              "audio_start": 111.0,
+              "min_word_probability": 0.864
+            }
+          ]
+        },
+        {
+          "d16_category": 8,
+          "blocking": false,
+          "reason": "sig came from a different turn than the drug mention",
+          "render": "expanded",
+          "evidence": [
+            {
+              "text": "the metoprolol up to fifty milligrams",
+              "char_offset": 966,
+              "char_end": 1003,
+              "turn_id": 12,
+              "turn_role": "clinician",
+              "audio_start": 71.2,
+              "min_word_probability": 0.886
+            },
+            {
+              "text": "twice a day, with food",
+              "char_offset": 1477,
+              "char_end": 1499,
+              "turn_id": 20,
+              "turn_role": "clinician",
+              "audio_start": 114.4,
+              "min_word_probability": 0.871
+            }
+          ]
+        },
+        {
+          "d16_category": null,
+          "blocking": false,
+          "reason": "salt unspecified: succinate (once daily) or tartrate (twice daily)?",
+          "render": "expanded",
+          "choices": [
+            "metoprolol succinate",
+            "metoprolol tartrate"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "med-lisinopril",
+      "kind": "medication",
+      "disposition": "prefilled_flagged",
+      "d16_categories": [
+        5
+      ],
+      "mention_quote": {
+        "text": "the lisinopril at ten",
+        "char_offset": 783,
+        "char_end": 804,
+        "turn_id": 10,
+        "turn_role": "clinician",
+        "audio_start": 55.2,
+        "min_word_probability": 0.89
+      },
+      "medication": {
+        "status": "resolved",
+        "rxcui": "29046",
+        "canonical_name": "lisinopril",
+        "tty": "IN",
+        "ingredients": [
+          "lisinopril"
+        ],
+        "brand_names": [
+          "Zestril",
+          "Prinivil"
+        ],
+        "is_brand": false,
+        "salt_unspecified": false,
+        "salt_candidates": [],
+        "match_type": "exact",
+        "edit_distance": 0,
+        "match_confidence": 0.99,
+        "candidates": [],
+        "spl_set_ids": [
+          "00b266d9-ac4a-e931-e063-6294a90a6a0b"
+        ],
+        "available_strengths": [
+          "5 MG Oral Tablet",
+          "10 MG Oral Tablet",
+          "20 MG Oral Tablet",
+          "30 MG Oral Tablet",
+          "40 MG Oral Tablet"
+        ],
+        "dose_forms": [
+          "Oral Tablet",
+          "Oral Solution"
+        ],
+        "source": "RxNorm Current Prescribable",
+        "source_release": "09012026"
+      },
+      "sig": [
+        {
+          "quote": {
+            "text": "just take it the way you've been taking it",
+            "char_offset": 1189,
+            "char_end": 1231,
+            "turn_id": 16,
+            "turn_role": "clinician",
+            "audio_start": 93.2,
+            "min_word_probability": 0.869
+          },
+          "status": "not_specified",
+          "dose_amount": null,
+          "dose_unit": null,
+          "dose_form": null,
+          "route": null,
+          "frequency_per_day": null,
+          "interval_hours": null,
+          "timing": [],
+          "prn": false,
+          "prn_condition": null,
+          "unparsed_remainder": null,
+          "normalized_sig": null,
+          "parse_confidence": 0.97,
+          "source": "deterministic grammar",
+          "grammar_version": "0.1.0"
+        }
+      ],
+      "start_or_stop": null,
+      "change_kind": "continued",
+      "change_evidence_quote": {
+        "text": "That one doesn't change",
+        "char_offset": 1164,
+        "char_end": 1187,
+        "turn_id": 16,
+        "turn_role": "clinician",
+        "audio_start": 93.2,
+        "min_word_probability": 0.887
+      },
+      "change_kind_derived": false,
+      "change_kind_derivation": null,
+      "flags": [
+        {
+          "d16_category": 5,
+          "blocking": false,
+          "reason": "no dose spoken \u2014 not an error",
+          "render": "collapsed",
+          "display": "not specified"
+        },
+        {
+          "d16_category": null,
+          "blocking": false,
+          "reason": "change_kind was not derived from two parsed doses",
+          "render": "collapsed"
+        }
+      ]
+    },
+    {
+      "id": "med-unresolved-bp-pill",
+      "kind": "medication",
+      "disposition": "prefilled_flagged",
+      "d16_categories": [
+        4
+      ],
+      "mention_quote": {
+        "text": "the other blood pressure pill",
+        "char_offset": 843,
+        "char_end": 872,
+        "turn_id": 11,
+        "turn_role": "other",
+        "audio_start": 64.2,
+        "min_word_probability": 0.862
+      },
+      "medication": {
+        "status": "unresolved",
+        "rxcui": null,
+        "canonical_name": null,
+        "tty": null,
+        "ingredients": [],
+        "brand_names": [],
+        "is_brand": null,
+        "salt_unspecified": false,
+        "salt_candidates": [],
+        "match_type": "none",
+        "edit_distance": null,
+        "match_confidence": 0.0,
+        "candidates": [],
+        "spl_set_ids": [],
+        "available_strengths": [],
+        "dose_forms": [],
+        "source": "RxNorm Current Prescribable",
+        "source_release": "09012026"
+      },
+      "sig": [],
+      "start_or_stop": null,
+      "change_kind": "continued",
+      "change_evidence_quote": {
+        "text": "the other blood pressure pill",
+        "char_offset": 843,
+        "char_end": 872,
+        "turn_id": 11,
+        "turn_role": "other",
+        "audio_start": 64.2,
+        "min_word_probability": 0.862
+      },
+      "change_kind_derived": false,
+      "change_kind_derivation": null,
+      "flags": [
+        {
+          "d16_category": 4,
+          "blocking": false,
+          "reason": "no RxNorm concept matched the heard text",
+          "render": "expanded",
+          "heard_text": "the other blood pressure pill",
+          "near_matches": [],
+          "suggested_action": "merge_into:med-lisinopril"
+        },
+        {
+          "d16_category": 3,
+          "blocking": false,
+          "reason": "spoken by the patient, not the clinician",
+          "render": "expanded"
+        }
+      ]
+    }
+  ],
+  "appointments": [
+    {
+      "id": "appt-followup",
+      "kind": "appointment",
+      "disposition": "printed_as_fact",
+      "d16_categories": [],
+      "when": {
+        "quote": {
+          "text": "about ten days",
+          "char_offset": 1570,
+          "char_end": 1584,
+          "turn_id": 22,
+          "turn_role": "clinician",
+          "audio_start": 129.2,
+          "min_word_probability": 0.868
+        },
+        "status": "resolved",
+        "resolved_date": "2026-09-28",
+        "range_start": null,
+        "range_end": null,
+        "precision": "exact_day",
+        "direction": "future",
+        "anchor_date": "2026-09-18",
+        "anchor_source": "session_visit_date",
+        "original_phrase": "about ten days",
+        "display_string": "about ten days from today, which is Monday, September 28",
+        "depends_on_event": null,
+        "resolution_confidence": 0.93,
+        "source": "deterministic date resolver"
+      },
+      "purpose_quote": {
+        "text": "check the pressure again",
+        "char_offset": 1595,
+        "char_end": 1619,
+        "turn_id": 22,
+        "turn_role": "clinician",
+        "audio_start": 129.2,
+        "min_word_probability": 0.875
+      },
+      "flags": []
+    }
+  ],
+  "red_flags": [
+    {
+      "id": "flag-dizzy",
+      "kind": "red_flag",
+      "disposition": "printed_as_fact",
+      "d16_categories": [],
+      "instruction_quote": {
+        "text": "If you feel dizzy when you stand up, or your heart feels like it's racing, call the office.",
+        "char_offset": 2188,
+        "char_end": 2279,
+        "turn_id": 30,
+        "turn_role": "clinician",
+        "audio_start": 189.2,
+        "min_word_probability": 0.868
+      },
+      "flags": []
+    },
+    {
+      "id": "flag-dont-stop",
+      "kind": "red_flag",
+      "disposition": "printed_as_fact",
+      "d16_categories": [],
+      "instruction_quote": {
+        "text": "don't stop it on your own",
+        "char_offset": 1986,
+        "char_end": 2011,
+        "turn_id": 26,
+        "turn_role": "clinician",
+        "audio_start": 167.2,
+        "min_word_probability": 0.884
+      },
+      "flags": []
+    }
+  ],
+  "loose_threads": [
+    {
+      "id": "thread-lisinopril-adjust",
+      "kind": "loose_thread",
+      "disposition": "surfaced",
+      "d16_categories": [
+        6
+      ],
+      "topic_quote": {
+        "text": "we may need to adjust the lisinopril as well",
+        "char_offset": 1251,
+        "char_end": 1295,
+        "turn_id": 18,
+        "turn_role": "clinician",
+        "audio_start": 100.4,
+        "min_word_probability": 0.887
+      },
+      "flags": [
+        {
+          "d16_category": 6,
+          "blocking": false,
+          "reason": "raised and never resolved anywhere later in the visit",
+          "render": "expanded"
+        }
+      ]
+    }
+  ],
+  "discarded": [
+    {
+      "d16_category": 1,
+      "kind": "medication",
+      "reason": "span_verification_failed",
+      "dropped_at": "C4"
+    }
+  ],
+  "summary_quotes": {
+    "why_you_came_in": [
+      {
+        "text": "I've been checking the pressure at home",
+        "char_offset": 419,
+        "char_end": 458,
+        "turn_id": 5,
+        "turn_role": "other",
+        "audio_start": 23.2,
+        "min_word_probability": 0.878
+      }
+    ],
+    "what_the_doctor_found": [
+      {
+        "text": "That's higher than I want to see",
+        "char_offset": 681,
+        "char_end": 713,
+        "turn_id": 10,
+        "turn_role": "clinician",
+        "audio_start": 55.2,
+        "min_word_probability": 0.874
+      },
+      {
+        "text": "Your heart rate's got room for it",
+        "char_offset": 1018,
+        "char_end": 1051,
+        "turn_id": 14,
+        "turn_role": "clinician",
+        "audio_start": 82.2,
+        "min_word_probability": 0.909
+      }
+    ],
+    "what_happens_next": [
+      {
+        "text": "bring the home monitor with you next time",
+        "char_offset": 2336,
+        "char_end": 2377,
+        "turn_id": 32,
+        "turn_role": "clinician",
+        "audio_start": 201.2,
+        "min_word_probability": 0.871
+      }
+    ]
+  }
+}

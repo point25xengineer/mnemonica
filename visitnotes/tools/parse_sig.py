@@ -78,6 +78,13 @@ _NOT_SPECIFIED = (
     "keep taking it", "keep taking them", "as prescribed", "as you have been",
     "the usual", "usual dose", "per the label", "as needed",  # bare PRN
     "continue as", "stay on the same", "no change",
+    # Found by C5 against the real recording: 1c-ii asserts `not_specified`
+    # for turn 16's "Just take it the way you've been taking it", and A9's
+    # list reached it with neither "as you have been" nor "keep taking it".
+    # Without this, D16 category 5 never fires and "your doctor didn't say"
+    # renders as "we couldn't parse it" — the one confusion D16 forbids.
+    "the way you've been taking it", "the way you have been taking it",
+    "been taking it",
 )
 """Phrases that are a *complete* answer whose content is "no dose stated".
 

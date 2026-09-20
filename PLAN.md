@@ -54,7 +54,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | Phase 1 — foundations | Evan + agent | 5.5 / 6 | 1e — clip in; enrollment + long visit left |
 | Track A — knowledge base | Evan + agent | 13 / 13 | **done** |
 | Track B — audio | agent-track-b | 4 / 6 | **B1-B2-B4-B6 done**; B3 + B5 wait on 1e's enrollment and a listen |
-| Track C — extraction | | 0 / 6 | **can start now** |
+| Track C — extraction | Evan + agent | 6 / 6 | **done** — C2 pass, C3 pass at 100% verbatim on the 4-bit 9B |
 | Track D — interface | | 10 / 10 | **done** |
 | Phase 3 — integration | | 0 / 5 | waits on all tracks |
 | Phase 4 — demo | | 0 / 4 | waits on Phase 3 |
@@ -70,8 +70,8 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 | **0g** | pyannote imports + runs on Python 3.14? | **pass** | agent-phase-0 | fail → Track B goes single-speaker, every dose blocking |
 | **0h** | MPS turn boundaries match CPU? | **pass** — 0.0 ms delta, use MPS | agent-phase-0 | fail → CPU only, ~8 min per 15 min audio |
 | **B5** | word offsets good enough for click-to-play? | **structural pass** — real `Session` reproduces fixture 1c exactly; 28/28 quotes resolve at the fixture's own offsets. The listening half is unanswered. | agent-track-b | fail → check you're on large-v3, not turbo |
-| **C2** | does `compile_json_schema(VisitExtraction)` compile at all? | — | | fail → post-hoc parse + retry; span verification still holds |
-| **C3** | verbatim quote fidelity holding? | — | | fail → 8-bit 9B, then 35B MoE |
+| **C2** | does `compile_json_schema(VisitExtraction)` compile at all? | **pass** — compiles, and an empty extraction is reachable | Track C | fail → post-hoc parse + retry; span verification still holds |
+| **C3** | verbatim quote fidelity holding? | **pass** — 100%, 33/33 quotes, 4-bit 9B | Track C | fail → 8-bit 9B, then 35B MoE |
 | **3c** | thresholds calibrated? | — | | no labeled data — bias toward flagging |
 
 ---
@@ -140,12 +140,16 @@ and 1.8 GB, rebuildable in 7 s and 37 s):
 
 *Owner:* ____  ·  *Needs 1a, 1c. Builds on the fixture, not on Track B.*
 
-- [ ] **C1** schemas — no free-text field anywhere
-- [ ] **C2** GATE — xgrammar compiles the real `VisitExtraction`, + logits processor
-- [ ] **C3** GATE — turn-chunked prompt, verbatim fidelity on 9B
-- [ ] **C4** span verification, offsets by `str.find`
-- [ ] **C4.5** association check — mention turn vs sig/date turn (**D16 cat 8**)
-- [ ] **C5** all **8** D16 dispositions fire on the fixture
+- [x] **C1** schemas — no free-text field anywhere
+- [x] **C2** GATE — xgrammar compiles the real `VisitExtraction`, + logits processor
+- [x] **C3** GATE — turn-chunked prompt, verbatim fidelity on 9B → **100%**
+- [x] **C4** span verification, offsets by `str.find`
+- [x] **C4.5** association check — mention turn vs sig/date turn (**D16 cat 8**)
+- [x] **C5** all **8** D16 dispositions fire on the fixture
+
+Run it: `python -m visitnotes.extract.c2_gate --live` · `python -m
+visitnotes.extract.c3_gate` · `python -m visitnotes.verify.run
+fixtures/golden_visit.json -o sessions/c5/extraction.json`
 
 ## Track D — Review UI + output · [phases/PHASE-2D-interface.md](phases/PHASE-2D-interface.md)
 
@@ -209,6 +213,9 @@ SPEC.md — this table is the record, not the decision.*
 | A6 / TOOLS §1 | added `MAX_FUZZY_EDIT_DISTANCE = 3` | *Coumadin* is not in the Current Prescribable release (discontinued brand) and scored **0.81 against *Comtan*** — above threshold, clear of #2, `resolved`. Jaro-Winkler weights the prefix and `co` is a prefix many drugs share. Truncating converts it to `unresolved`, i.e. D16 category 4: raw heard text, flagged, near-matches offered. | Track A |
 | A6 / TOOLS §1 | added head-of-phrase backoff | TOOLS §1 tells the model to pass the drug name alone; `golden_extraction.json` passes `"the metoprolol up to 50 milligrams"` and `"the lisonopril at 10"` and expects both `resolved`. Both documents are right in their own terms. A phrase that fails whole is retried on the tokens before the first preposition or numeral. Deliberately not a general prefix sweep — that version "resolved" the fixture's category-4 plant `"the other blood pressure pill"`. | Track A |
 | TOOLS §1 | `source_release` is **09082026**, not the "09012026" TOOLS.md names | 09012026 is the mtime of the files inside the zip. The release readme says September 08, 2026. It is read from `Readme_Full_Prescribe_*.txt` at build time and the builder refuses to guess if the readme is missing. | Track A |
+| TOOLS §2 / A9 | added three phrases to `parse_sig`'s `_NOT_SPECIFIED` list, in Track A's file | 1c-ii asserts `not_specified` for "Just take it the way you've been taking it" and A9 returned `unparseable`. That is the exact collapse D16 forbids — "I couldn't hear it" reading the same as "your doctor never said it" — and D16 category 5 cannot fire without it. Track A owns the list; the entry is commented in place. | Track C |
+| D16 cat 2 | implemented on per-word `probability` only; segment `no_speech_prob` / `compression_ratio` are **not** read | 1c measured them identical across nine consecutive segments of the real recording (the 30 s decode window's stats are stamped onto every sentence inside it), and contract 1a does not carry them onto `Word`. A threshold on a constant is a check that never fires, which looks exactly like a clean run. The constant is kept and documented as unused. | Track C |
+| D16 cat 1 | an **empty** required quote is not counted as a discard | Measured at C3: the model leaves `change_evidence_quote` blank rather than paraphrasing it. Blank is an absence, fabrication is an invention, and the discard count is the one number that tells a clinician something was deleted. Conflating them makes the header claim a deletion that never happened. | Track C |
 | PHASE-1 1a sketch | `Turn` gained `char_start`/`char_end`; `Session` gained `session_dir`; `Word.text` whitespace rule made explicit | C4.5 needs turn bounds to answer D16 cat 8 cheaply; D2/D3 retention covers logs and scratch files, not just the `.wav`; the leading-space ambiguity in mlx-whisper's `WordTiming.word` would break every citation silently. | Phase 1 |
 
 ---
@@ -649,6 +656,82 @@ Format: `HH:MM · <step> · <what happened>`
         is checked-in test data U9 must never shred. Track B: hand it a
         Session and delete the json.loads. Nothing else in Track D reads a
         file path.
+21:30 · C2 · GATE PASS, and both halves of it. compile_json_schema(
+        VisitExtraction, strict_mode=True) compiles, so does the per-turn
+        TurnExtraction the runtime actually generates against, and a
+        no-content turn really does return all-empty lists — checked twice,
+        by walking the empty JSON through a GrammarMatcher token by token and
+        by generating live on turn 8 ("Mm -hmm.") in 1.3 s. D23's post-hoc
+        fallback is written and reachable (Extractor(use_grammar=False)) but
+        is not needed.
+21:30 · C2 · A FOURTH landmine, on top of 0i's three. TokenizerInfo.
+        from_huggingface type-checks its argument and rejects BOTH mlx-lm's
+        TokenizerWrapper and the raw tokenizers.Tokenizer one layer further
+        in — it wants the transformers backend in the middle. grammar.py
+        walks the _tokenizer chain and takes the first layer xgrammar
+        accepts, rather than hardcoding a depth that a dependency bump will
+        move. Also: do NOT read the mask width off model.args.vocab_size,
+        which does not exist on this ModelArgs. Read logits.shape[-1] at call
+        time — it is the number that has to match anyway.
+21:30 · C3 · GATE PASS on the 4-bit 9B, and D24's escalation ladder is not
+        needed. **100% verbatim fidelity: 33 of 33 non-empty quotes found in
+        the transcript by exact str.find.** 35 turns in 65.6 s, 1.9 s per
+        turn, ~38 tok/s. The 8-bit 9B stays uncached; the MoE stays a speed
+        option rather than a quality one.
+21:30 · C3 · The failure mode that IS there is not paraphrase — it is
+        silence. 3 of 36 emitted quotes were the empty string, every one of
+        them change_evidence_quote, which the schema makes required and the
+        grammar therefore forces the model to emit. An empty string is the
+        model declining to answer, NOT inventing one, so spans.py counts it
+        separately and it does NOT become a D16 category 1 discard. Counting
+        it as fabrication would have made the header claim a deletion that
+        never happened — the one number D16 cat 1 exists to keep honest.
+21:30 · C4/C4.5/C5 · Whole envelope built and running: verify() takes a
+        Session plus a VisitExtraction and emits exactly the post-C5 shape
+        render/model.py parses. End to end on golden_visit.json: model load
+        3.4 s + extraction 64 s + verification 0.1 s = **67 s of machine
+        time** for 35 turns. That is 3b's number minus audio, and it fits a
+        demo slot. 21 new tests, 209 green overall.
+21:30 · C5 · Track D, one shape note and one behaviour note. (1) The
+        envelope matches golden_extraction.json key for key and
+        Extraction.parse() consumes it unchanged — including that
+        change_evidence_quote can now be null, when the model left it blank.
+        (2) Duplicate suppression is on verified OFFSETS, not on the model's
+        strings: per-turn extraction sees neighbours for context (D15), so
+        one follow-up gets nominated from either side of it, and identical
+        offsets are the same words in the same place rather than two things
+        that read alike.
+21:30 · C4.5 · Strict turn equality was unusable and would have made cat 8
+        fire on nearly every item — a check that always fires reads like a
+        check nobody should trust. Two softenings, both cheap: adjacent
+        clinician turns (<=2) do not count, and a sig whose own turn names
+        the drug does not count. The planted case still fires: the sig at
+        turn 20 is 8 turns from the mention at turn 12 and turn 20 never says
+        "metoprolol". The same-turn sig is correctly silent. Both directions
+        are tested, because only one of them is the interesting one.
+21:30 · C5 · Track A, two things C5 hit in your tools and one fix landed in
+        yours. (1) parse_sig returned `unparseable` for turn 16's "Just take
+        it the way you've been taking it", where 1c-ii asserts
+        `not_specified` — A9's own acceptance criterion. Three phrases added
+        to _NOT_SPECIFIED; without it D16 category 5 never fires and "your
+        doctor didn't say" renders as "we couldn't parse it", which is the
+        one confusion D16 forbids. Logged under Deviations. (2) NOT fixed,
+        because it is yours to judge: "two of the 25s" and "the 50s" parse as
+        unparseable with no dose_amount. C5 does not depend on it — D19's
+        blocking check triggers on a dose NUMERAL in the quote, not on a
+        successful parse, precisely so a grammar miss cannot let an
+        unattributed dose through.
+21:30 · 3c · Two of the three thresholds are set and live in
+        visitnotes/verify/thresholds.py, ready for 3c to move:
+        DOSE_WORD_PROBABILITY 0.80 (a dose numeral below this is flagged) and
+        LOW_WORD_PROBABILITY 0.55 (everything else). The real recording puts
+        the planted case at 0.14 and correct doses at 0.99+, so the range is
+        wide and the bias is deliberate. COMPRESSION_RATIO_CEILING is defined
+        and DELIBERATELY UNUSED: 1c measured the segment fields as identical
+        across nine consecutive segments, and contract 1a does not carry them
+        onto Word at all, so a threshold on them would be a check that never
+        fires. The resolution margin is Track A's AMBIGUITY_MARGIN and is not
+        duplicated here.
 ```
 
 ---

@@ -402,6 +402,10 @@ class Handler(BaseHTTPRequestHandler):
                 ),
             )
         try:
+            # The consent screen no longer asks how consent was given; verbal
+            # is the case in an exam room, and it is what D27 prints in
+            # the patient footer. A written-consent workflow would need
+            # more than a radio button anyway.
             current.give_consent(method=form.get("method", "verbal"))
         except ConsentRequired as exc:
             return self._html(

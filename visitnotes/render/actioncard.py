@@ -25,8 +25,9 @@ from typing import Any, Iterable, Literal
 
 from visitnotes.render.model import Item, Resolution
 
-__all__ = ["Fragment", "Sentence", "medication_sentences", "appointment_sentence",
-           "red_flag_sentence", "format_dose", "format_frequency"]
+__all__ = ["Fragment", "Sentence", "MedicationRow", "medication_sentences",
+           "medication_row", "appointment_sentence", "red_flag_sentence",
+           "format_dose", "format_frequency"]
 
 
 @dataclass(frozen=True)
@@ -364,6 +365,110 @@ def medication_sentences(
             )
         )
     return sentences
+
+
+@dataclass(frozen=True)
+class MedicationRow:
+    """One medication as table cells rather than prose (U8b).
+
+    Same slotted values as `medication_sentences`, same templates, same
+    verbatim rule — only the shape changes. A row is easier to scan than a
+    paragraph when what the reader wants is *which of my pills changed*, and
+    scanning is what a patient does with this page at the pharmacy counter.
+
+    Cells are `Sentence`s, not strings, so the large-type emphasis on doses
+    survives into the table exactly as it does in the prose version.
+    """
+
+    name: str
+    change: Sentence | None
+    how: Sentence | None
+    notes: tuple[Sentence, ...] = ()
+
+
+_CHANGE_VERB = {
+    "increased": "Dose increased",
+    "decreased": "Dose decreased",
+    "stopped": "Stop taking this",
+    "new": "New medicine",
+    "continued": "No change",
+    "unchanged": "No change",
+}
+
+
+def medication_row(
+    item: Item,
+    clinician_name: str,
+    *,
+    promoted: bool = False,
+    resolution: Resolution | None = None,
+) -> MedicationRow:
+    """The table form of `medication_sentences`.
+
+    Deliberately a second reader over the same data rather than a
+    reimplementation: every value below comes from the same helpers the prose
+    version uses, so the two cannot drift into disagreeing about a dose.
+    """
+    med = item.raw.get("medication") or {}
+    name = med.get("canonical_name")
+    if not name:
+        heard = item.primary_quote
+        name = heard.text if heard else "a medication"
+
+    derivation = item.raw.get("change_kind_derivation") or {}
+    from_dose = format_dose(
+        (derivation.get("from_dose") or {}).get("amount"),
+        (derivation.get("from_dose") or {}).get("unit"),
+    )
+    to_dose = format_dose(
+        (derivation.get("to_dose") or {}).get("amount"),
+        (derivation.get("to_dose") or {}).get("unit"),
+    )
+    change_kind = item.raw.get("change_kind")
+    verb = _CHANGE_VERB.get(change_kind or "", "Changed")
+
+    if change_kind in ("stopped", "new", "continued", "unchanged"):
+        change = Sentence((Fragment(verb),))
+    elif from_dose and to_dose:
+        change = Sentence((
+            Fragment(verb + " from "), Fragment(from_dose, strong=True),
+            Fragment(" to "), Fragment(to_dose, strong=True),
+        ))
+    elif to_dose:
+        change = Sentence((
+            Fragment(verb + " to "), Fragment(to_dose, strong=True),
+        ))
+    else:
+        change = Sentence((Fragment(verb),))
+
+    if _sig_is_not_specified(item):
+        how = Sentence((Fragment("Keep taking it the way you have been"),))
+    else:
+        settled = _settled_quotes(item, resolution)
+        sig = _select_sig(item, settled) or {}
+        dose = format_dose(sig.get("dose_amount"), sig.get("dose_unit"))
+        freq = format_frequency(sig.get("frequency_per_day"))
+        timing = format_timing(sig.get("timing") or [])
+        parts: list[Fragment] = []
+        if dose:
+            parts.append(Fragment(dose, strong=True))
+        if freq:
+            if parts:
+                parts.append(Fragment(", "))
+            parts.append(Fragment(freq + timing, strong=True))
+        elif timing and parts:
+            parts.append(Fragment(timing))
+        how = Sentence(tuple(parts)) if parts else None
+
+    notes: list[Sentence] = []
+    salt = med.get("salt_candidates") or []
+    if med.get("salt_unspecified") and salt:
+        notes.append(Sentence((
+            Fragment("Check the label — this may be "),
+            Fragment(" or ".join(salt) + "."),
+        )))
+
+    return MedicationRow(name=name, change=change, how=how, notes=tuple(notes))
 
 
 # -- appointment ---------------------------------------------------------

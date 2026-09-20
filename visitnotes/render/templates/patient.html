@@ -30,6 +30,33 @@
     border-bottom: 3px solid #111;
   }
   ul { list-style: none; margin: 0; padding: 0; }
+
+  /* U8b — medicines as a table. Scanning beats reading when the question is
+     "which of my pills changed?". Same templated values as the prose form. */
+  table.meds { border-collapse: collapse; width: 100%; margin: 0 0 1.5rem; }
+  table.meds th, table.meds td {
+    text-align: left; vertical-align: top;
+    padding: .7rem .8rem; border-bottom: 2px solid #999;
+  }
+  table.meds thead th {
+    font-size: 17px; text-transform: uppercase; letter-spacing: .06em;
+    border-bottom: 3px solid #111; padding-bottom: .4rem;
+  }
+  table.meds td.drug { font-weight: 700; }
+  table.meds td .note { display: block; font-size: 17px; color: #333; margin-top: .3rem; }
+  /* A patient may read the digital copy on a phone. Below the fold of a
+     narrow screen a three-column table stops being scannable, so it becomes
+     labelled blocks — same cells, stacked. */
+  @media screen and (max-width: 34rem) {
+    table.meds thead { position: absolute; left: -9999px; }
+    table.meds tr { display: block; border-bottom: 3px solid #111; margin-bottom: 1rem; }
+    table.meds td { display: block; border: 0; padding: .15rem .8rem; }
+    table.meds td.drug { font-size: 21px; padding-top: .7rem; }
+    table.meds td[data-label]::before {
+      content: attr(data-label); display: block;
+      font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: #444;
+    }
+  }
   li.entry { margin: 0 0 1.4rem; padding-left: 1.1rem; border-left: 4px solid #767676; }
   p { margin: 0 0 .5rem; }
   strong { font-weight: 700; }
@@ -57,15 +84,30 @@
 
 {% if medications %}
 <h2>Your medicines</h2>
-<ul>
-  {% for med in medications %}
-  <li class="entry">
-    {% for sentence in med.sentences %}
-    <p>{% for f in sentence.fragments %}{% if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif %}{% endfor %}</p>
+{% macro cell(sentence) -%}
+  {%- for f in sentence.fragments -%}
+    {%- if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif -%}
+  {%- endfor -%}
+{%- endmacro %}
+<table class="meds">
+  <thead>
+    <tr><th scope="col">Medicine</th><th scope="col">What changed</th><th scope="col">How to take it</th></tr>
+  </thead>
+  <tbody>
+    {% for med in medications %}
+    <tr>
+      <td class="drug" data-label="Medicine">{{ med.row.name }}</td>
+      <td data-label="What changed">
+        {% if med.row.change %}{{ cell(med.row.change) }}{% endif %}
+        {% for note in med.row.notes %}<span class="note">{{ cell(note) }}</span>{% endfor %}
+      </td>
+      <td data-label="How to take it">
+        {% if med.row.how %}{{ cell(med.row.how) }}{% else %}&mdash;{% endif %}
+      </td>
+    </tr>
     {% endfor %}
-  </li>
-  {% endfor %}
-</ul>
+  </tbody>
+</table>
 {% endif %}
 
 {% if red_flags %}

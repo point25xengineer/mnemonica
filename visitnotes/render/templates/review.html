@@ -19,12 +19,12 @@
   </div>
   <div class="bar-right">
     <a class="toggle" href="{{ '/' if show_details else '/?checks=1' }}">
-      {{ 'hide checks' if show_details else 'show checks' }} <kbd>D</kbd>
+      {{ 'hide checks' if show_details else 'show checks' }}
     </a>
     {% if can_approve %}
     <form method="post" action="/approve">
       <button type="submit" class="approve" id="approve-button">
-        Approve &amp; print <kbd>A</kbd>
+        Approve &amp; print
       </button>
     </form>
     {% else %}
@@ -61,7 +61,7 @@
         <div class="ask">
           <p class="q">Is that the right word?</p>
           <form method="post" action="/promote" class="answers">
-            <button type="submit" class="option"><kbd>C</kbd> Yes, print it</button>
+            <button type="submit" class="option">Yes, print it</button>
           </form>
         </div>
         {% endif %}
@@ -82,7 +82,7 @@
                     class="option{% if option.chosen %} chosen{% endif %}"
                     {% if option.cue %}data-cue-start="{{ '%.3f'|format(option.cue.start) }}"
                     data-cue-end="{{ '%.3f'|format(option.cue.end) }}"{% endif %}>
-              <kbd>{{ loop.index }}</kbd> {{ option.label }}
+              {{ option.label }}
               {% if option.cue %}<span class="hear" title="hear it">&#9658;</span>{% endif %}
             </button>
             {% endfor %}
@@ -93,7 +93,7 @@
           <form method="post" action="/drop" class="answers">
             <input type="hidden" name="item_id" value="{{ row.id }}">
             <button type="submit" class="option">
-              <kbd>1</kbd> Same as {{ titles.get(flag.merge_target, flag.merge_target) }} &mdash; drop it
+              Same as {{ titles.get(flag.merge_target, flag.merge_target) }} &mdash; drop it
             </button>
           </form>
           {% endif %}
@@ -142,7 +142,7 @@
 
         <form method="post" action="/drop" class="dropline">
           <input type="hidden" name="item_id" value="{{ row.id }}">
-          <button type="submit">drop <kbd>X</kbd></button>
+          <button type="submit">drop</button>
         </form>
       </div>
     </details>
@@ -165,7 +165,6 @@
 </p>
 {% endif %}
 
-<p class="keyhint"><kbd>J</kbd><kbd>K</kbd> move &middot; <kbd>1</kbd>&ndash;<kbd>9</kbd> answer &middot; <kbd>Space</kbd> hear &middot; <kbd>A</kbd> approve</p>
 
 <audio id="player" {% if audio_available %}src="/audio"{% endif %} preload="auto"></audio>
 <script src="/static/review.js"></script>

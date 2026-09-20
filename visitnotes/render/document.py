@@ -55,6 +55,13 @@ def long_date(value: date | datetime) -> str:
 @dataclass(frozen=True)
 class _RenderedMed:
     sentences: list[actioncard.Sentence]
+    row: actioncard.MedicationRow
+    """U8b — the same medication as table cells.
+
+    Both shapes are built from one pass over one item, so the table and the
+    prose cannot disagree about a dose. The template picks a shape; nothing
+    downstream recomputes a value.
+    """
 
 
 def _printable(
@@ -92,12 +99,18 @@ def render_patient_document(
 
     medications = [
         _RenderedMed(
-            actioncard.medication_sentences(
+            sentences=actioncard.medication_sentences(
                 item,
                 clinician_name,
                 promoted=bool(res and res.promoted),
                 resolution=res,
-            )
+            ),
+            row=actioncard.medication_row(
+                item,
+                clinician_name,
+                promoted=bool(res and res.promoted),
+                resolution=res,
+            ),
         )
         for item, res in _printable(extraction.medications, resolutions)
     ]

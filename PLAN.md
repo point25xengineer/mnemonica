@@ -52,7 +52,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 |---|---|---|---|
 | Phase 0 — environment | agent-phase-0 | 9 / 9 | **done** |
 | Phase 1 — foundations | Evan + agent | 5.5 / 6 | 1e — clip in; enrollment + long visit left |
-| Track A — knowledge base | | 0 / 13 | **can start now** |
+| Track A — knowledge base | Evan + agent | 13 / 13 | **done** |
 | Track B — audio | | 0 / 6 | **can start now** — clip ingested; B3 needs the enrollment sample |
 | Track C — extraction | | 0 / 6 | **can start now** |
 | Track D — interface | | 0 / 10 | **can start now** |
@@ -69,7 +69,7 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 |---|---|---|---|---|
 | **0g** | pyannote imports + runs on Python 3.14? | **pass** | agent-phase-0 | fail → Track B goes single-speaker, every dose blocking |
 | **0h** | MPS turn boundaries match CPU? | **pass** — 0.0 ms delta, use MPS | agent-phase-0 | fail → CPU only, ~8 min per 15 min audio |
-| **B5** | word offsets good enough for click-to-play? | — | | fail → check you're on large-v3, not turbo |
+| **B5** | word offsets good enough for click-to-play? | **structural pass** — real `Session` reproduces fixture 1c exactly; 28/28 quotes resolve at the fixture's own offsets. The listening half is unanswered. | agent-track-b | fail → check you're on large-v3, not turbo |
 | **C2** | does `compile_json_schema(VisitExtraction)` compile at all? | — | | fail → post-hoc parse + retry; span verification still holds |
 | **C3** | verbatim quote fidelity holding? | — | | fail → 8-bit 9B, then 35B MoE |
 | **3c** | thresholds calibrated? | — | | no labeled data — bias toward flagging |
@@ -103,30 +103,38 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 
 *Owner:* ____  ·  *No ML dependencies. Nothing blocks this.*
 
-- [ ] **A1** RXNCONSO → SQLite (watch the trailing pipe)
-- [ ] **A2** RXNSAT `SPL_SET_ID` slice
-- [ ] **A3** normalization + salt-stripped key
-- [ ] **A3.5** filter `SY`/`TMSY` by dose pattern, add `PIN` → **18,094-string** name index *(do this BEFORE A4 — see SPEC §7)*
-- [ ] **A4** indexes: exact, salt-stripped, Double Metaphone
-- [ ] **A5** frequency prior from product counts
-- [ ] **A5.5** salt table — the **32** `IN` concepts with 2+ `PIN` children
-- [ ] **A6** `resolve_medication` + margin test + `salt_unspecified`
-- [ ] **A7** brand → ingredient via SBD brackets
-- [ ] **A8** openFDA → SQLite FTS5 *(needs 0d)*
-- [ ] **A9** `parse_sig` — `not_specified` ≠ `unparseable`
-- [ ] **A10** `resolve_date` — anchor injected, past direction works
-- [ ] **A11** cross-validation vs available strengths
+- [x] **A1** RXNCONSO → SQLite (watch the trailing pipe)
+- [x] **A2** RXNSAT `SPL_SET_ID` slice
+- [x] **A3** normalization + salt-stripped key
+- [x] **A3.5** filter `SY`/`TMSY` by dose pattern, add `PIN` → **18,094-string** name index *(do this BEFORE A4 — see SPEC §7)*
+- [x] **A4** indexes: exact, salt-stripped, Double Metaphone
+- [x] **A5** frequency prior from product counts
+- [x] **A5.5** salt table — the **32** `IN` concepts with 2+ `PIN` children *(lands at **20** under a marketed-salt filter — see Deviations)*
+- [x] **A6** `resolve_medication` + margin test + `salt_unspecified`
+- [x] **A7** brand → ingredient via SBD brackets
+- [x] **A8** openFDA → SQLite FTS5 *(needs 0d)*
+- [x] **A9** `parse_sig` — `not_specified` ≠ `unparseable`
+- [x] **A10** `resolve_date` — anchor injected, past direction works
+- [x] **A11** cross-validation vs available strengths
+
+**Build the two databases before running anything** (both gitignored — 233 MB
+and 1.8 GB, rebuildable in 7 s and 37 s):
+
+    /Users/evancanty/vn-shared/.venv/bin/python -m visitnotes.kb.build
+    /Users/evancanty/vn-shared/.venv/bin/python -m visitnotes.kb.openfda
 
 ## Track B — Audio · [phases/PHASE-2B-audio.md](phases/PHASE-2B-audio.md)
 
 *Owner:* ____  ·  *Needs 0g, 0h, 1e.*
 
-- [ ] **B1** Whisper large-v3-mlx → `Word[]` (**not turbo**)
-- [ ] **B2** pyannote, `exclusive_speaker_diarization`
-- [ ] **B3** enrollment match → `role`, manual override
-- [ ] **B4** word → turn assignment, `char_offset` assertion passes
-- [ ] **B5** GATE — emit `Session`, diff against fixture
-- [ ] **B6** unexpected-speaker cluster-distance check
+- [x] **B1** Whisper large-v3-mlx → `Word[]` (**not turbo**)
+- [x] **B2** pyannote, `exclusive_speaker_diarization`
+- [~] **B3** enrollment match → `role`, manual override — *works, but rehearsed
+  against a proxy sample cut from the take itself. Needs 1e's real 10 s
+  enrollment before anyone calls it validated.*
+- [x] **B4** word → turn assignment, `char_offset` assertion passes
+- [~] **B5** GATE — structural half **pass**; the ear test needs a human
+- [x] **B6** unexpected-speaker cluster-distance check
 
 ## Track C — Extraction + verification · [phases/PHASE-2C-extraction.md](phases/PHASE-2C-extraction.md)
 
@@ -195,6 +203,12 @@ SPEC.md — this table is the record, not the decision.*
 |---|---|---|---|
 | 0c / D1 | pyannote is fed `{"waveform", "sample_rate"}` dicts, not file paths | torchcodec's `libtorchcodec_core*.dylib` needs FFmpeg **shared** libs (`libavutil.56`–`.61`); `imageio-ffmpeg` ships only a static CLI, and there is no Homebrew on this machine. Every file-path decode raises `OSError`. The waveform dict is pyannote's own documented workaround (`core/io.py:49`) and adds no dependency — which also keeps D1 intact. Whisper is unaffected: it shells out to the ffmpeg CLI, which resolves. | agent-phase-0 |
 | D16 / TOOLS §4 | `golden_extraction.json` defines a post-C5 disposition envelope (`disposition`, `d16_categories`, `flags[].render`, `header` counts) and a concrete `SummarySelection` shape | TOOLS §4 specifies what the *model* emits and §5 the verification steps, but never the shape Track D consumes. Track D is blocked without one, so 1c-ii pins it. Not a departure from a decision — a gap being filled. Update TOOLS §4 when C1 lands. | Phase 1 |
+| A5.5 / TOOLS §1 | the salt table has **20** ingredients, not ~32 | The spec's 32 was measured but the method was not written down, and it does not reproduce. A bare 2+-`PIN`-children join gives **151**, most of them hydration states (*X anhydrous* vs *X monohydrate*) and formulations (*amphotericin B liposomal*) — not two dosing schedules wearing one name. Restricting the suffix to a real counter-ion vocabulary gives 50; additionally requiring **both salts to be marketed** (each heads ≥1 `SCD`/`SBD`) gives 20. A salt nobody sells cannot be what the clinician meant. Metoprolol, hydroxyzine, bupropion, paroxetine and diclofenac are all on it; the flag stays rare enough to mean something. | Track A |
+| A3 / TOOLS §1 | `SALT_WORDS` is 46 counter-ions, not the 6 A3 names | With the 6 named words the A5.5 join found **2** ingredients: `paroxetine mesylate`, `hydroxyzine pamoate` and `diclofenac potassium` never salt-stripped to their `IN`. The list is now the counter-ion vocabulary measured off this release's `PIN` suffixes, deliberately excluding hydration states, formulation words and source qualifiers. The salt key is only ever a fallback lookup, which is what makes a broader list survivable. | Track A |
+| A6 / TOOLS §1 stage 3 | Double Metaphone is a **scoring term**, not the blocking step | The spec blocks on the phonetic code — "retrieve everything sharing the query's code". Measured, that fails A6's own acceptance case: `doublemetaphone("metropolol")` is `MTRPLL` and `doublemetaphone("metoprolol")` is `MTPRLL`. The error is a metathesis, and a phonetic code is a positional encoding — robust to substitution, brittle to transposition. It dropped the one example the stage exists to recover, silently, as an `unresolved` with an empty candidate list. A3.5 cut the index to 18,094 strings and a Jaro-Winkler pass over all of them takes **14 ms**, so blocking buys speed we do not need at the cost of recall we cannot audit. | Track A |
+| A6 / TOOLS §1 | added `MAX_FUZZY_EDIT_DISTANCE = 3` | *Coumadin* is not in the Current Prescribable release (discontinued brand) and scored **0.81 against *Comtan*** — above threshold, clear of #2, `resolved`. Jaro-Winkler weights the prefix and `co` is a prefix many drugs share. Truncating converts it to `unresolved`, i.e. D16 category 4: raw heard text, flagged, near-matches offered. | Track A |
+| A6 / TOOLS §1 | added head-of-phrase backoff | TOOLS §1 tells the model to pass the drug name alone; `golden_extraction.json` passes `"the metoprolol up to 50 milligrams"` and `"the lisonopril at 10"` and expects both `resolved`. Both documents are right in their own terms. A phrase that fails whole is retried on the tokens before the first preposition or numeral. Deliberately not a general prefix sweep — that version "resolved" the fixture's category-4 plant `"the other blood pressure pill"`. | Track A |
+| TOOLS §1 | `source_release` is **09082026**, not the "09012026" TOOLS.md names | 09012026 is the mtime of the files inside the zip. The release readme says September 08, 2026. It is read from `Readme_Full_Prescribe_*.txt` at build time and the builder refuses to guess if the readme is missing. | Track A |
 | PHASE-1 1a sketch | `Turn` gained `char_start`/`char_end`; `Session` gained `session_dir`; `Word.text` whitespace rule made explicit | C4.5 needs turn bounds to answer D16 cat 8 cheaply; D2/D3 retention covers logs and scratch files, not just the `.wav`; the leading-space ambiguity in mlx-whisper's `WordTiming.word` would break every citation silently. | Phase 1 |
 
 ---
@@ -413,6 +427,100 @@ Format: `HH:MM · <step> · <what happened>`
         says to read them per segment; at sentence granularity they carry no
         information. Per-word probability is the signal that works. Do not
         build a threshold on the segment fields without checking this first.
+20:55 · A1-A5.5 · knowledge base built, `data/rxnorm.db` (233 MB, 7 s from
+        RRF). Every count in SPEC §7 reproduced exactly off this release:
+        name index **18,094** (IN 5,844 / BN 4,134 / PIN 1,943 / SY 2,902 /
+        TMSY 3,271), concept table 246,241, SPL_SET_ID over 21,594 rxcuis,
+        and the dose-bearing rows left in the index are exactly the 42 IN /
+        27 BN / 43 PIN A3.5 says are real names with numerals. The A3.5
+        filter is worth the trouble it was given.
+20:55 · A5.5 · the salt table does NOT reproduce at 32, and the gap is
+        methodological rather than a data change. A bare "IN with 2+ PIN
+        children" join gives **151** — hydration states and liposomal
+        formulations, not dosing schedules. Counter-ion vocabulary only: 50.
+        Also requiring both salts to be MARKETED: **20**, metoprolol among
+        them. Logged under Deviations with the full chain. If anyone re-runs
+        the original measurement and finds the 32, say so — the list is one
+        `GROUP BY` and I would rather match the spec than argue with it.
+20:55 · A7 · two bugs that a count alone would never have shown, both found
+        by asserting on metoprolol specifically. (1) RxNorm writes the
+        release rate FIRST — `24 HR metoprolol succinate 25 MG Extended
+        Release Oral Tablet` — so the ingredient head of every ER product was
+        `24 hr metoprolol succinate`, a key nothing looks up. It cost A5.5
+        the hero drug and undercounted A5's frequency prior on exactly the
+        drugs most likely to be discussed. (2) The bracketed brand in this
+        release is `[Toprol]`, not `[Toprol-XL]` as TOOLS §1 spells it —
+        A7 is a string parse over a format that varies, and it varies.
+20:56 · A6 · `resolve_medication` lands. Four things worth knowing before
+        you build on it, all in Deviations with reasoning:
+        (a) Double Metaphone is a SCORING term, not the blocking step.
+        `metropolol` -> MTRPLL, `metoprolol` -> MTPRLL: the spec's bucket
+        drops A6's own acceptance case, because the error is a metathesis and
+        a phonetic code is positional. Recall is exhaustive instead — 14 ms
+        over all 18,094 keys, which is nothing against one constrained
+        generation per turn.
+        (b) thresholds are SET, not tuned: SCORE_THRESHOLD 0.72,
+        AMBIGUITY_MARGIN 0.06, RECALL_FLOOR 0.80, MAX_FUZZY_EDIT_DISTANCE 3.
+        No labeled data exists, so they are biased toward flagging and
+        Phase 3c owns them. Gate 3c stays `—`.
+        (c) the margin does real work: `predisone` comes back **ambiguous**
+        between predniSONE (0.721) and predniSOLONE (0.709). Two different
+        drugs at different potencies, and a 0.012 gap is a coin toss the
+        patient cannot see.
+        (d) the edit-distance cap exists because *Coumadin* is not in the
+        Current Prescribable release and scored 0.81 against **Comtan** —
+        resolved, confident, wrong.
+20:56 · A6 · all three medications in `golden_extraction.json` now resolve to
+        the status and RxCUI the hand-authored fixture recorded, including
+        `salt_unspecified` on bare metoprolol and `unresolved` on "the other
+        blood pressure pill". Track C/D: two fields of the fixture's
+        hand-written resolution differ from the real tool and yours should
+        follow the tool — `source_release` is **09082026** (the fixture says
+        09012026, which is a file mtime), and `available_strengths` are
+        RxNorm's `RXN_AVAILABLE_STRENGTH` values like `25 MG (expressed as
+        metoprolol succinate)`, not the fixture's `25 MG Oral Tablet`.
+20:57 · A9 · `parse_sig`. Two bugs found by running it rather than reading
+        it: `\bdaily\b` matched inside "twice daily" and returned
+        frequency_per_day=1.0 — a silent halving from a regex that looked
+        right, so the frequency alternatives are now ordered most-specific
+        first; and the route cue "puff" matched inside "puffy", classifying
+        *"when your ankles look puffy"* as inhaled. Note `partial` has TWO
+        causes and only one leaves a remainder: leftover text, or complete
+        coverage with a missing component ("10 mg for ten days" has no
+        frequency). Both are prefilled+flagged; inventing a remainder to
+        satisfy the field would be the tool lying about its own coverage.
+20:57 · A10 · `resolve_date`. The bug here was the worst of the lot and it is
+        worth stating plainly: a bare `\bback in\b` past cue matched
+        **"come back in three weeks"** — the most common follow-up phrasing
+        there is, and TOOLS §3's own worked example — and resolved it three
+        weeks BEFORE the visit. A past cue inverts the arithmetic, it does
+        not degrade it. All past cues are now narrowed to specific forms.
+        D18's display string is computed end to end: "come back in three
+        weeks, which is Friday, October 9" from a Friday 2026-09-18 visit.
+20:58 · A8 · openFDA into FTS5, `data/openfda_labels.db` (1.8 GB, 37 s over
+        the 14 zips). 262,883 records, 253,906 with indexed text. **64,660
+        carry an openfda.rxcui — 25%**, exactly as SPEC warns, which is why
+        the join is on SPL_SET_ID. The full chain runs: spoken "metoprolol
+        succinate" -> RxNorm 221124 -> 50 SPL set ids -> the FDA's own
+        geriatric_use paragraph. That paragraph is public-domain,
+        FDA-authoritative, quotable, and no model wrote it.
+20:58 · A11 · cross-validation fires on all four: unmarketed strength
+        (250 mg metoprolol succinate), two sigs for one drug -> **blocking,
+        D16 cat 7**, schedule over a stated maximum -> blocking, and the
+        salt-unspecified flag restated where the dose lives. Multiples of a
+        marketed strength are NOT flagged — "two 25 mg tablets" is 50 mg and
+        is not an error.
+20:54 · A · two packages added to the shared venv, both pure-offline and
+        both tiny: `jellyfish` 1.2.1 (Jaro-Winkler, Levenshtein) and
+        `metaphone` 0.6 (Double Metaphone). Nothing in Track A calls a
+        network. If you rebuild the venv, reinstall them or `test_tools.py`
+        fails at import.
+20:59 · A · Track A done. 128 new tests in tests/test_kb.py and
+        tests/test_tools.py, 176 green overall. Both databases are gitignored
+        and rebuild in 7 s and 37 s from data already on disk; the tests skip
+        rather than fail when they are absent, so a fresh clone is not stuck.
+        Gate 3c is still `—` and is still Phase 3's to answer.
+
 ```
 
 ---

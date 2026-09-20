@@ -143,12 +143,15 @@ def test_contradiction_shows_both_values_with_timestamps(rows):
     flag = next(f for f in row.flags if f.d16_category == 7)
     assert flag.blocking
     assert len(flag.evidence) == 2
-    # Both timestamps, and two distinct ones — the values themselves come from
-    # the fixture, which is regenerated whenever the recording is.
-    assert len({e.audio_start for e in flag.evidence}) == 2
-    assert all(e.audio_start > 0 for e in flag.evidence)
+    # Two distinct moments, each playable. The values themselves come from the
+    # fixture, which is regenerated whenever the recording is.
+    assert all(e.cue is not None for e in flag.evidence)
+    assert len({e.cue.start for e in flag.evidence}) == 2
     assert len(flag.options) == 2
     assert flag.chosen is None
+    assert all(o.cue is not None for o in flag.options), (
+        "the doctor has to hear both doses before committing to one"
+    )
 
 
 def test_loose_thread_gets_its_own_row(extraction, rows):
@@ -159,6 +162,73 @@ def test_loose_thread_gets_its_own_row(extraction, rows):
     assert not row.blocking
     assert extraction.header()["loose_threads"] == 1
     assert extraction.header()["needs_confirmation"] == 2
+
+
+def test_a_question_is_asked_in_the_doctors_language(rows):
+    """Not Track C's. *"dose stated in a turn with no confident speaker role"*
+    is correct and is not something to read with a patient in the chair."""
+    from visitnotes.render.review import QUESTIONS
+
+    asked = [f.question for row in rows for f in row.flags]
+    assert asked
+    for question in asked:
+        assert len(question) < 80, question
+    row = next(r for r in rows if r.id == "med-metoprolol")
+    assert next(f for f in row.flags if f.d16_category == 7).question == QUESTIONS[7]
+
+
+def test_category_8_is_never_demoted_to_a_footnote(rows):
+    """It is non-blocking and has no options, so every rule that keys on
+    those alone hides it — which is the one thing U3 forbids."""
+    row = next(r for r in rows if r.id == "med-metoprolol")
+    cat8 = next(f for f in row.flags if f.d16_category == 8)
+    assert not cat8.quiet
+    assert cat8 in row.questions
+    assert len(cat8.evidence) == 2, "both quotes, side by side"
+    assert all(e.cue for e in cat8.evidence)
+
+
+def test_category_3_reads_correctly_for_a_patient_turn(rows):
+    """It fires for two situations. "We couldn't place the voice" is wrong
+    about a turn we placed confidently as the patient."""
+    unresolved = next(r for r in rows if r.id == "med-unresolved-bp-pill")
+    cat3 = next(f for f in unresolved.flags if f.d16_category == 3)
+    assert cat3.question == "The patient said this, not the doctor."
+
+    blocking = next(r for r in rows if r.blocking)
+    unplaced = next(f for f in blocking.flags if f.d16_category == 3)
+    assert "couldn\u2019t place" in unplaced.question
+
+
+def test_pipeline_bookkeeping_stays_off_the_glass(rows):
+    """The screen already asks about an underived change_kind in its own
+    words; repeating it in Track C's is noise."""
+    row = next(r for r in rows if r.id == "med-lisinopril")
+    assert any(f.bookkeeping for f in row.flags)
+    assert not any(f.question.startswith("change_kind") for f in row.notes)
+
+
+def test_a_note_is_not_dressed_up_as_a_question(rows):
+    """Category 5 has nothing to answer. Giving it the same frame as a
+    blocking contradiction is what makes the most-correct row in the table
+    look like a failure."""
+    row = next(r for r in rows if r.id == "med-lisinopril")
+    quiet = [f for f in row.flags if f.quiet]
+    assert quiet
+    assert all(f.d16_category != 7 for f in quiet)
+    assert row.notes and not any(f.blocking for f in row.notes)
+
+
+def test_a_clean_row_carries_no_status_word(rows):
+    """Nothing in the corner means nothing to do."""
+    for row in rows:
+        if not row.item.flags:
+            assert row.status == ""
+
+
+def test_a_blocking_row_says_so_in_a_word(rows):
+    row = next(r for r in rows if r.blocking)
+    assert row.status == "needs you"
 
 
 # -- U4: audio ------------------------------------------------------------

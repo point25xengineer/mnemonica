@@ -201,9 +201,17 @@ class Handler(BaseHTTPRequestHandler):
             )
         if current.session is None:
             current.load_fixture()
-        return self._render_review(current)
+        show_details = (
+            urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query).get(
+                "checks", ["0"]
+            )[0]
+            == "1"
+        )
+        return self._render_review(current, show_details=show_details)
 
-    def _render_review(self, current: ReviewSession) -> None:
+    def _render_review(
+        self, current: ReviewSession, *, show_details: bool = False
+    ) -> None:
         assert current.session and current.extraction
         rows = review_view.build_review(
             current.extraction,
@@ -220,6 +228,7 @@ class Handler(BaseHTTPRequestHandler):
             can_approve=current.can_approve,
             titles={r.id: r.title for r in rows},
             audio_available=current.session.audio_path.exists(),
+            show_details=show_details,
         )
 
     def _document(self) -> None:

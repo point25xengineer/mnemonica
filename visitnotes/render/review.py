@@ -1,9 +1,17 @@
 """U3/U4/U5 — the clinician's screen, as data.
 
-D9 gives this screen sixty seconds, and that budget is what decides every
-question here. Only blocking items demand attention. Everything that verified
-collapses. The eye should land on the two things that need a decision, not
-scan twenty things that don't.
+D9 gives this screen sixty seconds, and that budget decides every question
+here. Only blocking items demand attention. Everything that verified
+collapses. The eye should land on the things that need a decision, not scan
+twenty that don't.
+
+**The screen asks questions; it does not report state.** The first build put
+Track C's own vocabulary on the glass — `D16.7`, `turn 28 · clinician ·
+140.8s`, `weakest word "metoprolol," p=0.85` — which is exactly the
+information a doctor cannot act on and must read past. `QUESTIONS` below turns
+each category into the one sentence the clinician answers. The provenance
+still exists and is one keypress away (`show_details`), because it is what
+makes an answer checkable; it is just not the default view.
 
 Two rules that look like details and are not:
 
@@ -21,32 +29,77 @@ Two rules that look like details and are not:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 
 from visitnotes.contracts import Session
 from visitnotes.render import actioncard
 from visitnotes.render.audio import AudioCue, cue_for
 from visitnotes.render.model import (
     Extraction,
-    Flag,
     Item,
     Quote,
     Resolution,
     item_is_resolved,
 )
 
-__all__ = ["ReviewRow", "ReviewFlag", "Evidence", "build_review", "header_line"]
+__all__ = [
+    "ReviewRow",
+    "ReviewFlag",
+    "ReviewOption",
+    "Evidence",
+    "QUESTIONS",
+    "build_review",
+    "header_line",
+]
+
+
+QUESTIONS: dict[int, str] = {
+    2: "A number was hard to hear.",
+    3: "We couldn’t place the voice that said this.",
+    4: "No match in the drug list.",
+    5: "No dose was discussed.",
+    6: "Raised, never settled.",
+    7: "Two different doses were said. Which one?",
+    8: "The instructions came from a different moment than the drug.",
+}
+"""One short sentence per D16 category, in the doctor's language.
+
+Track C's `reason` strings are written for the people debugging the pipeline
+(*"dose stated in a turn with no confident speaker role"*). They are correct
+and they are not what someone with a patient in the chair should have to
+parse. Anything not in this map falls back to the recorded reason, so a new
+category degrades to verbose rather than to blank.
+"""
 
 
 @dataclass
 class Evidence:
+    """A quote, and the provenance behind it.
+
+    `detail` is assembled here but only rendered when the clinician asks for
+    it. Building it always costs nothing and means the toggle is a CSS-level
+    decision rather than a second pass over the data.
+    """
+
     text: str
-    turn_id: int
-    turn_role: str
-    audio_start: float
-    min_word_probability: float
+    role: str
     cue: AudioCue | None
+    detail: str
     verified: bool
+
+
+@dataclass
+class ReviewOption:
+    """One answer, with the audio that justifies it.
+
+    The option and its evidence are the same thing on this screen: *"which
+    dose did you mean"* is answered by hearing both. Keeping them apart made
+    the doctor match a button to a quote three lines above it.
+    """
+
+    label: str
+    value: str
+    cue: AudioCue | None
+    chosen: bool
 
 
 @dataclass
@@ -54,23 +107,50 @@ class ReviewFlag:
     index: int
     d16_category: int | None
     blocking: bool
-    reason: str
+    question: str
     render: str
     evidence: list[Evidence]
-    options: list[str]
+    options: list[ReviewOption]
     chosen: str | None
-    display: str | None
-    heard_text: str | None
-    near_matches: list[str]
     merge_target: str | None
     """An item this one is probably a duplicate of.
 
     The fixture's category-4 flag says `merge_into:med-lisinopril` — the
     patient's *"the other blood pressure pill"* is the lisinopril already on
     the list. Parsing that and never offering it is how a flag becomes
-    decoration: the clinician reads the suggestion and still has to work out
-    what to do with it.
+    decoration.
     """
+
+    @property
+    def quiet(self) -> bool:
+        """Nothing to do here — a note, not a question.
+
+        These collapse into a single muted line. Category 5 is the canonical
+        case: *"as directed"* is an answer, and dressing it up as a finding is
+        what makes the most-correct behaviour in the table look like a
+        failure.
+
+        `render == "expanded"` overrides it. Category 8 is non-blocking and
+        has no options, so a rule based on those alone demotes it to a
+        footnote — which is precisely the hiding U3 forbids, since it is the
+        one failure span verification structurally cannot catch.
+        """
+        if self.render == "expanded":
+            return False
+        return not self.blocking and not self.options and not self.merge_target
+
+    @property
+    def bookkeeping(self) -> bool:
+        """A note about the pipeline's own state rather than about the visit.
+
+        `change_kind was not derived from two parsed doses` is true, and the
+        screen already answers it: an underived direction gets its own
+        *"Is that the right word?"* question, and a non-directional verb needs
+        no answer at all. Saying it twice, once in Track C's vocabulary, is
+        noise. String-matched on purpose — if Track C rewords it we show a
+        slightly verbose note, which degrades the right way.
+        """
+        return self.quiet and self.question.startswith("change_kind")
 
 
 @dataclass
@@ -97,15 +177,74 @@ class ReviewRow:
     def category_labels(self) -> list[str]:
         return [f"D16.{c}" for c in self.item.d16_categories]
 
+    @property
+    def questions(self) -> list[ReviewFlag]:
+        return [f for f in self.flags if not f.quiet]
+
+    @property
+    def notes(self) -> list[ReviewFlag]:
+        return [f for f in self.flags if f.quiet and not f.bookkeeping]
+
+    @property
+    def status(self) -> str:
+        """The one word in the corner of a collapsed row."""
+        if self.dropped:
+            return "dropped"
+        if self.blocking and self.resolved:
+            return "settled"
+        if self.blocking:
+            return "needs you"
+        if self.needs_promotion:
+            return "check wording"
+        if self.questions:
+            return "check"
+        return ""
+
+
+def _question(
+    flag_category: int | None,
+    reason: str,
+    evidence: list[Evidence],
+    default_role: str | None = None,
+) -> str:
+    """The one sentence the clinician answers.
+
+    Category 3 fires for two different situations and needs two different
+    sentences: a turn enrollment could not place at all, and a turn that is
+    confidently the patient rather than the doctor. *"We couldn\u2019t place the
+    voice"* is wrong for the second and *"the patient said this"* is a claim
+    we cannot make about the first.
+    """
+    if flag_category == 3:
+        # A flag need not carry evidence — the fixture's patient-attribution
+        # flag does not, because the item's own mention quote IS the evidence.
+        roles = {e.role for e in evidence} or {default_role}
+        if roles == {"other"}:
+            return "The patient said this, not the doctor."
+    if flag_category in QUESTIONS:
+        return QUESTIONS[flag_category]
+    return reason
+
+
+def _detail(quote: Quote, cue: AudioCue | None) -> str:
+    who = {"clinician": "doctor", "other": "patient", "unknown": "unplaced voice"}
+    parts = [
+        who.get(quote.turn_role, quote.turn_role),
+        f"{quote.audio_start:.0f}s",
+        f"turn {quote.turn_id}",
+    ]
+    if cue:
+        parts.append(f"weakest “{cue.focus_word}” p={cue.focus_probability:.2f}")
+    return " · ".join(parts)
+
 
 def _evidence(session: Session, quote: Quote, *, flagged: bool) -> Evidence:
+    cue = cue_for(session, quote, flagged=flagged)
     return Evidence(
         text=quote.text,
-        turn_id=quote.turn_id,
-        turn_role=quote.turn_role,
-        audio_start=quote.audio_start,
-        min_word_probability=quote.min_word_probability,
-        cue=cue_for(session, quote, flagged=flagged),
+        role=quote.turn_role,
+        cue=cue,
+        detail=_detail(quote, cue),
         verified=quote.verify_against(session),
     )
 
@@ -148,21 +287,41 @@ def build_review(
 
         flags: list[ReviewFlag] = []
         for index, flag in enumerate(item.flags):
+            evidence = [_evidence(session, q, flagged=True) for q in flag.evidence]
+            chosen = res.settles(index) if res else None
+            labels = flag.options()
+
+            # An option that came from a piece of evidence carries that
+            # evidence's audio, so the button itself is the thing you play.
+            options = [
+                ReviewOption(
+                    label=label,
+                    value=label,
+                    cue=(
+                        evidence[position].cue
+                        if not flag.choices and position < len(evidence)
+                        else None
+                    ),
+                    chosen=chosen == label,
+                )
+                for position, label in enumerate(labels)
+            ]
+
             flags.append(
                 ReviewFlag(
                     index=index,
                     d16_category=flag.d16_category,
                     blocking=flag.blocking,
-                    reason=flag.reason,
+                    question=_question(
+                        flag.d16_category,
+                        flag.reason,
+                        evidence,
+                        default_role=quote.turn_role if quote else None,
+                    ),
                     render=flag.render,
-                    evidence=[
-                        _evidence(session, q, flagged=True) for q in flag.evidence
-                    ],
-                    options=flag.options(),
-                    chosen=res.settles(index) if res else None,
-                    display=flag.display,
-                    heard_text=flag.heard_text,
-                    near_matches=list(flag.near_matches),
+                    evidence=evidence,
+                    options=options,
+                    chosen=chosen,
                     merge_target=(
                         flag.suggested_action.split(":", 1)[1]
                         if (flag.suggested_action or "").startswith("merge_into:")

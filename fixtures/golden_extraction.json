@@ -16,18 +16,19 @@
       "kind": "medication",
       "disposition": "blocking",
       "d16_categories": [
+        2,
         3,
         7,
         8
       ],
       "mention_quote": {
-        "text": "the metoprolol up to fifty milligrams",
-        "char_offset": 966,
-        "char_end": 1003,
+        "text": "the metoprolol up to 50 milligrams",
+        "char_offset": 951,
+        "char_end": 985,
         "turn_id": 12,
         "turn_role": "clinician",
-        "audio_start": 71.2,
-        "min_word_probability": 0.886
+        "audio_start": 58.94,
+        "min_word_probability": 0.965
       },
       "medication": {
         "status": "resolved",
@@ -71,13 +72,13 @@
       "sig": [
         {
           "quote": {
-            "text": "up to fifty milligrams",
-            "char_offset": 981,
-            "char_end": 1003,
+            "text": "up to 50 milligrams",
+            "char_offset": 966,
+            "char_end": 985,
             "turn_id": 12,
             "turn_role": "clinician",
-            "audio_start": 71.2,
-            "min_word_probability": 0.886
+            "audio_start": 58.94,
+            "min_word_probability": 0.995
           },
           "status": "parsed",
           "dose_amount": 50.0,
@@ -97,13 +98,13 @@
         },
         {
           "quote": {
-            "text": "two of the twenty-fives",
-            "char_offset": 1378,
-            "char_end": 1401,
+            "text": "two of the 25s",
+            "char_offset": 1379,
+            "char_end": 1393,
             "turn_id": 19,
             "turn_role": "unknown",
-            "audio_start": 111.0,
-            "min_word_probability": 0.864
+            "audio_start": 96.24,
+            "min_word_probability": 0.891
           },
           "status": "parsed",
           "dose_amount": 25.0,
@@ -124,13 +125,13 @@
         },
         {
           "quote": {
-            "text": "twice a day, with food",
-            "char_offset": 1477,
-            "char_end": 1499,
+            "text": "twice a day with food",
+            "char_offset": 1466,
+            "char_end": 1487,
             "turn_id": 20,
             "turn_role": "clinician",
-            "audio_start": 114.4,
-            "min_word_probability": 0.871
+            "audio_start": 99.5,
+            "min_word_probability": 0.948
           },
           "status": "partial",
           "dose_amount": null,
@@ -152,13 +153,13 @@
         },
         {
           "quote": {
-            "text": "the metropolol, twenty-five, twice a day",
-            "char_offset": 2084,
-            "char_end": 2124,
+            "text": "the metoprolol, 25, twice a day",
+            "char_offset": 2083,
+            "char_end": 2114,
             "turn_id": 28,
             "turn_role": "clinician",
-            "audio_start": 178.2,
-            "min_word_probability": 0.66
+            "audio_start": 140.76,
+            "min_word_probability": 0.848
           },
           "status": "parsed",
           "dose_amount": 25.0,
@@ -180,13 +181,13 @@
       "start_or_stop": null,
       "change_kind": "increased",
       "change_evidence_quote": {
-        "text": "the metoprolol up to fifty milligrams",
-        "char_offset": 966,
-        "char_end": 1003,
+        "text": "the metoprolol up to 50 milligrams",
+        "char_offset": 951,
+        "char_end": 985,
         "turn_id": 12,
         "turn_role": "clinician",
-        "audio_start": 71.2,
-        "min_word_probability": 0.886
+        "audio_start": 58.94,
+        "min_word_probability": 0.965
       },
       "change_kind_derived": true,
       "change_kind_derivation": {
@@ -194,26 +195,26 @@
           "amount": 25.0,
           "unit": "mg",
           "quote": {
-            "text": "twenty-five milligrams",
-            "char_offset": 755,
-            "char_end": 777,
+            "text": "25 milligrams",
+            "char_offset": 745,
+            "char_end": 758,
             "turn_id": 10,
             "turn_role": "clinician",
-            "audio_start": 55.2,
-            "min_word_probability": 0.882
+            "audio_start": 43.94,
+            "min_word_probability": 1.0
           }
         },
         "to_dose": {
           "amount": 50.0,
           "unit": "mg",
           "quote": {
-            "text": "up to fifty milligrams",
-            "char_offset": 981,
-            "char_end": 1003,
+            "text": "up to 50 milligrams",
+            "char_offset": 966,
+            "char_end": 985,
             "turn_id": 12,
             "turn_role": "clinician",
-            "audio_start": 71.2,
-            "min_word_probability": 0.886
+            "audio_start": 58.94,
+            "min_word_probability": 0.995
           }
         },
         "rule": "both doses parsed and resolved; 50 > 25"
@@ -226,22 +227,22 @@
           "render": "expanded",
           "evidence": [
             {
-              "text": "up to fifty milligrams",
-              "char_offset": 981,
-              "char_end": 1003,
+              "text": "up to 50 milligrams",
+              "char_offset": 966,
+              "char_end": 985,
               "turn_id": 12,
               "turn_role": "clinician",
-              "audio_start": 71.2,
-              "min_word_probability": 0.886
+              "audio_start": 58.94,
+              "min_word_probability": 0.995
             },
             {
-              "text": "the metropolol, twenty-five, twice a day",
-              "char_offset": 2084,
-              "char_end": 2124,
+              "text": "the metoprolol, 25, twice a day",
+              "char_offset": 2083,
+              "char_end": 2114,
               "turn_id": 28,
               "turn_role": "clinician",
-              "audio_start": 178.2,
-              "min_word_probability": 0.66
+              "audio_start": 140.76,
+              "min_word_probability": 0.848
             }
           ]
         },
@@ -252,13 +253,13 @@
           "render": "expanded",
           "evidence": [
             {
-              "text": "two of the twenty-fives",
-              "char_offset": 1378,
-              "char_end": 1401,
+              "text": "two of the 25s",
+              "char_offset": 1379,
+              "char_end": 1393,
               "turn_id": 19,
               "turn_role": "unknown",
-              "audio_start": 111.0,
-              "min_word_probability": 0.864
+              "audio_start": 96.24,
+              "min_word_probability": 0.891
             }
           ]
         },
@@ -269,22 +270,40 @@
           "render": "expanded",
           "evidence": [
             {
-              "text": "the metoprolol up to fifty milligrams",
-              "char_offset": 966,
-              "char_end": 1003,
+              "text": "the metoprolol up to 50 milligrams",
+              "char_offset": 951,
+              "char_end": 985,
               "turn_id": 12,
               "turn_role": "clinician",
-              "audio_start": 71.2,
-              "min_word_probability": 0.886
+              "audio_start": 58.94,
+              "min_word_probability": 0.965
             },
             {
-              "text": "twice a day, with food",
-              "char_offset": 1477,
-              "char_end": 1499,
+              "text": "twice a day with food",
+              "char_offset": 1466,
+              "char_end": 1487,
               "turn_id": 20,
               "turn_role": "clinician",
-              "audio_start": 114.4,
-              "min_word_probability": 0.871
+              "audio_start": 99.5,
+              "min_word_probability": 0.948
+            }
+          ]
+        },
+        {
+          "d16_category": 2,
+          "blocking": false,
+          "reason": "dose numeral transcribed with low confidence",
+          "render": "expanded",
+          "min_word_probability": 0.14,
+          "evidence": [
+            {
+              "text": "the 50 make me more tired",
+              "char_offset": 1720,
+              "char_end": 1745,
+              "turn_id": 23,
+              "turn_role": "other",
+              "audio_start": 116.8,
+              "min_word_probability": 0.137
             }
           ]
         },
@@ -308,13 +327,13 @@
         5
       ],
       "mention_quote": {
-        "text": "the lisinopril at ten",
-        "char_offset": 783,
-        "char_end": 804,
+        "text": "the lisonopril at 10",
+        "char_offset": 764,
+        "char_end": 784,
         "turn_id": 10,
         "turn_role": "clinician",
-        "audio_start": 55.2,
-        "min_word_probability": 0.89
+        "audio_start": 43.94,
+        "min_word_probability": 0.898
       },
       "medication": {
         "status": "resolved",
@@ -331,9 +350,10 @@
         "is_brand": false,
         "salt_unspecified": false,
         "salt_candidates": [],
-        "match_type": "exact",
-        "edit_distance": 0,
-        "match_confidence": 0.99,
+        "match_type": "fuzzy",
+        "edit_distance": 1,
+        "match_confidence": 0.91,
+        "heard_text": "lisonopril",
         "candidates": [],
         "spl_set_ids": [
           "00b266d9-ac4a-e931-e063-6294a90a6a0b"
@@ -355,13 +375,13 @@
       "sig": [
         {
           "quote": {
-            "text": "just take it the way you've been taking it",
-            "char_offset": 1189,
-            "char_end": 1231,
+            "text": "Just take it the way you've been taking it",
+            "char_offset": 1187,
+            "char_end": 1229,
             "turn_id": 16,
             "turn_role": "clinician",
-            "audio_start": 93.2,
-            "min_word_probability": 0.869
+            "audio_start": 78.44,
+            "min_word_probability": 1.0
           },
           "status": "not_specified",
           "dose_amount": null,
@@ -384,16 +404,30 @@
       "change_kind": "continued",
       "change_evidence_quote": {
         "text": "That one doesn't change",
-        "char_offset": 1164,
-        "char_end": 1187,
+        "char_offset": 1162,
+        "char_end": 1185,
         "turn_id": 16,
         "turn_role": "clinician",
-        "audio_start": 93.2,
-        "min_word_probability": 0.887
+        "audio_start": 78.44,
+        "min_word_probability": 0.998
       },
       "change_kind_derived": false,
       "change_kind_derivation": null,
       "flags": [
+        {
+          "d16_category": null,
+          "blocking": false,
+          "reason": "likely mistranscription \u2014 heard 'lisonopril', matched 'lisinopril'",
+          "render": "expanded",
+          "heard_text": "lisonopril",
+          "resolved_name": "lisinopril",
+          "edit_distance": 1,
+          "other_spellings_in_visit": [
+            "lysinopril",
+            "lysinop,",
+            "lyso,"
+          ]
+        },
         {
           "d16_category": 5,
           "blocking": false,
@@ -418,12 +452,12 @@
       ],
       "mention_quote": {
         "text": "the other blood pressure pill",
-        "char_offset": 843,
-        "char_end": 872,
+        "char_offset": 828,
+        "char_end": 857,
         "turn_id": 11,
         "turn_role": "other",
-        "audio_start": 64.2,
-        "min_word_probability": 0.862
+        "audio_start": 52.42,
+        "min_word_probability": 0.535
       },
       "medication": {
         "status": "unresolved",
@@ -450,12 +484,12 @@
       "change_kind": "continued",
       "change_evidence_quote": {
         "text": "the other blood pressure pill",
-        "char_offset": 843,
-        "char_end": 872,
+        "char_offset": 828,
+        "char_end": 857,
         "turn_id": 11,
         "turn_role": "other",
-        "audio_start": 64.2,
-        "min_word_probability": 0.862
+        "audio_start": 52.42,
+        "min_word_probability": 0.535
       },
       "change_kind_derived": false,
       "change_kind_derivation": null,
@@ -486,13 +520,13 @@
       "d16_categories": [],
       "when": {
         "quote": {
-          "text": "about ten days",
-          "char_offset": 1570,
-          "char_end": 1584,
+          "text": "about 10 days",
+          "char_offset": 1562,
+          "char_end": 1575,
           "turn_id": 22,
           "turn_role": "clinician",
-          "audio_start": 129.2,
-          "min_word_probability": 0.868
+          "audio_start": 109.18,
+          "min_word_probability": 0.728
         },
         "status": "resolved",
         "resolved_date": "2026-09-28",
@@ -502,20 +536,20 @@
         "direction": "future",
         "anchor_date": "2026-09-18",
         "anchor_source": "session_visit_date",
-        "original_phrase": "about ten days",
-        "display_string": "about ten days from today, which is Monday, September 28",
+        "original_phrase": "about 10 days",
+        "display_string": "about 10 days from today, which is Monday, September 28",
         "depends_on_event": null,
         "resolution_confidence": 0.93,
         "source": "deterministic date resolver"
       },
       "purpose_quote": {
         "text": "check the pressure again",
-        "char_offset": 1595,
-        "char_end": 1619,
+        "char_offset": 1586,
+        "char_end": 1610,
         "turn_id": 22,
         "turn_role": "clinician",
-        "audio_start": 129.2,
-        "min_word_probability": 0.875
+        "audio_start": 109.18,
+        "min_word_probability": 1.0
       },
       "flags": []
     }
@@ -528,12 +562,12 @@
       "d16_categories": [],
       "instruction_quote": {
         "text": "If you feel dizzy when you stand up, or your heart feels like it's racing, call the office.",
-        "char_offset": 2188,
-        "char_end": 2279,
+        "char_offset": 2186,
+        "char_end": 2277,
         "turn_id": 30,
         "turn_role": "clinician",
-        "audio_start": 189.2,
-        "min_word_probability": 0.868
+        "audio_start": 150.1,
+        "min_word_probability": 0.997
       },
       "flags": []
     },
@@ -544,12 +578,12 @@
       "d16_categories": [],
       "instruction_quote": {
         "text": "don't stop it on your own",
-        "char_offset": 1986,
-        "char_end": 2011,
+        "char_offset": 1976,
+        "char_end": 2001,
         "turn_id": 26,
         "turn_role": "clinician",
-        "audio_start": 167.2,
-        "min_word_probability": 0.884
+        "audio_start": 134.58,
+        "min_word_probability": 1.0
       },
       "flags": []
     }
@@ -563,13 +597,13 @@
         6
       ],
       "topic_quote": {
-        "text": "we may need to adjust the lisinopril as well",
-        "char_offset": 1251,
-        "char_end": 1295,
+        "text": "we may need to adjust the lysinopril as well",
+        "char_offset": 1253,
+        "char_end": 1297,
         "turn_id": 18,
         "turn_role": "clinician",
-        "audio_start": 100.4,
-        "min_word_probability": 0.887
+        "audio_start": 83.26,
+        "min_word_probability": 0.996
       },
       "flags": [
         {
@@ -593,43 +627,43 @@
     "why_you_came_in": [
       {
         "text": "I've been checking the pressure at home",
-        "char_offset": 419,
-        "char_end": 458,
+        "char_offset": 428,
+        "char_end": 467,
         "turn_id": 5,
         "turn_role": "other",
-        "audio_start": 23.2,
-        "min_word_probability": 0.878
+        "audio_start": 17.78,
+        "min_word_probability": 0.999
       }
     ],
     "what_the_doctor_found": [
       {
-        "text": "That's higher than I want to see",
-        "char_offset": 681,
-        "char_end": 713,
+        "text": "that's higher than I want to see",
+        "char_offset": 671,
+        "char_end": 703,
         "turn_id": 10,
         "turn_role": "clinician",
-        "audio_start": 55.2,
-        "min_word_probability": 0.874
+        "audio_start": 43.94,
+        "min_word_probability": 0.995
       },
       {
         "text": "Your heart rate's got room for it",
-        "char_offset": 1018,
-        "char_end": 1051,
+        "char_offset": 997,
+        "char_end": 1030,
         "turn_id": 14,
         "turn_role": "clinician",
-        "audio_start": 82.2,
-        "min_word_probability": 0.909
+        "audio_start": 66.7,
+        "min_word_probability": 0.936
       }
     ],
     "what_happens_next": [
       {
         "text": "bring the home monitor with you next time",
-        "char_offset": 2336,
-        "char_end": 2377,
+        "char_offset": 2350,
+        "char_end": 2391,
         "turn_id": 32,
         "turn_role": "clinician",
-        "audio_start": 201.2,
-        "min_word_probability": 0.871
+        "audio_start": 159.36,
+        "min_word_probability": 0.991
       }
     ]
   }

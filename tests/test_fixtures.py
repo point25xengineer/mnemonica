@@ -82,17 +82,23 @@ def test_word_probabilities_actually_vary(session):
 
 
 def test_a_dose_numeral_carries_low_confidence(session):
-    """D16 category 2, planted at turn 9."""
-    turn = next(t for t in session.turns if t.id == 9)
-    word = next(w for w in turn.words if "sixty-two" in w.text)
-    assert word.probability < 0.5
+    """D16 category 2 — from the real take, at turn 23.
+
+    The scripted plant (noise over the BP reading at turn 9) did not land:
+    the actor read "sixty-two", Whisper heard it correctly at p=1.00, and
+    there is no ASR error there at all. This one landed on its own and is a
+    better case anyway, because it is a DOSE numeral rather than a vital.
+    """
+    turn = next(t for t in session.turns if t.id == 23)
+    word = next(w for w in turn.words if w.text == "50")
+    assert word.probability < 0.2
 
 
 def test_one_turn_has_an_unknown_role(session):
     """D16 category 3 needs a turn whose speaker role is not established."""
     unknown = [t for t in session.turns if t.role == "unknown"]
     assert len(unknown) == 1
-    assert "twenty-fives" in unknown[0].text  # and it contains a dose
+    assert "25s" in unknown[0].text  # and it contains a dose
 
 
 # --- 1c-ii -----------------------------------------------------------------
@@ -201,6 +207,31 @@ def test_the_loose_thread_is_never_resolved_later(extraction, session):
     thread = extraction["loose_threads"][0]
     after = [t for t in session.turns if t.id > thread["topic_quote"]["turn_id"]]
     assert not any("adjust" in t.text and "lisinopril" in t.text for t in after)
+
+
+def test_the_knowledge_base_catches_what_confidence_missed(session, extraction):
+    """The real take's best finding, and it was not planted.
+
+    Whisper wrote the doctor's "lisinopril" three different wrong ways, two
+    of them at p=1.00. No confidence signal flags any of it — the resolver's
+    fuzzy match is the only thing standing between that and a wrong drug on
+    a printed page.
+    """
+    med = next(m for m in extraction["medications"] if m["id"] == "med-lisinopril")
+    assert med["medication"]["match_type"] == "fuzzy"
+    assert med["medication"]["edit_distance"] <= 2  # TOOLS §1 disposition
+    heard = med["medication"]["heard_text"]
+    assert heard != med["medication"]["canonical_name"]
+    assert heard in session.transcript_text
+
+    # and the mistranscriptions really were high-confidence
+    confident = [
+        w
+        for t in session.turns
+        for w in t.words
+        if "lysinopril" in w.text.lower() and w.probability >= 0.99
+    ]
+    assert confident, "the point is that confidence did NOT flag these"
 
 
 def test_salt_is_never_specified_anywhere_in_the_visit(session, extraction):

@@ -8,10 +8,10 @@ is silently merged into an existing cluster, not detected.
 
 | | |
 |---|---|
-| **Runtime** | ~3 min 32 s · 35 turns · 461 words |
+| **Runtime** | 2 min 48 s · 35 turns · 480 words · **recorded** |
 | **Speakers** | `SPEAKER_00` Dr. Amara Osei (clinician) · `SPEAKER_01` Ray Delgado, 71 (patient) |
 | **Visit date** | **Friday, 18 September 2026** — see *Dates* below |
-| **Mirrors** | `fixtures/golden_visit.json` — generated from the same `TURNS` list |
+| **Mirrors** | `fixtures/golden_visit.json` — both generated from `asr_words.json` |
 
 ---
 
@@ -60,32 +60,56 @@ Every D16 category, one script line, so the fixture doubles as the test plan.
 | D16 | Turn | Plant |
 |---|---|---|
 | 1 fabrication | — | not plantable; C4 provokes it with a fake quote |
-| 2 low confidence | **T9** | `162` spoken over a chair scrape → `probability` ≈ 0.4 |
+| 2 low confidence | **T23** | `50` in "will the 50 make me more tired" → **p = 0.14** |
 | 3 ambiguous attribution | **T19** | crosstalk; patient says a dose, `role="unknown"` |
 | 4 unresolved drug | **T11** | "the other blood pressure pill" |
 | 5 not specified | **T16** | "just take it the way you've been taking it" |
 | 6 loose thread | **T18** | "we may need to adjust the lisinopril too" — never revisited |
-| 7 contradiction | **T12 / T28** | metoprolol **50 mg** at 1:11, **25 mg** at 2:58 |
+| 7 contradiction | **T12 / T28** | metoprolol **50 mg** at 1:04, **25** at 2:22 |
 | 8 cross-turn association | **T12 → T20** | "that one's twice a day" lands 8 turns after the metoprolol mention, with lisinopril the nearest drug named in between and **no drug named after it** |
-| fuzzy match | **T28** | `metropolol` — expected mistranscription (see below) |
+| fuzzy match | **T10, T15, T18, T28** | **lisinopril**, wrong three ways — `lisonopril`, `lysinopril`, `lysinop` |
 | salt unspecified | all | bare "metoprolol", no salt, ever |
 | red flag | **T26 / T30** | "call the office" |
 | appointment | **T22** | ten days, purpose stated |
 | past date | **T5** | "back in June" |
 | consent (D27) | **T0/T1** | captured on tape before anything else |
 
-**T28 is the sharp one, and it is two plants at once.** The doctor, thinking
-of the old regimen, says a dose that contradicts T12 — *and* it is the turn
-where a mistranscription is most likely. `25` twice a day and `50` once a day
-are clinically near-identical, which is exactly why a human skims past it. The
+**T28 is the sharp one.** The doctor, reciting the old regimen from memory,
+says a dose that contradicts T12. `25` twice a day and `50` once a day are
+clinically near-identical, which is exactly why a human skims past it. The
 system must not.
 
-**The fuzzy match is a prediction, not a line to perform.** Say *metoprolol*
-correctly every time. `metropolol` is what we expect Whisper to emit at T28,
-where it is said fast and mid-sentence, and the fixture plants it there as the
-prediction. If the real transcript comes back clean, that is a pass for Track B
-and the fuzzy path still has its unit test — do **not** re-record to force an
-error in.
+## What the recording actually did — two plants moved
+
+The take is in, and reality reassigned two of the plants. Both moves are
+improvements, and both are recorded here because the fixture now encodes them.
+
+**The fuzzy match landed on lisinopril, not metoprolol.** Metoprolol came back
+correct all three times it was said. Lisinopril did not, three separate ways:
+
+| Heard | p | Edit distance |
+|---|---|---|
+| `lisonopril` (T10) | 0.90 | 1 |
+| `lysinopril` (T15, T18) | **1.00** | 1 |
+| `lysinopril` (T28) | 0.78 | 1 |
+| `lyso,` `ly,` `lysinop,` (T15) | 0.10–0.77 | the actor's own restarts |
+
+All inside `edit_distance <= 2`, so they hit TOOLS §1's *"likely
+mistranscription, show both heard and resolved"* disposition. **Two of them
+came back at p = 1.00.** No confidence signal flags them; `resolve_medication`
+is the only thing between a confidently-wrong drug name and a printed page.
+That is the demo, and we did not have to stage it.
+
+**The category 2 plant moved from T9 to T23.** The scripted plant was noise
+over a blood-pressure reading. It did not land — the actor read *"sixty-two"*
+and Whisper heard `62.` correctly at p = 1.00, so there is no ASR error there
+at all. Meanwhile T23's *"will the **50** make me more tired?"* came back at
+**p = 0.14**, which is a better category 2 case than the scripted one: a dose
+numeral rather than a vital, in a patient turn.
+
+**One thing the transcript shows that no plant asked for:** Whisper writes
+numerals as digits — `25 milligrams`, `150 over 90`, `the 50s`. Anything
+matching quotes against a transcript must expect digits, not words.
 
 ---
 
@@ -99,87 +123,87 @@ script makes accuracy look fake-good and then collapses on stage.
 
 <!-- BEGIN GENERATED DIALOGUE -->
 
-*Generated from `fixtures/build_golden.py`. Edit the `TURNS` list there and re-run `python fixtures/build_golden.py --script`; editing this block by hand is how the script and the fixture drift apart.*
+*Generated from the committed ASR output by `fixtures/build_golden.py`. This is a transcript of the take that exists, not a script to perform from scratch — re-run `python fixtures/build_golden.py --script` after changing `TURN_BOUNDS`. Editing this block by hand makes the script and the fixture disagree.*
 
-**T0** · 00:00 · **DR. OSEI:** Morning, Ray. Before we get started, I'd like to record this visit so you go home with a written summary. Nothing leaves this laptop. Is that alright with you?
+**T0** · 00:00 · **DR. OSEI:** Good morning, Ray. Before we get started, I'd like to record this visit so you go home with a written summary. Nothing leaves this laptop. Is that alright with you?
 
-**T1** · 00:08 · **RAY:** Yeah, that's fine by me.
+**T1** · 00:07 · **RAY:** Yeah, that's fine by me.
 
-**T2** · 00:11 · **DR. OSEI:** Thank you. Okay, recording now.
+**T2** · 00:09 · **DR. OSEI:** Thank you. Okay, recording now.
 
-**T3** · 00:14 · **RAY:** Do I need to, uh, do I need to sign something?
+**T3** · 00:11 · **RAY:** Do I need to, uh, do I need to sign something?
 
-**T4** · 00:17 · **DR. OSEI:** No, saying yes is enough, I've got it noted. So how have things been?
+**T4** · 00:13 · **DR. OSEI:** No, saying yes is enough. I've got it noted. So how have things been?
 
-**T5** · 00:23 · **RAY:** Not bad. The headaches I had back in June, those are, those are mostly gone now. And I've been checking the pressure at home, like you asked.
+**T5** · 00:17 · **RAY:** Not bad. Uh, the headaches I had back in June, those are, those are mostly gone now. And I've been checking the pressure at home, like you asked.
 
-**T6** · 00:33 · **DR. OSEI:** Good, that's what I like to hear. What kind of numbers are you getting?
+**T6** · 00:25 · **DR. OSEI:** Good. That's what I like to hear. What kind of numbers are you getting?
 
-**T7** · 00:37 · **RAY:** Um, mostly one fifty over ninety. Ninety-two, sometimes.
+**T7** · 00:30 · **RAY:** Um, mostly 150 over 90. 92 sometimes.
 
-**T8** · 00:44 · **DR. OSEI:** Mm-hm.
+**T8** · 00:35 · **DR. OSEI:** Mm -hmm.
 
-**T9** · 00:46 · **RAY:** One morning it was one sixty-two. That one scared me a little.
+**T9** · 00:37 · **RAY:** Um, one, one morning it was 62. That one scared me a little.
 
 > *Recording note: Make noise across "sixty-two" — scrape the chair, or cough. This is the D16 category 2 plant and the per-word probability has to actually drop. Do not enunciate it.*
 
-**T10** · 00:55 · **DR. OSEI:** Okay. That's higher than I want to see. Right now you're taking the metoprolol, twenty-five milligrams, and the lisinopril at ten.
+**T10** · 00:43 · **DR. OSEI:** Okay, that's higher than I want to see. Right now you're taking the metoprolol, 25 milligrams, and the lisinopril at 10?
 
-**T11** · 01:04 · **RAY:** The little white one, yeah. And the, the other blood pressure pill, I don't know what that one's called.
+**T11** · 00:52 · **RAY:** Uh, yeah, the little white one, yeah. And the other blood pressure pill, I don't know what that one's called.
 
-**T12** · 01:11 · **DR. OSEI:** That's the lisinopril. So what I'd like to do is bring the metoprolol up to fifty milligrams.
+**T12** · 00:58 · **DR. OSEI:** That's the lisinopril. So what I'd like to do is bring the metoprolol up to 50 milligrams.
 
-**T13** · 01:19 · **RAY:** Fifty. Okay.
+**T13** · 01:05 · **RAY:** 50, okay.
 
-**T14** · 01:22 · **DR. OSEI:** Your heart rate's got room for it, and the headaches coming back would be the thing I'd worry about otherwise.
+**T14** · 01:06 · **DR. OSEI:** Your heart rate's got room for it, and the headaches coming back would be the thing I'd worry about otherwise.
 
-**T15** · 01:29 · **RAY:** And the other one? The lisinopril?
+**T15** · 01:13 · **RAY:** And the other one, the liso, li, lisinop, lisinopril?
 
-**T16** · 01:33 · **DR. OSEI:** That one doesn't change, just take it the way you've been taking it.
+**T16** · 01:18 · **DR. OSEI:** That one doesn't change. Just take it the way you've been taking it.
 
-**T17** · 01:38 · **RAY:** Okay.
+**T17** · 01:22 · **RAY:** Oh, okay.
 
-**T18** · 01:40 · **DR. OSEI:** Though, um, we may need to adjust the lisinopril as well, depending. Let me have a look at your kidney numbers. Now, the dosing.
+**T18** · 01:23 · **DR. OSEI:** Though, um, we may need to adjust the lisinopril as well, depending. Let me have a look at your kidney numbers. Now the dosing.
 
 > *Recording note: This is the loose thread, and it ends mid-turn on "Now, the dosing." Do NOT come back to the lisinopril. The temptation to resolve it on tape is strong; resisting it is the whole plant. Note also that this turn does not name metoprolol before the sig lands at turn 20 — a nearest-mention heuristic that guesses right by accident tests nothing.*
 
-**T19** · 01:51 · **RAY:** So that's two of the twenty-fives?
+**T19** · 01:36 · **RAY:** So that's two of the 25s?
 
 > *Recording note: Start speaking before she finishes turn 18 — a real half-second overlap. The patient stating a dose over the clinician is the D16 category 3 plant, and exclusive diarization needs something to actually exclude.*
 
-**T20** · 01:54 · **DR. OSEI:** Let's get you the fifties, it's one tablet instead of two. And that one's twice a day, with food.
+**T20** · 01:39 · **DR. OSEI:** Let's get you the 50s. It's one tablet instead of two, and that's once twice a day with food.
 
 > *Recording note: Do NOT name the drug in this turn. "That one" is the category 8 plant: the sig is eight turns downstream of the mention, and lisinopril is the nearest drug named in between. Span verification cannot see this failure — every quote in it is genuine.*
 
-**T21** · 02:05 · **RAY:** Twice a day. Morning and night.
+**T21** · 01:46 · **RAY:** Uh, twice a day, morning and night?
 
-**T22** · 02:09 · **DR. OSEI:** Right. And I want to see you back in about ten days so we can check the pressure again and make sure the higher dose isn't dropping it too far.
+**T22** · 01:49 · **DR. OSEI:** Right. And I want to see you back in about 10 days so we can check the pressure again and make sure the higher dose isn't doping it too far.
 
-**T23** · 02:19 · **RAY:** Ten days. I'll get that on the calendar. Will the fifty make me more tired? When I started the twenty-five I was, I was dragging for about a week.
+**T23** · 01:56 · **RAY:** Uh, 10 days. Okay, I'll get that on my calendar. Will the 50 make me more tired? When I started the 20, uh, 25, I was dragging for about a week.
 
-**T24** · 02:34 · **DR. OSEI:** It can, at first. Tiredness, cold hands, those are the common ones, and they usually settle after a week or two.
+**T24** · 02:06 · **DR. OSEI:** It can at first. Tiredness, cold hands, those are the common ones, and they usually settle after a week or two.
 
-**T25** · 02:44 · **RAY:** And if they don't?
+**T25** · 02:12 · **RAY:** And if they don't?
 
-**T26** · 02:47 · **DR. OSEI:** Then we look at it again. But don't stop it on your own, that's the one thing I'd ask you.
+**T26** · 02:14 · **DR. OSEI:** Uh, then we look at it again. But don't stop it on your own. That's the one thing I'd ask you.
 
-**T27** · 02:55 · **RAY:** No, I won't.
+**T27** · 02:19 · **RAY:** No, no, okay, I won't.
 
-**T28** · 02:58 · **DR. OSEI:** So, going back over it, the metoprolol, twenty-five, twice a day, and the lisinopril stays where it is.
+**T28** · 02:20 · **DR. OSEI:** So going back over it, the metoprolol, 25, twice a day, and the lisinopril stays where it is.
 
 > *Recording note: This contradicts turn 12 (fifty milligrams) and it should sound completely unremarkable — she is reciting the old regimen from memory, slightly too fast. That is the failure mode. Say "metoprolol" correctly; the fixture predicts Whisper hears "metropolol" here, and if the real transcript comes back clean that is a pass for Track B, not a reason to re-record.*
 
-**T29** · 03:07 · **RAY:** Got it.
+**T29** · 02:28 · **RAY:** Got it, got it.
 
-**T30** · 03:09 · **DR. OSEI:** One more thing. If you feel dizzy when you stand up, or your heart feels like it's racing, call the office. Don't wait for the ten days.
+**T30** · 02:30 · **DR. OSEI:** One more thing. If you feel dizzy when you stand up, or your heart feels like it's racing, call the office. Don't wait for the 10 days.
 
-**T31** · 03:18 · **RAY:** Dizzy or racing. Okay.
+**T31** · 02:37 · **RAY:** Dizzy or racing, okay, okay, I'll call.
 
-**T32** · 03:21 · **DR. OSEI:** And bring the home monitor with you next time, I'd like to see it against ours.
+**T32** · 02:39 · **DR. OSEI:** And bring the home monitor with you next time. I'd like to see it against ours.
 
-**T33** · 03:26 · **RAY:** Will do. Thanks, doc.
+**T33** · 02:43 · **RAY:** Will do. Thanks, doc.
 
-**T34** · 03:29 · **DR. OSEI:** Take care, Ray.
+**T34** · 02:44 · **DR. OSEI:** Take care, Ray.
 
 <!-- END GENERATED DIALOGUE -->
 

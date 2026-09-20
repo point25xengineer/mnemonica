@@ -6,29 +6,25 @@ Writes `fixtures/golden_visit.json` (1c-i, a `Session`) and
 `fixtures/golden_extraction.json` (1c-ii, dispositioned items as C5 emits
 them). Both are committed; this script is how you regenerate them.
 
-**The content is hand-written — the offsets are not.** The phase file says
-write the fixture by hand, and the dialogue below is hand-authored, mirroring
-`roleplay_script.md` turn for turn. But hand-typing `char_offset` for 400
-words is how you get a fixture that is subtly wrong in a way nobody notices
-until Track C's citations point at the wrong characters. So the turns are
-authored and the offsets are computed, from the same string Track C will
-search.
+**This is now ground truth, not a prediction.** The first draft of this file
+hand-authored the dialogue and interpolated the timings, because no audio
+existed. The role-play take now exists, so the turns carry the REAL
+mlx-whisper output — real word boundaries, real per-word probabilities, real
+mistranscriptions — read from `asr_words.json`, which is committed so this
+rebuilds without the audio (gitignored, and role-play besides).
 
-Every quote in `golden_extraction.json` is likewise located with `str.find`
-over the transcript this script just built — exactly as C4 will (D14). The two
-fixtures are consistent with each other by construction, not by inspection.
+What is still hand-authored is the part diarization would produce: which words
+belong to which turn, and which speaker is which. Those boundaries are
+independent of Track B, which is the point — B5 diffs its real `Session`
+against this one, and a fixture built from pyannote's own output could not
+test pyannote.
 
-## The turn list is a prediction of pyannote's output, not a stage script
+Offsets are computed, never typed. Every quote in `golden_extraction.json` is
+located with `str.find` over the transcript this script builds, exactly as C4
+will (D14), and asserted to occur exactly once.
 
-Consecutive same-speaker lines are merged, because
-`exclusive_speaker_diarization` emits one turn per contiguous stretch of one
-voice. A fixture with two adjacent clinician turns predicts something pyannote
-would never produce, and B5's diff against it would be noise. Turns here
-alternate strictly.
-
-Word timings are interpolated across each turn proportional to word length.
-They are plausible, not measured — nothing in the pipeline does arithmetic on
-them except click-to-play (U4), which only needs monotonicity.
+Word timings come from mlx-whisper's DTW alignment on large-v3 (D21 — not
+turbo, whose 4 decoder layers wreck exactly this).
 """
 
 from __future__ import annotations
@@ -60,104 +56,92 @@ PT = "SPEAKER_01"  # Ray Delgado, 71 — patient
 # and tests/test_script_matches_fixture.py fails if they drift apart.
 # ---------------------------------------------------------------------------
 
-#: (id, cluster, role, start, end, heard_text)
-TURNS: list[tuple[int, str, str, float, float, str]] = [
-    (0, DR, "clinician", 0.0, 8.2, "Morning, Ray. Before we get started, I'd like to record this visit so you go home with a written summary. Nothing leaves this laptop. Is that alright with you?"),
-    (1, PT, "other", 8.4, 11.0, "Yeah, that's fine by me."),
-    (2, DR, "clinician", 11.2, 14.1, "Thank you. Okay, recording now."),
-    (3, PT, "other", 14.3, 17.2, "Do I need to, uh, do I need to sign something?"),
-    (4, DR, "clinician", 17.4, 23.0, "No, saying yes is enough, I've got it noted. So how have things been?"),
-    (5, PT, "other", 23.2, 33.1, "Not bad. The headaches I had back in June, those are, those are mostly gone now. And I've been checking the pressure at home, like you asked."),
-    (6, DR, "clinician", 33.3, 37.0, "Good, that's what I like to hear. What kind of numbers are you getting?"),
-    (7, PT, "other", 37.2, 44.0, "Um, mostly one fifty over ninety. Ninety-two, sometimes."),
-    (8, DR, "clinician", 44.2, 46.1, "Mm-hm."),
-    # D16 cat 2 — "sixty-two" is spoken over a chair scrape.
-    (9, PT, "other", 46.3, 55.0, "One morning it was one sixty-two. That one scared me a little."),
-    (10, DR, "clinician", 55.2, 64.0, "Okay. That's higher than I want to see. Right now you're taking the metoprolol, twenty-five milligrams, and the lisinopril at ten."),
-    # D16 cat 4 — "the other blood pressure pill" resolves to nothing.
-    (11, PT, "other", 64.2, 71.0, "The little white one, yeah. And the, the other blood pressure pill, I don't know what that one's called."),
-    # The metoprolol mention. Its sig arrives 8 turns later, at turn 20.
-    (12, DR, "clinician", 71.2, 79.3, "That's the lisinopril. So what I'd like to do is bring the metoprolol up to fifty milligrams."),
-    (13, PT, "other", 79.5, 82.0, "Fifty. Okay."),
-    (14, DR, "clinician", 82.2, 89.0, "Your heart rate's got room for it, and the headaches coming back would be the thing I'd worry about otherwise."),
-    (15, PT, "other", 89.2, 93.0, "And the other one? The lisinopril?"),
-    # D16 cat 5 — a complete, correct parse whose finding is that no dose exists.
-    (16, DR, "clinician", 93.2, 98.1, "That one doesn't change, just take it the way you've been taking it."),
-    (17, PT, "other", 98.3, 100.2, "Okay."),
-    # D16 cat 6 — the loose thread. Never revisited, deliberately.
-    (18, DR, "clinician", 100.4, 111.0, "Though, um, we may need to adjust the lisinopril as well, depending. Let me have a look at your kidney numbers. Now, the dosing."),
-    # D16 cat 3 — the patient states a dose over the clinician; role is unknown.
-    (19, PT, "unknown", 111.0, 114.2, "So that's two of the twenty-fives?"),
-    # D16 cat 8 — "twice a day" lands here, with lisinopril the nearest named drug.
-    (20, DR, "clinician", 114.4, 125.0, "Let's get you the fifties, it's one tablet instead of two. And that one's twice a day, with food."),
-    (21, PT, "other", 125.2, 129.0, "Twice a day. Morning and night."),
-    (22, DR, "clinician", 129.2, 139.0, "Right. And I want to see you back in about ten days so we can check the pressure again and make sure the higher dose isn't dropping it too far."),
-    (23, PT, "other", 139.2, 154.0, "Ten days. I'll get that on the calendar. Will the fifty make me more tired? When I started the twenty-five I was, I was dragging for about a week."),
-    (24, DR, "clinician", 154.2, 164.0, "It can, at first. Tiredness, cold hands, those are the common ones, and they usually settle after a week or two."),
-    (25, PT, "other", 164.2, 167.0, "And if they don't?"),
-    (26, DR, "clinician", 167.2, 175.0, "Then we look at it again. But don't stop it on your own, that's the one thing I'd ask you."),
-    (27, PT, "other", 175.2, 178.0, "No, I won't."),
-    # D16 cat 7 (contradicts turn 12) + the predicted fuzzy match, "metropolol".
-    (28, DR, "clinician", 178.2, 187.0, "So, going back over it, the metropolol, twenty-five, twice a day, and the lisinopril stays where it is."),
-    (29, PT, "other", 187.2, 189.0, "Got it."),
-    (30, DR, "clinician", 189.2, 198.0, "One more thing. If you feel dizzy when you stand up, or your heart feels like it's racing, call the office. Don't wait for the ten days."),
-    (31, PT, "other", 198.2, 201.0, "Dizzy or racing. Okay."),
-    (32, DR, "clinician", 201.2, 206.0, "And bring the home monitor with you next time, I'd like to see it against ours."),
-    (33, PT, "other", 206.2, 209.0, "Will do. Thanks, doc."),
-    (34, DR, "clinician", 209.2, 212.0, "Take care, Ray."),
+#: Turn boundaries over `asr_words.json`, as (id, cluster, role, first word
+#: index, last word index, inclusive). This is the hand-authored part — it is
+#: what diarization has to reproduce, so it must not come FROM diarization.
+#:
+#: Turn 19 is the D16 category 3 plant: the patient states a dose over the
+#: clinician, and its role is `unknown` rather than `other`, because that is
+#: what an enrollment match that fails on overlapped speech produces (D20).
+TURN_BOUNDS: list[tuple[int, str, str, int, int]] = [
+    (0,  DR, "clinician",   0,  29),
+    (1,  PT, "other",      30,  34),
+    (2,  DR, "clinician",  35,  39),
+    (3,  PT, "other",      40,  50),
+    (4,  DR, "clinician",  51,  64),
+    (5,  PT, "other",      65,  92),
+    (6,  DR, "clinician",  93, 106),
+    (7,  PT, "other",     107, 113),
+    (8,  DR, "clinician", 114, 115),
+    (9,  PT, "other",     116, 128),
+    (10, DR, "clinician", 129, 149),
+    (11, PT, "other",     150, 169),   # cat 4 — "the other blood pressure pill"
+    (12, DR, "clinician", 170, 186),   # the metoprolol mention
+    (13, PT, "other",     187, 188),
+    (14, DR, "clinician", 189, 208),
+    (15, PT, "other",     209, 217),
+    (16, DR, "clinician", 218, 230),   # cat 5 — no dose stated
+    (17, PT, "other",     231, 232),
+    (18, DR, "clinician", 233, 256),   # cat 6 — the loose thread
+    (19, PT, "unknown",   257, 262),   # cat 3 — a dose, no confident role
+    (20, DR, "clinician", 263, 281),   # cat 8 — the sig, 8 turns downstream
+    (21, PT, "other",     282, 288),
+    (22, DR, "clinician", 289, 318),   # the appointment
+    (23, PT, "other",     319, 349),   # cat 2 — "the 50" at p=0.14
+    (24, DR, "clinician", 350, 370),
+    (25, PT, "other",     371, 374),
+    (26, DR, "clinician", 375, 395),   # red flag — "don't stop it on your own"
+    (27, PT, "other",     396, 400),
+    (28, DR, "clinician", 401, 418),   # cat 7 — 25 against turn 12's 50
+    (29, PT, "other",     419, 422),
+    (30, DR, "clinician", 423, 449),   # red flag — "call the office"
+    (31, PT, "other",     450, 456),
+    (32, DR, "clinician", 457, 472),
+    (33, PT, "other",     473, 476),
+    (34, DR, "clinician", 477, 479),
 ]
 
-#: (turn id, token, probability) — the words we deliberately degrade.
-#: A fixture where every word is 0.99 tests nothing D16 category 2 cares about.
-LOW_CONFIDENCE: list[tuple[int, str, float]] = [
-    (9, "sixty-two.", 0.41),   # the cat 2 plant: chair scrape over the number
-    (9, "one", 0.62),          # its neighbour degrades too, as ASR does
-    (19, "twenty-fives?", 0.58),  # spoken over the clinician
-    (28, "metropolol,", 0.66),    # the mistranscription is not confident either
-    (3, "uh,", 0.55),
-    (18, "um,", 0.51),
-]
+
+def load_asr_words() -> list[dict]:
+    """The committed mlx-whisper output. Leading spaces intact, as emitted."""
+    return json.loads((HERE / "asr_words.json").read_text())["words"]
 
 
 def build_session() -> Session:
-    """Author the turns, compute every offset from the transcript itself."""
-    rng = random.Random(20260918)  # deterministic: the fixture is committed
+    """Assemble the Session from real ASR words and authored turn boundaries."""
+    asr = load_asr_words()
     transcript_parts: list[str] = []
     cursor = 0
     turns: list[Turn] = []
 
-    overrides = {(tid, tok): p for tid, tok, p in LOW_CONFIDENCE}
-
-    for tid, cluster, role, start, end, text in TURNS:
+    for tid, cluster, role, first, last in TURN_BOUNDS:
+        raw = asr[first : last + 1]
+        # mlx-whisper emits " metoprolol" with a leading space. 1a's contract
+        # says Word.text carries none and char_offset points at the first real
+        # character; this strip-and-shift IS the B4 assertion, and Phase 0
+        # confirmed the leading space empirically before we got here.
+        tokens = [w["word"].strip() for w in raw]
+        text = " ".join(tokens)
         if transcript_parts:
-            cursor += 1  # the single space joining this turn to the last
+            cursor += 1  # the space joining this turn to the previous one
         char_start = cursor
-        tokens = text.split()
-        total = sum(len(t) for t in tokens)
+
         words: list[Word] = []
-        elapsed = 0
-        # Walk the turn text forward, so a repeated token ("the", "those")
-        # gets its own offset instead of every copy pointing at the first.
         within = 0
-        for token in tokens:
+        for token, w in zip(tokens, raw):
             i = text.index(token, within)
             within = i + len(token)
-            frac_start = (elapsed) / total
-            elapsed += len(token)
-            frac_end = elapsed / total
-            probability = overrides.get(
-                (tid, token), round(rng.uniform(0.86, 0.995), 3)
-            )
             words.append(
                 Word(
                     text=token,
-                    start=round(start + (end - start) * frac_start, 3),
-                    end=round(start + (end - start) * frac_end, 3),
-                    probability=probability,
+                    start=w["start"],
+                    end=w["end"],
+                    probability=w["probability"],
                     speaker_cluster=cluster,
                     char_offset=char_start + i,
                 )
             )
+
         cursor = char_start + len(text)
         transcript_parts.append(text)
         turns.append(
@@ -165,8 +149,8 @@ def build_session() -> Session:
                 id=tid,
                 speaker_cluster=cluster,
                 role=role,
-                start=start,
-                end=end,
+                start=raw[0]["start"],
+                end=raw[-1]["end"],
                 words=words,
                 text=text,
                 char_start=char_start,
@@ -177,14 +161,13 @@ def build_session() -> Session:
     return Session(
         visit_date=VISIT_DATE,
         session_dir=SESSION_DIR,
-        audio_path=SESSION_DIR / "visit.wav",
+        audio_path=SESSION_DIR / "visit.m4a",
         transcript_text=" ".join(transcript_parts),
         turns=turns,
         consent=Consent(
             obtained=True,
             method="verbal",
-            # D27: before recording. Turn 0 is t=0 of the audio; consent
-            # precedes it.
+            # D27 — before recording. Turn 0 is t=0 of the audio.
             obtained_at=datetime(2026, 9, 18, 9, 12, 0),
         ),
     )
@@ -265,18 +248,21 @@ def build_extraction(session: Session) -> dict:
     # --- the centrepiece ---------------------------------------------------
     # One drug, four dose statements, three of which need a human. This is
     # the item the demo lives or dies on.
-    mention = q("the metoprolol up to fifty milligrams")
-    prior_dose = q("twenty-five milligrams")          # turn 10, the baseline
-    new_dose = q("up to fifty milligrams")            # turn 12, the change
-    unknown_dose = q("two of the twenty-fives")       # turn 19, role=unknown
-    later_sig = q("twice a day, with food")           # turn 20, cat 8
-    contradiction = q("the metropolol, twenty-five, twice a day")  # turn 28
+    mention = q("the metoprolol up to 50 milligrams")
+    prior_dose = q("25 milligrams")                   # turn 10, the baseline
+    new_dose = q("up to 50 milligrams")               # turn 12, the change
+    unknown_dose = q("two of the 25s")                # turn 19, role=unknown
+    later_sig = q("twice a day with food")            # turn 20, cat 8
+    contradiction = q("the metoprolol, 25, twice a day")  # turn 28
+    # The ASR heard the drug correctly here; it is LISINOPRIL that came back
+    # mistranscribed, three separate ways. See the lisinopril item below.
+    low_confidence_dose = q("the 50 make me more tired")  # turn 23, p=0.14
 
     metoprolol = {
         "id": "med-metoprolol",
         "kind": "medication",
         "disposition": "blocking",
-        "d16_categories": [3, 7, 8],
+        "d16_categories": [2, 3, 7, 8],
         "mention_quote": mention,
         "medication": {
             "status": "resolved",
@@ -417,6 +403,18 @@ def build_extraction(session: Session) -> dict:
                 "evidence": [mention, later_sig],
             },
             {
+                # D16 cat 2. The one the script planted at the BP reading did
+                # not land — the actor read "sixty-two" and Whisper heard it
+                # correctly. This one landed for free, and it is the better
+                # case: a DOSE numeral at p=0.14, in a patient turn.
+                "d16_category": 2,
+                "blocking": False,
+                "reason": "dose numeral transcribed with low confidence",
+                "render": "expanded",
+                "min_word_probability": 0.14,
+                "evidence": [low_confidence_dose],
+            },
+            {
                 "d16_category": None,
                 "blocking": False,
                 "reason": "salt unspecified: succinate (once daily) or tartrate (twice daily)?",
@@ -432,7 +430,9 @@ def build_extraction(session: Session) -> dict:
         "kind": "medication",
         "disposition": "prefilled_flagged",
         "d16_categories": [5],
-        "mention_quote": q("the lisinopril at ten"),
+        # The doctor said "lisinopril"; Whisper wrote "lisonopril". Every
+        # confidence signal is high — only the knowledge base catches this.
+        "mention_quote": q("the lisonopril at 10"),
         "medication": {
             "status": "resolved",
             "rxcui": "29046",
@@ -443,9 +443,10 @@ def build_extraction(session: Session) -> dict:
             "is_brand": False,
             "salt_unspecified": False,
             "salt_candidates": [],
-            "match_type": "exact",
-            "edit_distance": 0,
-            "match_confidence": 0.99,
+            "match_type": "fuzzy",
+            "edit_distance": 1,
+            "match_confidence": 0.91,
+            "heard_text": "lisonopril",
             "candidates": [],
             "spl_set_ids": LISINOPRIL_SPL,
             "available_strengths": LISINOPRIL_STRENGTHS,
@@ -459,7 +460,7 @@ def build_extraction(session: Session) -> dict:
                 # that no dose was stated. This is not an error and must not
                 # look like one: "your doctor never said it" is a different
                 # fact from "I could not hear it".
-                "quote": q("just take it the way you've been taking it"),
+                "quote": q("Just take it the way you've been taking it"),
                 "status": "not_specified",
                 "dose_amount": None,
                 "dose_unit": None,
@@ -485,6 +486,21 @@ def build_extraction(session: Session) -> dict:
         "change_kind_derived": False,
         "change_kind_derivation": None,
         "flags": [
+            {
+                # TOOLS §1: resolved + fuzzy + edit_distance <= 2 -> prefilled
+                # and flagged, showing BOTH heard and resolved. "You said
+                # lisonopril, we matched lisinopril" is the knowledge base
+                # catching an ASR error that every confidence signal missed —
+                # two of the three mistranscriptions came back at p=1.00.
+                "d16_category": None,
+                "blocking": False,
+                "reason": "likely mistranscription — heard 'lisonopril', matched 'lisinopril'",
+                "render": "expanded",
+                "heard_text": "lisonopril",
+                "resolved_name": "lisinopril",
+                "edit_distance": 1,
+                "other_spellings_in_visit": ["lysinopril", "lysinop,", "lyso,"],
+            },
             {
                 "d16_category": 5,
                 "blocking": False,
@@ -562,7 +578,7 @@ def build_extraction(session: Session) -> dict:
         "disposition": "printed_as_fact",
         "d16_categories": [],
         "when": {
-            "quote": q("about ten days"),
+            "quote": q("about 10 days"),
             "status": "resolved",
             "resolved_date": "2026-09-28",
             "range_start": None,
@@ -571,11 +587,11 @@ def build_extraction(session: Session) -> dict:
             "direction": "future",
             "anchor_date": VISIT_DATE.isoformat(),
             "anchor_source": "session_visit_date",
-            "original_phrase": "about ten days",
+            "original_phrase": "about 10 days",
             # D18: BOTH forms. A patient reading a bare date cannot catch an
             # error; reading both lets them. Ten days, not two weeks —
             # multiples of seven from this weekend print a weekend.
-            "display_string": "about ten days from today, which is Monday, September 28",
+            "display_string": "about 10 days from today, which is Monday, September 28",
             "depends_on_event": None,
             "resolution_confidence": 0.93,
             "source": "deterministic date resolver",
@@ -614,7 +630,7 @@ def build_extraction(session: Session) -> dict:
             "d16_categories": [6],
             # Arguably the most valuable output in the product: "you told the
             # patient you'd adjust the dose and never specified it."
-            "topic_quote": q("we may need to adjust the lisinopril as well"),
+            "topic_quote": q("we may need to adjust the lysinopril as well"),
             "flags": [
                 {
                     "d16_category": 6,
@@ -667,7 +683,7 @@ def build_extraction(session: Session) -> dict:
         "summary_quotes": {
             "why_you_came_in": [q("I've been checking the pressure at home")],
             "what_the_doctor_found": [
-                q("That's higher than I want to see"),
+                q("that's higher than I want to see"),
                 q("Your heart rate's got room for it"),
             ],
             "what_happens_next": [
@@ -721,10 +737,19 @@ def _cli() -> None:
 
 SPEAKER_LABEL = {DR: "DR. OSEI", PT: "RAY"}
 
-#: Where the fixture PREDICTS an ASR error. The script says the left-hand
-#: side; the transcript is expected to come back with the right-hand side.
-#: Say the drug name correctly — do not perform the error.
-MISTRANSCRIBED = {28: [("metropolol", "metoprolol")]}
+#: Where the ASR got it wrong. The transcript (left) is what Whisper wrote;
+#: the script (right) is what was actually said. Applied in reverse when
+#: rendering the script, so the script stays a record of the SPEECH.
+#:
+#: Every one of these is lisinopril. Metoprolol came back correct all three
+#: times. Two of these were emitted at p=1.00 — confidence gave no warning at
+#: all, which is exactly why resolve_medication exists.
+MISTRANSCRIBED = {
+    10: [("lisonopril", "lisinopril")],
+    15: [("lyso, ly, lysinop, lysinopril", "liso, li, lisinop, lisinopril")],
+    18: [("lysinopril", "lisinopril")],
+    28: [("lysinopril", "lisinopril")],
+}
 
 #: Recording notes, printed under their turn. Not spoken.
 NOTES: dict[int, str] = {
@@ -766,21 +791,27 @@ def spoken_text(turn_id: int, heard: str) -> str:
     return text
 
 
-def render_script_block() -> str:
+def render_script_block(session: Session | None = None) -> str:
+    session = session or build_session()
     lines = [
         BEGIN,
         "",
-        "*Generated from `fixtures/build_golden.py`. Edit the `TURNS` list "
-        "there and re-run `python fixtures/build_golden.py --script`; editing "
-        "this block by hand is how the script and the fixture drift apart.*",
+        "*Generated from the committed ASR output by "
+        "`fixtures/build_golden.py`. This is a transcript of the take that "
+        "exists, not a script to perform from scratch — re-run "
+        "`python fixtures/build_golden.py --script` after changing "
+        "`TURN_BOUNDS`. Editing this block by hand makes the script and the "
+        "fixture disagree.*",
         "",
     ]
-    for tid, cluster, _role, start, _end, heard in TURNS:
-        mm, ss = divmod(int(start), 60)
+    for turn in session.turns:
+        mm, ss = divmod(int(turn.start), 60)
         lines.append(
-            f"**T{tid}** · {mm:02d}:{ss:02d} · **{SPEAKER_LABEL[cluster]}:** "
-            f"{spoken_text(tid, heard)}"
+            f"**T{turn.id}** · {mm:02d}:{ss:02d} · "
+            f"**{SPEAKER_LABEL[turn.speaker_cluster]}:** "
+            f"{spoken_text(turn.id, turn.text)}"
         )
+        tid = turn.id
         lines.append("")
         if tid in NOTES:
             lines.append(f"> *Recording note: {NOTES[tid]}*")

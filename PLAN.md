@@ -51,9 +51,9 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | Track | Owner | Progress | State |
 |---|---|---|---|
 | Phase 0 — environment | agent-phase-0 | 9 / 9 | **done** |
-| Phase 1 — foundations | Evan + agent | 5 / 6 | **1e only — needs a recording** |
+| Phase 1 — foundations | Evan + agent | 5.5 / 6 | 1e — clip in; enrollment + long visit left |
 | Track A — knowledge base | | 0 / 13 | **can start now** |
-| Track B — audio | | 0 / 6 | 0g/0h **pass** — waits on 1e only |
+| Track B — audio | | 0 / 6 | **can start now** — clip ingested; B3 needs the enrollment sample |
 | Track C — extraction | | 0 / 6 | **can start now** |
 | Track D — interface | | 0 / 10 | **can start now** |
 | Phase 3 — integration | | 0 / 5 | waits on all tracks |
@@ -95,7 +95,7 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 - [x] **1c-i** HUMAN — `fixtures/golden_visit.json` (`Session`), all **8** D16 cases planted
 - [x] **1c-ii** HUMAN — `fixtures/golden_extraction.json` (dispositioned items) — **Track D is blocked without this**; a `Session` has no items to render
 - [x] **1d** HUMAN — role-play script, drugs verified, 2 speakers
-- [ ] **1e** HUMAN — clip + long visit + 10 s enrollment recorded
+- [~] **1e** HUMAN — clip **recorded and ingested**; long visit + 10 s enrollment still needed
 
 ---
 
@@ -379,6 +379,40 @@ Format: `HH:MM · <step> · <what happened>`
         SummarySelection is referenced without a definition. Track D will
         build against this file. C5: if you emit something different, change
         the fixture and TELL Track D. Logged under Deviations.
+20:55 · 1e · Short clip recorded and ingested: 2:48, mono 48 kHz AAC, one
+        mixed room mic (not per-speaker tracks — diarization has real work to
+        do). whisper-large-v3-mlx: 11.9 s for 165.7 s of audio, 13.9x
+        real-time, 480 words. Still needed: the 10 s clinician enrollment
+        sample (D20 does not work without it) and the long visit for 4a.
+20:55 · 1c · FIXTURES REBUILT FROM THE REAL TAKE. golden_visit.json is no
+        longer a prediction — it carries actual mlx-whisper words, timings
+        and per-word probabilities, read from the newly committed
+        fixtures/asr_words.json so it rebuilds without the audio. What stays
+        hand-authored is the turn segmentation and speaker roles, which is
+        deliberate: a fixture built from pyannote's own output cannot test
+        pyannote. B5 still has an independent target to diff against.
+20:55 · 1c · Three things every track needs to know about the real
+        transcript. (1) WHISPER WRITES DIGITS: "25 milligrams", "150 over
+        90", "the 50s" — not "twenty-five". Every quote matched against a
+        transcript must expect digits. All fixture quotes were rewired.
+        (2) The fuzzy-match plant landed on LISINOPRIL, not metoprolol.
+        Metoprolol was correct all three times; lisinopril came back as
+        lisonopril (p=0.90) and lysinopril (p=1.00, 1.00, 0.78) — all edit
+        distance 1. Two at p=1.00, so no confidence signal flags them and
+        resolve_medication's fuzzy path is the only thing that catches it.
+        Track A: A6's margin test now has a real case, not a synthetic one.
+        (3) The scripted cat 2 plant did NOT land — the actor read
+        "sixty-two" and Whisper heard it right at p=1.00. A better one
+        landed free at T23: "will the 50 make me more tired" with 50 at
+        p=0.14, a dose numeral in a patient turn.
+20:55 · 1c · Track B and C, a correction to D16 category 2 as specified.
+        SEGMENT-LEVEL SIGNALS DO NOT DISCRIMINATE in mlx-whisper output:
+        no_speech_prob=0.101, compression_ratio=1.64, avg_logprob=-0.098 are
+        IDENTICAL across nine consecutive segments, because the 30 s decode
+        window's stats are stamped onto every segment inside it. D16 cat 2
+        says to read them per segment; at sentence granularity they carry no
+        information. Per-word probability is the signal that works. Do not
+        build a threshold on the segment fields without checking this first.
 ```
 
 ---

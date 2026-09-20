@@ -1,4116 +1,4268 @@
 {
   "visit_date": "2026-09-18",
   "session_dir": "fixtures/sessions/golden",
-  "audio_path": "fixtures/sessions/golden/visit.wav",
-  "transcript_text": "Morning, Ray. Before we get started, I'd like to record this visit so you go home with a written summary. Nothing leaves this laptop. Is that alright with you? Yeah, that's fine by me. Thank you. Okay, recording now. Do I need to, uh, do I need to sign something? No, saying yes is enough, I've got it noted. So how have things been? Not bad. The headaches I had back in June, those are, those are mostly gone now. And I've been checking the pressure at home, like you asked. Good, that's what I like to hear. What kind of numbers are you getting? Um, mostly one fifty over ninety. Ninety-two, sometimes. Mm-hm. One morning it was one sixty-two. That one scared me a little. Okay. That's higher than I want to see. Right now you're taking the metoprolol, twenty-five milligrams, and the lisinopril at ten. The little white one, yeah. And the, the other blood pressure pill, I don't know what that one's called. That's the lisinopril. So what I'd like to do is bring the metoprolol up to fifty milligrams. Fifty. Okay. Your heart rate's got room for it, and the headaches coming back would be the thing I'd worry about otherwise. And the other one? The lisinopril? That one doesn't change, just take it the way you've been taking it. Okay. Though, um, we may need to adjust the lisinopril as well, depending. Let me have a look at your kidney numbers. Now, the dosing. So that's two of the twenty-fives? Let's get you the fifties, it's one tablet instead of two. And that one's twice a day, with food. Twice a day. Morning and night. Right. And I want to see you back in about ten days so we can check the pressure again and make sure the higher dose isn't dropping it too far. Ten days. I'll get that on the calendar. Will the fifty make me more tired? When I started the twenty-five I was, I was dragging for about a week. It can, at first. Tiredness, cold hands, those are the common ones, and they usually settle after a week or two. And if they don't? Then we look at it again. But don't stop it on your own, that's the one thing I'd ask you. No, I won't. So, going back over it, the metropolol, twenty-five, twice a day, and the lisinopril stays where it is. Got it. One more thing. If you feel dizzy when you stand up, or your heart feels like it's racing, call the office. Don't wait for the ten days. Dizzy or racing. Okay. And bring the home monitor with you next time, I'd like to see it against ours. Will do. Thanks, doc. Take care, Ray.",
+  "audio_path": "fixtures/sessions/golden/visit.m4a",
+  "transcript_text": "Good morning, Ray. Before we get started, I'd like to record this visit so you go home with a written summary. Nothing leaves this laptop. Is that alright with you? Yeah, that's fine by me. Thank you. Okay, recording now. Do I need to, uh, do I need to sign something? No, saying yes is enough. I've got it noted. So how have things been? Not bad. Uh, the headaches I had back in June, those are, those are mostly gone now. And I've been checking the pressure at home, like you asked. Good. That's what I like to hear. What kind of numbers are you getting? Um, mostly 150 over 90. 92 sometimes. Mm -hmm. Um, one, one morning it was 62. That one scared me a little. Okay, that's higher than I want to see. Right now you're taking the metoprolol, 25 milligrams, and the lisonopril at 10? Uh, yeah, the little white one, yeah. And the other blood pressure pill, I don't know what that one's called. That's the lisinopril. So what I'd like to do is bring the metoprolol up to 50 milligrams. 50, okay. Your heart rate's got room for it, and the headaches coming back would be the thing I'd worry about otherwise. And the other one, the lyso, ly, lysinop, lysinopril? That one doesn't change. Just take it the way you've been taking it. Oh, okay. Though, um, we may need to adjust the lysinopril as well, depending. Let me have a look at your kidney numbers. Now the dosing. So that's two of the 25s? Let's get you the 50s. It's one tablet instead of two, and that's once twice a day with food. Uh, twice a day, morning and night? Right. And I want to see you back in about 10 days so we can check the pressure again and make sure the higher dose isn't doping it too far. Uh, 10 days. Okay, I'll get that on my calendar. Will the 50 make me more tired? When I started the 20, uh, 25, I was dragging for about a week. It can at first. Tiredness, cold hands, those are the common ones, and they usually settle after a week or two. And if they don't? Uh, then we look at it again. But don't stop it on your own. That's the one thing I'd ask you. No, no, okay, I won't. So going back over it, the metoprolol, 25, twice a day, and the lysinopril stays where it is. Got it, got it. One more thing. If you feel dizzy when you stand up, or your heart feels like it's racing, call the office. Don't wait for the 10 days. Dizzy or racing, okay, okay, I'll call. And bring the home monitor with you next time. I'd like to see it against ours. Will do. Thanks, doc. Take care, Ray.",
   "turns": [
     {
       "id": 0,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
       "start": 0.0,
-      "end": 8.2,
+      "end": 7.6,
       "words": [
         {
-          "text": "Morning,",
+          "text": "Good",
           "start": 0.0,
-          "end": 0.501,
-          "probability": 0.979,
+          "end": 0.28,
+          "probability": 0.932,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 0
         },
         {
-          "text": "Ray.",
-          "start": 0.501,
-          "end": 0.751,
-          "probability": 0.977,
+          "text": "morning,",
+          "start": 0.28,
+          "end": 0.6,
+          "probability": 0.973,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 9
+          "char_offset": 5
         },
         {
-          "text": "Before",
-          "start": 0.751,
-          "end": 1.127,
-          "probability": 0.943,
+          "text": "Ray.",
+          "start": 0.72,
+          "end": 0.9,
+          "probability": 0.941,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 14
         },
         {
-          "text": "we",
-          "start": 1.127,
-          "end": 1.252,
-          "probability": 0.995,
+          "text": "Before",
+          "start": 1.32,
+          "end": 1.68,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 21
+          "char_offset": 19
+        },
+        {
+          "text": "we",
+          "start": 1.68,
+          "end": 1.86,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 26
         },
         {
           "text": "get",
-          "start": 1.252,
-          "end": 1.44,
-          "probability": 0.984,
+          "start": 1.86,
+          "end": 1.98,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 24
+          "char_offset": 29
         },
         {
           "text": "started,",
-          "start": 1.44,
-          "end": 1.94,
-          "probability": 0.908,
+          "start": 1.98,
+          "end": 2.32,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 28
+          "char_offset": 33
         },
         {
           "text": "I'd",
-          "start": 1.94,
-          "end": 2.128,
-          "probability": 0.968,
+          "start": 2.4,
+          "end": 2.54,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 37
+          "char_offset": 42
         },
         {
           "text": "like",
-          "start": 2.128,
-          "end": 2.379,
-          "probability": 0.904,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 41
-        },
-        {
-          "text": "to",
-          "start": 2.379,
-          "end": 2.504,
-          "probability": 0.881,
+          "start": 2.54,
+          "end": 2.66,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 46
         },
         {
-          "text": "record",
-          "start": 2.504,
-          "end": 2.879,
-          "probability": 0.972,
+          "text": "to",
+          "start": 2.66,
+          "end": 2.8,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 49
+          "char_offset": 51
+        },
+        {
+          "text": "record",
+          "start": 2.8,
+          "end": 3.0,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 54
         },
         {
           "text": "this",
-          "start": 2.879,
-          "end": 3.13,
-          "probability": 0.875,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 56
-        },
-        {
-          "text": "visit",
-          "start": 3.13,
-          "end": 3.443,
-          "probability": 0.94,
+          "start": 3.0,
+          "end": 3.28,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 61
         },
         {
-          "text": "so",
-          "start": 3.443,
-          "end": 3.568,
-          "probability": 0.877,
+          "text": "visit",
+          "start": 3.28,
+          "end": 3.54,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 67
+          "char_offset": 66
+        },
+        {
+          "text": "so",
+          "start": 3.54,
+          "end": 3.72,
+          "probability": 0.939,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 72
         },
         {
           "text": "you",
-          "start": 3.568,
-          "end": 3.756,
-          "probability": 0.889,
+          "start": 3.72,
+          "end": 3.86,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 70
+          "char_offset": 75
         },
         {
           "text": "go",
-          "start": 3.756,
-          "end": 3.881,
-          "probability": 0.976,
+          "start": 3.86,
+          "end": 4.02,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 74
+          "char_offset": 79
         },
         {
           "text": "home",
-          "start": 3.881,
-          "end": 4.131,
-          "probability": 0.905,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 77
-        },
-        {
-          "text": "with",
-          "start": 4.131,
-          "end": 4.382,
-          "probability": 0.885,
+          "start": 4.02,
+          "end": 4.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 82
         },
         {
-          "text": "a",
-          "start": 4.382,
-          "end": 4.444,
-          "probability": 0.975,
+          "text": "with",
+          "start": 4.3,
+          "end": 4.54,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 87
         },
         {
-          "text": "written",
-          "start": 4.444,
-          "end": 4.882,
-          "probability": 0.899,
+          "text": "a",
+          "start": 4.54,
+          "end": 4.68,
+          "probability": 0.992,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 89
+          "char_offset": 92
+        },
+        {
+          "text": "written",
+          "start": 4.68,
+          "end": 4.98,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 94
         },
         {
           "text": "summary.",
-          "start": 4.882,
-          "end": 5.383,
-          "probability": 0.892,
+          "start": 4.98,
+          "end": 5.34,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 97
+          "char_offset": 102
         },
         {
           "text": "Nothing",
-          "start": 5.383,
-          "end": 5.821,
-          "probability": 0.945,
+          "start": 5.5,
+          "end": 5.84,
+          "probability": 0.993,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 106
+          "char_offset": 111
         },
         {
           "text": "leaves",
-          "start": 5.821,
-          "end": 6.197,
-          "probability": 0.927,
+          "start": 5.84,
+          "end": 6.18,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 114
+          "char_offset": 119
         },
         {
           "text": "this",
-          "start": 6.197,
-          "end": 6.447,
-          "probability": 0.898,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 121
-        },
-        {
-          "text": "laptop.",
-          "start": 6.447,
-          "end": 6.885,
-          "probability": 0.89,
+          "start": 6.18,
+          "end": 6.38,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 126
         },
         {
-          "text": "Is",
-          "start": 6.885,
-          "end": 7.011,
-          "probability": 0.934,
+          "text": "laptop.",
+          "start": 6.38,
+          "end": 6.6,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 134
+          "char_offset": 131
+        },
+        {
+          "text": "Is",
+          "start": 6.84,
+          "end": 6.98,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 139
         },
         {
           "text": "that",
-          "start": 7.011,
-          "end": 7.261,
-          "probability": 0.994,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 137
-        },
-        {
-          "text": "alright",
-          "start": 7.261,
-          "end": 7.699,
-          "probability": 0.869,
+          "start": 6.98,
+          "end": 7.08,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 142
         },
         {
-          "text": "with",
-          "start": 7.699,
-          "end": 7.95,
-          "probability": 0.881,
+          "text": "alright",
+          "start": 7.08,
+          "end": 7.22,
+          "probability": 0.867,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 150
+          "char_offset": 147
+        },
+        {
+          "text": "with",
+          "start": 7.22,
+          "end": 7.42,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 155
         },
         {
           "text": "you?",
-          "start": 7.95,
-          "end": 8.2,
-          "probability": 0.877,
+          "start": 7.42,
+          "end": 7.6,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 155
+          "char_offset": 160
         }
       ],
-      "text": "Morning, Ray. Before we get started, I'd like to record this visit so you go home with a written summary. Nothing leaves this laptop. Is that alright with you?",
+      "text": "Good morning, Ray. Before we get started, I'd like to record this visit so you go home with a written summary. Nothing leaves this laptop. Is that alright with you?",
       "char_start": 0,
-      "char_end": 159
+      "char_end": 164
     },
     {
       "id": 1,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 8.4,
-      "end": 11.0,
+      "start": 7.78,
+      "end": 8.76,
       "words": [
         {
           "text": "Yeah,",
-          "start": 8.4,
-          "end": 9.05,
-          "probability": 0.947,
+          "start": 7.78,
+          "end": 8.14,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 160
+          "char_offset": 165
         },
         {
           "text": "that's",
-          "start": 9.05,
-          "end": 9.83,
-          "probability": 0.881,
+          "start": 8.14,
+          "end": 8.36,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 166
+          "char_offset": 171
         },
         {
           "text": "fine",
-          "start": 9.83,
-          "end": 10.35,
-          "probability": 0.911,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 173
-        },
-        {
-          "text": "by",
-          "start": 10.35,
-          "end": 10.61,
-          "probability": 0.917,
+          "start": 8.36,
+          "end": 8.46,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 178
         },
         {
-          "text": "me.",
-          "start": 10.61,
-          "end": 11.0,
-          "probability": 0.868,
+          "text": "by",
+          "start": 8.46,
+          "end": 8.6,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 181
+          "char_offset": 183
+        },
+        {
+          "text": "me.",
+          "start": 8.6,
+          "end": 8.76,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 186
         }
       ],
       "text": "Yeah, that's fine by me.",
-      "char_start": 160,
-      "char_end": 184
+      "char_start": 165,
+      "char_end": 189
     },
     {
       "id": 2,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 11.2,
-      "end": 14.1,
+      "start": 9.04,
+      "end": 10.76,
       "words": [
         {
           "text": "Thank",
-          "start": 11.2,
-          "end": 11.737,
-          "probability": 0.897,
+          "start": 9.04,
+          "end": 9.4,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 185
+          "char_offset": 190
         },
         {
           "text": "you.",
-          "start": 11.737,
-          "end": 12.167,
-          "probability": 0.934,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 191
-        },
-        {
-          "text": "Okay,",
-          "start": 12.167,
-          "end": 12.704,
-          "probability": 0.882,
+          "start": 9.4,
+          "end": 9.52,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 196
         },
         {
-          "text": "recording",
-          "start": 12.704,
-          "end": 13.67,
-          "probability": 0.865,
+          "text": "Okay,",
+          "start": 9.62,
+          "end": 9.96,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 202
+          "char_offset": 201
+        },
+        {
+          "text": "recording",
+          "start": 10.04,
+          "end": 10.52,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 207
         },
         {
           "text": "now.",
-          "start": 13.67,
-          "end": 14.1,
-          "probability": 0.935,
+          "start": 10.52,
+          "end": 10.76,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 212
+          "char_offset": 217
         }
       ],
       "text": "Thank you. Okay, recording now.",
-      "char_start": 185,
-      "char_end": 216
+      "char_start": 190,
+      "char_end": 221
     },
     {
       "id": 3,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 14.3,
-      "end": 17.2,
+      "start": 11.1,
+      "end": 13.32,
       "words": [
         {
           "text": "Do",
-          "start": 14.3,
-          "end": 14.461,
-          "probability": 0.933,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 217
-        },
-        {
-          "text": "I",
-          "start": 14.461,
-          "end": 14.542,
-          "probability": 0.962,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 220
-        },
-        {
-          "text": "need",
-          "start": 14.542,
-          "end": 14.864,
-          "probability": 0.879,
+          "start": 11.1,
+          "end": 11.46,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 222
         },
         {
-          "text": "to,",
-          "start": 14.864,
-          "end": 15.106,
-          "probability": 0.864,
+          "text": "I",
+          "start": 11.46,
+          "end": 11.54,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 225
+        },
+        {
+          "text": "need",
+          "start": 11.54,
+          "end": 11.68,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 227
         },
         {
-          "text": "uh,",
-          "start": 15.106,
-          "end": 15.347,
-          "probability": 0.55,
+          "text": "to,",
+          "start": 11.68,
+          "end": 11.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 231
+          "char_offset": 232
+        },
+        {
+          "text": "uh,",
+          "start": 11.9,
+          "end": 12.14,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 236
         },
         {
           "text": "do",
-          "start": 15.347,
-          "end": 15.508,
-          "probability": 0.928,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 235
-        },
-        {
-          "text": "I",
-          "start": 15.508,
-          "end": 15.589,
-          "probability": 0.868,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 238
-        },
-        {
-          "text": "need",
-          "start": 15.589,
-          "end": 15.911,
-          "probability": 0.916,
+          "start": 12.24,
+          "end": 12.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 240
         },
         {
-          "text": "to",
-          "start": 15.911,
-          "end": 16.072,
-          "probability": 0.944,
+          "text": "I",
+          "start": 12.62,
+          "end": 12.72,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 243
+        },
+        {
+          "text": "need",
+          "start": 12.72,
+          "end": 12.8,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 245
         },
         {
-          "text": "sign",
-          "start": 16.072,
-          "end": 16.394,
-          "probability": 0.968,
+          "text": "to",
+          "start": 12.8,
+          "end": 12.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 248
+          "char_offset": 250
+        },
+        {
+          "text": "sign",
+          "start": 12.88,
+          "end": 13.04,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 253
         },
         {
           "text": "something?",
-          "start": 16.394,
-          "end": 17.2,
-          "probability": 0.903,
+          "start": 13.04,
+          "end": 13.32,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 253
+          "char_offset": 258
         }
       ],
       "text": "Do I need to, uh, do I need to sign something?",
-      "char_start": 217,
-      "char_end": 263
+      "char_start": 222,
+      "char_end": 268
     },
     {
       "id": 4,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 17.4,
-      "end": 23.0,
+      "start": 13.6,
+      "end": 17.36,
       "words": [
         {
           "text": "No,",
-          "start": 17.4,
-          "end": 17.7,
-          "probability": 0.9,
+          "start": 13.6,
+          "end": 13.96,
+          "probability": 0.933,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 264
+          "char_offset": 269
         },
         {
           "text": "saying",
-          "start": 17.7,
-          "end": 18.3,
-          "probability": 0.92,
+          "start": 14.08,
+          "end": 14.5,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 268
+          "char_offset": 273
         },
         {
           "text": "yes",
-          "start": 18.3,
-          "end": 18.6,
-          "probability": 0.876,
+          "start": 14.5,
+          "end": 14.82,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 275
+          "char_offset": 280
         },
         {
           "text": "is",
-          "start": 18.6,
-          "end": 18.8,
-          "probability": 0.919,
+          "start": 14.82,
+          "end": 14.94,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 279
+          "char_offset": 284
         },
         {
-          "text": "enough,",
-          "start": 18.8,
-          "end": 19.5,
-          "probability": 0.902,
+          "text": "enough.",
+          "start": 14.94,
+          "end": 15.16,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 282
+          "char_offset": 287
         },
         {
           "text": "I've",
-          "start": 19.5,
-          "end": 19.9,
-          "probability": 0.921,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 290
-        },
-        {
-          "text": "got",
-          "start": 19.9,
-          "end": 20.2,
-          "probability": 0.893,
+          "start": 15.3,
+          "end": 15.52,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 295
         },
         {
-          "text": "it",
-          "start": 20.2,
-          "end": 20.4,
-          "probability": 0.995,
+          "text": "got",
+          "start": 15.52,
+          "end": 15.66,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 299
+          "char_offset": 300
+        },
+        {
+          "text": "it",
+          "start": 15.66,
+          "end": 15.78,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 304
         },
         {
           "text": "noted.",
-          "start": 20.4,
-          "end": 21.0,
-          "probability": 0.921,
+          "start": 15.78,
+          "end": 15.98,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 302
+          "char_offset": 307
         },
         {
           "text": "So",
-          "start": 21.0,
-          "end": 21.2,
-          "probability": 0.962,
+          "start": 16.26,
+          "end": 16.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 309
+          "char_offset": 314
         },
         {
           "text": "how",
-          "start": 21.2,
-          "end": 21.5,
-          "probability": 0.965,
+          "start": 16.62,
+          "end": 16.8,
+          "probability": 0.881,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 312
+          "char_offset": 317
         },
         {
           "text": "have",
-          "start": 21.5,
-          "end": 21.9,
-          "probability": 0.865,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 316
-        },
-        {
-          "text": "things",
-          "start": 21.9,
-          "end": 22.5,
-          "probability": 0.909,
+          "start": 16.8,
+          "end": 16.92,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 321
         },
         {
-          "text": "been?",
-          "start": 22.5,
-          "end": 23.0,
-          "probability": 0.982,
+          "text": "things",
+          "start": 16.92,
+          "end": 17.1,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 328
+          "char_offset": 326
+        },
+        {
+          "text": "been?",
+          "start": 17.1,
+          "end": 17.36,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 333
         }
       ],
-      "text": "No, saying yes is enough, I've got it noted. So how have things been?",
-      "char_start": 264,
-      "char_end": 333
+      "text": "No, saying yes is enough. I've got it noted. So how have things been?",
+      "char_start": 269,
+      "char_end": 338
     },
     {
       "id": 5,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 23.2,
-      "end": 33.1,
+      "start": 17.78,
+      "end": 24.82,
       "words": [
         {
           "text": "Not",
-          "start": 23.2,
-          "end": 23.458,
-          "probability": 0.917,
+          "start": 17.78,
+          "end": 18.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 334
+          "char_offset": 339
         },
         {
           "text": "bad.",
-          "start": 23.458,
-          "end": 23.803,
-          "probability": 0.958,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 338
-        },
-        {
-          "text": "The",
-          "start": 23.803,
-          "end": 24.061,
-          "probability": 0.954,
+          "start": 18.14,
+          "end": 18.38,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 343
         },
         {
-          "text": "headaches",
-          "start": 24.061,
-          "end": 24.836,
-          "probability": 0.909,
+          "text": "Uh,",
+          "start": 18.72,
+          "end": 19.08,
+          "probability": 0.897,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 347
+          "char_offset": 348
+        },
+        {
+          "text": "the",
+          "start": 19.22,
+          "end": 19.36,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 352
+        },
+        {
+          "text": "headaches",
+          "start": 19.36,
+          "end": 19.56,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 356
         },
         {
           "text": "I",
-          "start": 24.836,
-          "end": 24.922,
-          "probability": 0.928,
+          "start": 19.56,
+          "end": 19.74,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 357
+          "char_offset": 366
         },
         {
           "text": "had",
-          "start": 24.922,
-          "end": 25.18,
-          "probability": 0.948,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 359
-        },
-        {
-          "text": "back",
-          "start": 25.18,
-          "end": 25.524,
-          "probability": 0.873,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 363
-        },
-        {
-          "text": "in",
-          "start": 25.524,
-          "end": 25.697,
-          "probability": 0.861,
+          "start": 19.74,
+          "end": 19.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 368
         },
         {
-          "text": "June,",
-          "start": 25.697,
-          "end": 26.127,
-          "probability": 0.923,
+          "text": "back",
+          "start": 19.88,
+          "end": 20.04,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 371
+          "char_offset": 372
         },
         {
-          "text": "those",
-          "start": 26.127,
-          "end": 26.557,
-          "probability": 0.921,
+          "text": "in",
+          "start": 20.04,
+          "end": 20.18,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 377
         },
         {
-          "text": "are,",
-          "start": 26.557,
-          "end": 26.902,
-          "probability": 0.904,
+          "text": "June,",
+          "start": 20.18,
+          "end": 20.44,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 383
+          "char_offset": 380
         },
         {
           "text": "those",
-          "start": 26.902,
-          "end": 27.332,
-          "probability": 0.922,
+          "start": 20.52,
+          "end": 20.66,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 388
+          "char_offset": 386
+        },
+        {
+          "text": "are,",
+          "start": 20.66,
+          "end": 20.9,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 392
+        },
+        {
+          "text": "those",
+          "start": 20.96,
+          "end": 21.28,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 397
         },
         {
           "text": "are",
-          "start": 27.332,
-          "end": 27.59,
-          "probability": 0.885,
+          "start": 21.28,
+          "end": 21.4,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 394
+          "char_offset": 403
         },
         {
           "text": "mostly",
-          "start": 27.59,
-          "end": 28.107,
-          "probability": 0.962,
+          "start": 21.4,
+          "end": 21.56,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 398
+          "char_offset": 407
         },
         {
           "text": "gone",
-          "start": 28.107,
-          "end": 28.451,
-          "probability": 0.911,
+          "start": 21.56,
+          "end": 21.82,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 405
+          "char_offset": 414
         },
         {
           "text": "now.",
-          "start": 28.451,
-          "end": 28.796,
-          "probability": 0.993,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 410
-        },
-        {
-          "text": "And",
-          "start": 28.796,
-          "end": 29.054,
-          "probability": 0.942,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 415
-        },
-        {
-          "text": "I've",
-          "start": 29.054,
-          "end": 29.398,
-          "probability": 0.902,
+          "start": 21.82,
+          "end": 22.08,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 419
         },
         {
-          "text": "been",
-          "start": 29.398,
-          "end": 29.743,
-          "probability": 0.968,
+          "text": "And",
+          "start": 22.22,
+          "end": 22.58,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 424
         },
         {
-          "text": "checking",
-          "start": 29.743,
-          "end": 30.431,
-          "probability": 0.878,
+          "text": "I've",
+          "start": 22.58,
+          "end": 22.72,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 429
+          "char_offset": 428
         },
         {
-          "text": "the",
-          "start": 30.431,
-          "end": 30.69,
-          "probability": 0.921,
+          "text": "been",
+          "start": 22.72,
+          "end": 22.86,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 433
+        },
+        {
+          "text": "checking",
+          "start": 22.86,
+          "end": 23.1,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 438
         },
         {
-          "text": "pressure",
-          "start": 30.69,
-          "end": 31.378,
-          "probability": 0.966,
+          "text": "the",
+          "start": 23.1,
+          "end": 23.24,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 442
+          "char_offset": 447
         },
         {
-          "text": "at",
-          "start": 31.378,
-          "end": 31.55,
-          "probability": 0.936,
+          "text": "pressure",
+          "start": 23.24,
+          "end": 23.44,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 451
         },
         {
-          "text": "home,",
-          "start": 31.55,
-          "end": 31.981,
-          "probability": 0.953,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 454
-        },
-        {
-          "text": "like",
-          "start": 31.981,
-          "end": 32.325,
-          "probability": 0.948,
+          "text": "at",
+          "start": 23.44,
+          "end": 23.66,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 460
         },
         {
-          "text": "you",
-          "start": 32.325,
-          "end": 32.583,
-          "probability": 0.967,
+          "text": "home,",
+          "start": 23.66,
+          "end": 23.9,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 465
+          "char_offset": 463
+        },
+        {
+          "text": "like",
+          "start": 24.0,
+          "end": 24.28,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 469
+        },
+        {
+          "text": "you",
+          "start": 24.28,
+          "end": 24.52,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 474
         },
         {
           "text": "asked.",
-          "start": 32.583,
-          "end": 33.1,
-          "probability": 0.902,
+          "start": 24.52,
+          "end": 24.82,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 469
+          "char_offset": 478
         }
       ],
-      "text": "Not bad. The headaches I had back in June, those are, those are mostly gone now. And I've been checking the pressure at home, like you asked.",
-      "char_start": 334,
-      "char_end": 475
+      "text": "Not bad. Uh, the headaches I had back in June, those are, those are mostly gone now. And I've been checking the pressure at home, like you asked.",
+      "char_start": 339,
+      "char_end": 484
     },
     {
       "id": 6,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 33.3,
-      "end": 37.0,
+      "start": 25.26,
+      "end": 28.3,
       "words": [
         {
-          "text": "Good,",
-          "start": 33.3,
-          "end": 33.619,
-          "probability": 0.908,
+          "text": "Good.",
+          "start": 25.26,
+          "end": 25.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 476
+          "char_offset": 485
         },
         {
-          "text": "that's",
-          "start": 33.619,
-          "end": 34.002,
-          "probability": 0.975,
+          "text": "That's",
+          "start": 25.78,
+          "end": 26.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 482
+          "char_offset": 491
         },
         {
           "text": "what",
-          "start": 34.002,
-          "end": 34.257,
-          "probability": 0.883,
+          "start": 26.14,
+          "end": 26.24,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 489
+          "char_offset": 498
         },
         {
           "text": "I",
-          "start": 34.257,
-          "end": 34.321,
-          "probability": 0.986,
+          "start": 26.24,
+          "end": 26.36,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 494
+          "char_offset": 503
         },
         {
           "text": "like",
-          "start": 34.321,
-          "end": 34.576,
-          "probability": 0.991,
+          "start": 26.36,
+          "end": 26.5,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 496
+          "char_offset": 505
         },
         {
           "text": "to",
-          "start": 34.576,
-          "end": 34.703,
-          "probability": 0.956,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 501
-        },
-        {
-          "text": "hear.",
-          "start": 34.703,
-          "end": 35.022,
-          "probability": 0.897,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 504
-        },
-        {
-          "text": "What",
-          "start": 35.022,
-          "end": 35.278,
-          "probability": 0.89,
+          "start": 26.5,
+          "end": 26.58,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 510
         },
         {
-          "text": "kind",
-          "start": 35.278,
-          "end": 35.533,
-          "probability": 0.87,
+          "text": "hear.",
+          "start": 26.58,
+          "end": 26.74,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 515
+          "char_offset": 513
+        },
+        {
+          "text": "What",
+          "start": 26.92,
+          "end": 27.28,
+          "probability": 0.997,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 519
+        },
+        {
+          "text": "kind",
+          "start": 27.28,
+          "end": 27.46,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 524
         },
         {
           "text": "of",
-          "start": 35.533,
-          "end": 35.66,
-          "probability": 0.972,
+          "start": 27.46,
+          "end": 27.6,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 520
+          "char_offset": 529
         },
         {
           "text": "numbers",
-          "start": 35.66,
-          "end": 36.107,
-          "probability": 0.92,
+          "start": 27.6,
+          "end": 27.86,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 523
+          "char_offset": 532
         },
         {
           "text": "are",
-          "start": 36.107,
-          "end": 36.298,
-          "probability": 0.986,
+          "start": 27.86,
+          "end": 28.02,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 531
+          "char_offset": 540
         },
         {
           "text": "you",
-          "start": 36.298,
-          "end": 36.49,
-          "probability": 0.915,
+          "start": 28.02,
+          "end": 28.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 535
+          "char_offset": 544
         },
         {
           "text": "getting?",
-          "start": 36.49,
-          "end": 37.0,
-          "probability": 0.869,
+          "start": 28.14,
+          "end": 28.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 539
+          "char_offset": 548
         }
       ],
-      "text": "Good, that's what I like to hear. What kind of numbers are you getting?",
-      "char_start": 476,
-      "char_end": 547
+      "text": "Good. That's what I like to hear. What kind of numbers are you getting?",
+      "char_start": 485,
+      "char_end": 556
     },
     {
       "id": 7,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 37.2,
-      "end": 44.0,
+      "start": 30.5,
+      "end": 35.16,
       "words": [
         {
           "text": "Um,",
-          "start": 37.2,
-          "end": 37.616,
-          "probability": 0.975,
+          "start": 30.5,
+          "end": 30.94,
+          "probability": 0.114,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 548
+          "char_offset": 557
         },
         {
           "text": "mostly",
-          "start": 37.616,
-          "end": 38.449,
-          "probability": 0.969,
+          "start": 30.94,
+          "end": 31.38,
+          "probability": 0.979,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 552
+          "char_offset": 561
         },
         {
-          "text": "one",
-          "start": 38.449,
-          "end": 38.865,
-          "probability": 0.97,
+          "text": "150",
+          "start": 31.38,
+          "end": 32.44,
+          "probability": 0.845,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 559
-        },
-        {
-          "text": "fifty",
-          "start": 38.865,
-          "end": 39.559,
-          "probability": 0.866,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 563
+          "char_offset": 568
         },
         {
           "text": "over",
-          "start": 39.559,
-          "end": 40.114,
-          "probability": 0.928,
+          "start": 32.44,
+          "end": 33.02,
+          "probability": 0.958,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 569
+          "char_offset": 572
         },
         {
-          "text": "ninety.",
-          "start": 40.114,
-          "end": 41.086,
-          "probability": 0.89,
+          "text": "90.",
+          "start": 33.02,
+          "end": 33.44,
+          "probability": 0.988,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 574
+          "char_offset": 577
         },
         {
-          "text": "Ninety-two,",
-          "start": 41.086,
-          "end": 42.612,
-          "probability": 0.89,
+          "text": "92",
+          "start": 34.2,
+          "end": 34.64,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 582
+          "char_offset": 581
         },
         {
           "text": "sometimes.",
-          "start": 42.612,
-          "end": 44.0,
-          "probability": 0.864,
+          "start": 34.64,
+          "end": 35.16,
+          "probability": 0.979,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 594
+          "char_offset": 584
         }
       ],
-      "text": "Um, mostly one fifty over ninety. Ninety-two, sometimes.",
-      "char_start": 548,
-      "char_end": 604
+      "text": "Um, mostly 150 over 90. 92 sometimes.",
+      "char_start": 557,
+      "char_end": 594
     },
     {
       "id": 8,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 44.2,
-      "end": 46.1,
+      "start": 35.74,
+      "end": 36.3,
       "words": [
         {
-          "text": "Mm-hm.",
-          "start": 44.2,
-          "end": 46.1,
-          "probability": 0.907,
+          "text": "Mm",
+          "start": 35.74,
+          "end": 36.08,
+          "probability": 0.214,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 605
+          "char_offset": 595
+        },
+        {
+          "text": "-hmm.",
+          "start": 36.08,
+          "end": 36.3,
+          "probability": 0.975,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 598
         }
       ],
-      "text": "Mm-hm.",
-      "char_start": 605,
-      "char_end": 611
+      "text": "Mm -hmm.",
+      "char_start": 595,
+      "char_end": 603
     },
     {
       "id": 9,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 46.3,
-      "end": 55.0,
+      "start": 37.18,
+      "end": 40.7,
       "words": [
         {
-          "text": "One",
-          "start": 46.3,
-          "end": 46.812,
-          "probability": 0.888,
+          "text": "Um,",
+          "start": 37.18,
+          "end": 37.62,
+          "probability": 0.222,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 612
+          "char_offset": 604
+        },
+        {
+          "text": "one,",
+          "start": 37.62,
+          "end": 38.06,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 608
+        },
+        {
+          "text": "one",
+          "start": 38.12,
+          "end": 38.4,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 613
         },
         {
           "text": "morning",
-          "start": 46.812,
-          "end": 48.006,
-          "probability": 0.937,
+          "start": 38.4,
+          "end": 38.68,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 616
+          "char_offset": 617
         },
         {
           "text": "it",
-          "start": 48.006,
-          "end": 48.347,
-          "probability": 0.934,
+          "start": 38.68,
+          "end": 38.84,
+          "probability": 0.98,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 624
+          "char_offset": 625
         },
         {
           "text": "was",
-          "start": 48.347,
-          "end": 48.859,
-          "probability": 0.967,
+          "start": 38.84,
+          "end": 39.02,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 627
+          "char_offset": 628
         },
         {
-          "text": "one",
-          "start": 48.859,
-          "end": 49.371,
-          "probability": 0.62,
+          "text": "62.",
+          "start": 39.02,
+          "end": 39.5,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 631
-        },
-        {
-          "text": "sixty-two.",
-          "start": 49.371,
-          "end": 51.076,
-          "probability": 0.41,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 635
+          "char_offset": 632
         },
         {
           "text": "That",
-          "start": 51.076,
-          "end": 51.759,
-          "probability": 0.987,
+          "start": 39.62,
+          "end": 39.9,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 646
+          "char_offset": 636
         },
         {
           "text": "one",
-          "start": 51.759,
-          "end": 52.271,
-          "probability": 0.62,
+          "start": 39.9,
+          "end": 40.08,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 651
+          "char_offset": 641
         },
         {
           "text": "scared",
-          "start": 52.271,
-          "end": 53.294,
-          "probability": 0.903,
+          "start": 40.08,
+          "end": 40.3,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 645
+        },
+        {
+          "text": "me",
+          "start": 40.3,
+          "end": 40.52,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 652
+        },
+        {
+          "text": "a",
+          "start": 40.52,
+          "end": 40.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 655
         },
         {
-          "text": "me",
-          "start": 53.294,
-          "end": 53.635,
-          "probability": 0.899,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 662
-        },
-        {
-          "text": "a",
-          "start": 53.635,
-          "end": 53.806,
-          "probability": 0.894,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 665
-        },
-        {
           "text": "little.",
-          "start": 53.806,
-          "end": 55.0,
-          "probability": 0.931,
+          "start": 40.62,
+          "end": 40.7,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 667
+          "char_offset": 657
         }
       ],
-      "text": "One morning it was one sixty-two. That one scared me a little.",
-      "char_start": 612,
-      "char_end": 674
+      "text": "Um, one, one morning it was 62. That one scared me a little.",
+      "char_start": 604,
+      "char_end": 664
     },
     {
       "id": 10,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 55.2,
-      "end": 64.0,
+      "start": 43.94,
+      "end": 51.3,
       "words": [
         {
-          "text": "Okay.",
-          "start": 55.2,
-          "end": 55.6,
-          "probability": 0.9,
+          "text": "Okay,",
+          "start": 43.94,
+          "end": 44.38,
+          "probability": 0.988,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 675
+          "char_offset": 665
         },
         {
-          "text": "That's",
-          "start": 55.6,
-          "end": 56.08,
-          "probability": 0.942,
+          "text": "that's",
+          "start": 44.38,
+          "end": 44.82,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 681
+          "char_offset": 671
         },
         {
           "text": "higher",
-          "start": 56.08,
-          "end": 56.56,
-          "probability": 0.875,
+          "start": 44.82,
+          "end": 44.94,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 688
+          "char_offset": 678
         },
         {
           "text": "than",
-          "start": 56.56,
-          "end": 56.88,
-          "probability": 0.918,
+          "start": 44.94,
+          "end": 45.12,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 695
+          "char_offset": 685
         },
         {
           "text": "I",
-          "start": 56.88,
-          "end": 56.96,
-          "probability": 0.93,
+          "start": 45.12,
+          "end": 45.24,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 690
+        },
+        {
+          "text": "want",
+          "start": 45.24,
+          "end": 45.4,
+          "probability": 0.995,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 692
+        },
+        {
+          "text": "to",
+          "start": 45.4,
+          "end": 45.52,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 697
+        },
+        {
+          "text": "see.",
+          "start": 45.52,
+          "end": 45.68,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 700
         },
         {
-          "text": "want",
-          "start": 56.96,
-          "end": 57.28,
-          "probability": 0.874,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 702
-        },
-        {
-          "text": "to",
-          "start": 57.28,
-          "end": 57.44,
-          "probability": 0.891,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 707
-        },
-        {
-          "text": "see.",
-          "start": 57.44,
-          "end": 57.76,
-          "probability": 0.874,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 710
-        },
-        {
           "text": "Right",
-          "start": 57.76,
-          "end": 58.16,
-          "probability": 0.895,
+          "start": 45.8,
+          "end": 46.24,
+          "probability": 0.982,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 705
+        },
+        {
+          "text": "now",
+          "start": 46.24,
+          "end": 46.46,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 711
+        },
+        {
+          "text": "you're",
+          "start": 46.46,
+          "end": 46.68,
+          "probability": 0.956,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 715
         },
         {
-          "text": "now",
-          "start": 58.16,
-          "end": 58.4,
-          "probability": 0.944,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 721
-        },
-        {
-          "text": "you're",
-          "start": 58.4,
-          "end": 58.88,
-          "probability": 0.897,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 725
-        },
-        {
           "text": "taking",
-          "start": 58.88,
-          "end": 59.36,
-          "probability": 0.98,
+          "start": 46.68,
+          "end": 46.94,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 732
+          "char_offset": 722
         },
         {
           "text": "the",
-          "start": 59.36,
-          "end": 59.6,
-          "probability": 0.893,
+          "start": 46.94,
+          "end": 47.18,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 739
+          "char_offset": 729
         },
         {
           "text": "metoprolol,",
-          "start": 59.6,
-          "end": 60.48,
-          "probability": 0.947,
+          "start": 47.18,
+          "end": 48.16,
+          "probability": 0.858,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 743
+          "char_offset": 733
         },
         {
-          "text": "twenty-five",
-          "start": 60.48,
-          "end": 61.36,
-          "probability": 0.882,
+          "text": "25",
+          "start": 48.3,
+          "end": 48.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 755
+          "char_offset": 745
         },
         {
           "text": "milligrams,",
-          "start": 61.36,
-          "end": 62.24,
-          "probability": 0.893,
+          "start": 48.88,
+          "end": 49.4,
+          "probability": 0.959,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 767
+          "char_offset": 748
         },
         {
           "text": "and",
-          "start": 62.24,
-          "end": 62.48,
-          "probability": 0.965,
+          "start": 49.68,
+          "end": 49.74,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 760
+        },
+        {
+          "text": "the",
+          "start": 49.74,
+          "end": 49.86,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 764
+        },
+        {
+          "text": "lisonopril",
+          "start": 49.86,
+          "end": 50.74,
+          "probability": 0.898,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 768
+        },
+        {
+          "text": "at",
+          "start": 50.74,
+          "end": 51.06,
+          "probability": 0.993,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 779
         },
         {
-          "text": "the",
-          "start": 62.48,
-          "end": 62.72,
-          "probability": 0.89,
+          "text": "10?",
+          "start": 51.06,
+          "end": 51.3,
+          "probability": 0.993,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 783
-        },
-        {
-          "text": "lisinopril",
-          "start": 62.72,
-          "end": 63.52,
-          "probability": 0.973,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 787
-        },
-        {
-          "text": "at",
-          "start": 63.52,
-          "end": 63.68,
-          "probability": 0.931,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 798
-        },
-        {
-          "text": "ten.",
-          "start": 63.68,
-          "end": 64.0,
-          "probability": 0.868,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 801
+          "char_offset": 782
         }
       ],
-      "text": "Okay. That's higher than I want to see. Right now you're taking the metoprolol, twenty-five milligrams, and the lisinopril at ten.",
-      "char_start": 675,
-      "char_end": 805
+      "text": "Okay, that's higher than I want to see. Right now you're taking the metoprolol, 25 milligrams, and the lisonopril at 10?",
+      "char_start": 665,
+      "char_end": 785
     },
     {
       "id": 11,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 64.2,
-      "end": 71.0,
+      "start": 52.42,
+      "end": 58.02,
       "words": [
         {
-          "text": "The",
-          "start": 64.2,
-          "end": 64.437,
-          "probability": 0.893,
+          "text": "Uh,",
+          "start": 52.42,
+          "end": 52.86,
+          "probability": 0.995,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 806
+          "char_offset": 786
+        },
+        {
+          "text": "yeah,",
+          "start": 52.86,
+          "end": 53.3,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 790
+        },
+        {
+          "text": "the",
+          "start": 53.38,
+          "end": 53.52,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 796
         },
         {
           "text": "little",
-          "start": 64.437,
-          "end": 64.912,
-          "probability": 0.894,
+          "start": 53.52,
+          "end": 53.84,
+          "probability": 0.95,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 810
+          "char_offset": 800
         },
         {
           "text": "white",
-          "start": 64.912,
-          "end": 65.307,
-          "probability": 0.897,
+          "start": 53.84,
+          "end": 54.1,
+          "probability": 0.898,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 817
+          "char_offset": 807
         },
         {
           "text": "one,",
-          "start": 65.307,
-          "end": 65.623,
-          "probability": 0.947,
+          "start": 54.1,
+          "end": 54.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 823
+          "char_offset": 813
         },
         {
           "text": "yeah.",
-          "start": 65.623,
-          "end": 66.019,
-          "probability": 0.958,
+          "start": 54.38,
+          "end": 54.5,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 818
+        },
+        {
+          "text": "And",
+          "start": 54.74,
+          "end": 55.18,
+          "probability": 0.998,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 824
+        },
+        {
+          "text": "the",
+          "start": 55.18,
+          "end": 55.36,
+          "probability": 0.916,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 828
         },
         {
-          "text": "And",
-          "start": 66.019,
-          "end": 66.256,
-          "probability": 0.95,
+          "text": "other",
+          "start": 55.36,
+          "end": 55.82,
+          "probability": 0.535,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 834
+          "char_offset": 832
         },
         {
-          "text": "the,",
-          "start": 66.256,
-          "end": 66.572,
-          "probability": 0.933,
+          "text": "blood",
+          "start": 55.82,
+          "end": 56.32,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 838
         },
         {
-          "text": "the",
-          "start": 66.572,
-          "end": 66.809,
-          "probability": 0.893,
+          "text": "pressure",
+          "start": 56.32,
+          "end": 56.64,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 843
+          "char_offset": 844
         },
         {
-          "text": "other",
-          "start": 66.809,
-          "end": 67.205,
-          "probability": 0.976,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 847
-        },
-        {
-          "text": "blood",
-          "start": 67.205,
-          "end": 67.6,
-          "probability": 0.864,
+          "text": "pill,",
+          "start": 56.64,
+          "end": 56.86,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 853
         },
         {
-          "text": "pressure",
-          "start": 67.6,
-          "end": 68.233,
-          "probability": 0.862,
+          "text": "I",
+          "start": 56.92,
+          "end": 57.02,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 859
         },
         {
-          "text": "pill,",
-          "start": 68.233,
-          "end": 68.628,
-          "probability": 0.938,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 868
-        },
-        {
-          "text": "I",
-          "start": 68.628,
-          "end": 68.707,
-          "probability": 0.95,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 874
-        },
-        {
           "text": "don't",
-          "start": 68.707,
-          "end": 69.102,
-          "probability": 0.979,
+          "start": 57.02,
+          "end": 57.12,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 876
+          "char_offset": 861
         },
         {
           "text": "know",
-          "start": 69.102,
-          "end": 69.419,
-          "probability": 0.891,
+          "start": 57.12,
+          "end": 57.26,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 867
+        },
+        {
+          "text": "what",
+          "start": 57.26,
+          "end": 57.38,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 872
+        },
+        {
+          "text": "that",
+          "start": 57.38,
+          "end": 57.56,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 877
+        },
+        {
+          "text": "one's",
+          "start": 57.56,
+          "end": 57.8,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 882
         },
         {
-          "text": "what",
-          "start": 69.419,
-          "end": 69.735,
-          "probability": 0.923,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 887
-        },
-        {
-          "text": "that",
-          "start": 69.735,
-          "end": 70.051,
-          "probability": 0.931,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 892
-        },
-        {
-          "text": "one's",
-          "start": 70.051,
-          "end": 70.447,
-          "probability": 0.969,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 897
-        },
-        {
           "text": "called.",
-          "start": 70.447,
-          "end": 71.0,
-          "probability": 0.885,
+          "start": 57.8,
+          "end": 58.02,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 903
+          "char_offset": 888
         }
       ],
-      "text": "The little white one, yeah. And the, the other blood pressure pill, I don't know what that one's called.",
-      "char_start": 806,
-      "char_end": 910
+      "text": "Uh, yeah, the little white one, yeah. And the other blood pressure pill, I don't know what that one's called.",
+      "char_start": 786,
+      "char_end": 895
     },
     {
       "id": 12,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 71.2,
-      "end": 79.3,
+      "start": 58.94,
+      "end": 65.08,
       "words": [
         {
           "text": "That's",
-          "start": 71.2,
-          "end": 71.831,
-          "probability": 0.967,
+          "start": 58.94,
+          "end": 59.42,
+          "probability": 0.981,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 911
+          "char_offset": 896
         },
         {
           "text": "the",
-          "start": 71.831,
-          "end": 72.147,
-          "probability": 0.907,
+          "start": 59.42,
+          "end": 59.48,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 918
+          "char_offset": 903
         },
         {
           "text": "lisinopril.",
-          "start": 72.147,
-          "end": 73.304,
-          "probability": 0.943,
+          "start": 59.48,
+          "end": 60.26,
+          "probability": 0.972,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 907
+        },
+        {
+          "text": "So",
+          "start": 60.72,
+          "end": 61.2,
+          "probability": 0.968,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 919
+        },
+        {
+          "text": "what",
+          "start": 61.2,
+          "end": 61.5,
+          "probability": 0.696,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 922
         },
         {
-          "text": "So",
-          "start": 73.304,
-          "end": 73.514,
-          "probability": 0.892,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 934
-        },
-        {
-          "text": "what",
-          "start": 73.514,
-          "end": 73.935,
-          "probability": 0.932,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 937
-        },
-        {
           "text": "I'd",
-          "start": 73.935,
-          "end": 74.251,
-          "probability": 0.946,
+          "start": 61.5,
+          "end": 61.72,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 927
+        },
+        {
+          "text": "like",
+          "start": 61.72,
+          "end": 61.9,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 931
+        },
+        {
+          "text": "to",
+          "start": 61.9,
+          "end": 62.02,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 936
+        },
+        {
+          "text": "do",
+          "start": 62.02,
+          "end": 62.2,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 939
+        },
+        {
+          "text": "is",
+          "start": 62.2,
+          "end": 62.42,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 942
         },
         {
-          "text": "like",
-          "start": 74.251,
-          "end": 74.671,
-          "probability": 0.975,
+          "text": "bring",
+          "start": 62.42,
+          "end": 62.64,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 946
+          "char_offset": 945
         },
         {
-          "text": "to",
-          "start": 74.671,
-          "end": 74.882,
-          "probability": 0.885,
+          "text": "the",
+          "start": 62.64,
+          "end": 62.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 951
         },
         {
-          "text": "do",
-          "start": 74.882,
-          "end": 75.092,
-          "probability": 0.87,
+          "text": "metoprolol",
+          "start": 62.88,
+          "end": 63.76,
+          "probability": 0.965,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 954
+          "char_offset": 955
         },
         {
-          "text": "is",
-          "start": 75.092,
-          "end": 75.303,
-          "probability": 0.971,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 957
-        },
-        {
-          "text": "bring",
-          "start": 75.303,
-          "end": 75.829,
-          "probability": 0.946,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 960
-        },
-        {
-          "text": "the",
-          "start": 75.829,
-          "end": 76.144,
-          "probability": 0.976,
+          "text": "up",
+          "start": 63.76,
+          "end": 64.26,
+          "probability": 0.995,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 966
         },
         {
-          "text": "metoprolol",
-          "start": 76.144,
-          "end": 77.196,
-          "probability": 0.909,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 970
-        },
-        {
-          "text": "up",
-          "start": 77.196,
-          "end": 77.406,
-          "probability": 0.988,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 981
-        },
-        {
           "text": "to",
-          "start": 77.406,
-          "end": 77.617,
-          "probability": 0.886,
+          "start": 64.26,
+          "end": 64.48,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 984
+          "char_offset": 969
         },
         {
-          "text": "fifty",
-          "start": 77.617,
-          "end": 78.143,
-          "probability": 0.929,
+          "text": "50",
+          "start": 64.48,
+          "end": 64.7,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 987
+          "char_offset": 972
         },
         {
           "text": "milligrams.",
-          "start": 78.143,
-          "end": 79.3,
-          "probability": 0.969,
+          "start": 64.7,
+          "end": 65.08,
+          "probability": 0.769,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 993
+          "char_offset": 975
         }
       ],
-      "text": "That's the lisinopril. So what I'd like to do is bring the metoprolol up to fifty milligrams.",
-      "char_start": 911,
-      "char_end": 1004
+      "text": "That's the lisinopril. So what I'd like to do is bring the metoprolol up to 50 milligrams.",
+      "char_start": 896,
+      "char_end": 986
     },
     {
       "id": 13,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 79.5,
-      "end": 82.0,
+      "start": 65.62,
+      "end": 66.32,
       "words": [
         {
-          "text": "Fifty.",
-          "start": 79.5,
-          "end": 80.864,
-          "probability": 0.925,
+          "text": "50,",
+          "start": 65.62,
+          "end": 66.1,
+          "probability": 0.987,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1005
+          "char_offset": 987
         },
         {
-          "text": "Okay.",
-          "start": 80.864,
-          "end": 82.0,
-          "probability": 0.923,
+          "text": "okay.",
+          "start": 66.16,
+          "end": 66.32,
+          "probability": 0.979,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1012
+          "char_offset": 991
         }
       ],
-      "text": "Fifty. Okay.",
-      "char_start": 1005,
-      "char_end": 1017
+      "text": "50, okay.",
+      "char_start": 987,
+      "char_end": 996
     },
     {
       "id": 14,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 82.2,
-      "end": 89.0,
+      "start": 66.7,
+      "end": 71.94,
       "words": [
         {
           "text": "Your",
-          "start": 82.2,
-          "end": 82.499,
-          "probability": 0.913,
+          "start": 66.7,
+          "end": 67.18,
+          "probability": 0.997,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1018
+          "char_offset": 997
         },
         {
           "text": "heart",
-          "start": 82.499,
-          "end": 82.873,
-          "probability": 0.964,
+          "start": 67.18,
+          "end": 67.42,
+          "probability": 0.991,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1023
+          "char_offset": 1002
         },
         {
           "text": "rate's",
-          "start": 82.873,
-          "end": 83.321,
-          "probability": 0.909,
+          "start": 67.42,
+          "end": 67.68,
+          "probability": 0.936,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1029
+          "char_offset": 1008
         },
         {
           "text": "got",
-          "start": 83.321,
-          "end": 83.545,
-          "probability": 0.964,
+          "start": 67.68,
+          "end": 67.86,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1015
+        },
+        {
+          "text": "room",
+          "start": 67.86,
+          "end": 68.1,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1019
+        },
+        {
+          "text": "for",
+          "start": 68.1,
+          "end": 68.4,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1024
+        },
+        {
+          "text": "it,",
+          "start": 68.4,
+          "end": 68.66,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1028
+        },
+        {
+          "text": "and",
+          "start": 68.7,
+          "end": 69.1,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1032
+        },
+        {
+          "text": "the",
+          "start": 69.1,
+          "end": 69.22,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1036
         },
         {
-          "text": "room",
-          "start": 83.545,
-          "end": 83.844,
-          "probability": 0.99,
+          "text": "headaches",
+          "start": 69.22,
+          "end": 69.5,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1040
         },
         {
-          "text": "for",
-          "start": 83.844,
-          "end": 84.068,
-          "probability": 0.947,
+          "text": "coming",
+          "start": 69.5,
+          "end": 69.76,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1045
+          "char_offset": 1050
         },
         {
-          "text": "it,",
-          "start": 84.068,
-          "end": 84.292,
-          "probability": 0.936,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1049
-        },
-        {
-          "text": "and",
-          "start": 84.292,
-          "end": 84.516,
-          "probability": 0.924,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1053
-        },
-        {
-          "text": "the",
-          "start": 84.516,
-          "end": 84.741,
-          "probability": 0.961,
+          "text": "back",
+          "start": 69.76,
+          "end": 70.16,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1057
         },
         {
-          "text": "headaches",
-          "start": 84.741,
-          "end": 85.413,
-          "probability": 0.923,
+          "text": "would",
+          "start": 70.16,
+          "end": 70.4,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1061
+          "char_offset": 1062
         },
         {
-          "text": "coming",
-          "start": 85.413,
-          "end": 85.862,
-          "probability": 0.937,
+          "text": "be",
+          "start": 70.4,
+          "end": 70.56,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1068
+        },
+        {
+          "text": "the",
+          "start": 70.56,
+          "end": 70.66,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1071
         },
         {
-          "text": "back",
-          "start": 85.862,
-          "end": 86.16,
-          "probability": 0.962,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1078
-        },
-        {
-          "text": "would",
-          "start": 86.16,
-          "end": 86.534,
-          "probability": 0.875,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1083
-        },
-        {
-          "text": "be",
-          "start": 86.534,
-          "end": 86.684,
-          "probability": 0.928,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1089
-        },
-        {
-          "text": "the",
-          "start": 86.684,
-          "end": 86.908,
-          "probability": 0.974,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1092
-        },
-        {
           "text": "thing",
-          "start": 86.908,
-          "end": 87.281,
-          "probability": 0.899,
+          "start": 70.66,
+          "end": 70.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1096
+          "char_offset": 1075
         },
         {
           "text": "I'd",
-          "start": 87.281,
-          "end": 87.505,
-          "probability": 0.907,
+          "start": 70.88,
+          "end": 71.04,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1102
+          "char_offset": 1081
         },
         {
           "text": "worry",
-          "start": 87.505,
-          "end": 87.879,
-          "probability": 0.976,
+          "start": 71.04,
+          "end": 71.26,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1106
+          "char_offset": 1085
         },
         {
           "text": "about",
-          "start": 87.879,
-          "end": 88.253,
-          "probability": 0.872,
+          "start": 71.26,
+          "end": 71.54,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1112
+          "char_offset": 1091
         },
         {
           "text": "otherwise.",
-          "start": 88.253,
-          "end": 89.0,
-          "probability": 0.922,
+          "start": 71.54,
+          "end": 71.94,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1118
+          "char_offset": 1097
         }
       ],
       "text": "Your heart rate's got room for it, and the headaches coming back would be the thing I'd worry about otherwise.",
-      "char_start": 1018,
-      "char_end": 1128
+      "char_start": 997,
+      "char_end": 1107
     },
     {
       "id": 15,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 89.2,
-      "end": 93.0,
+      "start": 73.2,
+      "end": 78.0,
       "words": [
         {
           "text": "And",
-          "start": 89.2,
-          "end": 89.593,
-          "probability": 0.924,
+          "start": 73.2,
+          "end": 73.68,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1129
+          "char_offset": 1108
         },
         {
           "text": "the",
-          "start": 89.593,
-          "end": 89.986,
-          "probability": 0.914,
+          "start": 73.68,
+          "end": 73.94,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1133
+          "char_offset": 1112
         },
         {
           "text": "other",
-          "start": 89.986,
-          "end": 90.641,
-          "probability": 0.921,
+          "start": 73.94,
+          "end": 74.34,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1116
+        },
+        {
+          "text": "one,",
+          "start": 74.34,
+          "end": 74.58,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1122
+        },
+        {
+          "text": "the",
+          "start": 74.72,
+          "end": 74.86,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1127
+        },
+        {
+          "text": "lyso,",
+          "start": 74.86,
+          "end": 75.52,
+          "probability": 0.104,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1131
+        },
+        {
+          "text": "ly,",
+          "start": 75.52,
+          "end": 76.06,
+          "probability": 0.572,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 1137
         },
         {
-          "text": "one?",
-          "start": 90.641,
-          "end": 91.166,
-          "probability": 0.954,
+          "text": "lysinop,",
+          "start": 76.1,
+          "end": 76.86,
+          "probability": 0.775,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1143
+          "char_offset": 1141
         },
         {
-          "text": "The",
-          "start": 91.166,
-          "end": 91.559,
-          "probability": 0.908,
+          "text": "lysinopril?",
+          "start": 76.86,
+          "end": 78.0,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1148
-        },
-        {
-          "text": "lisinopril?",
-          "start": 91.559,
-          "end": 93.0,
-          "probability": 0.875,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1152
+          "char_offset": 1150
         }
       ],
-      "text": "And the other one? The lisinopril?",
-      "char_start": 1129,
-      "char_end": 1163
+      "text": "And the other one, the lyso, ly, lysinop, lysinopril?",
+      "char_start": 1108,
+      "char_end": 1161
     },
     {
       "id": 16,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 93.2,
-      "end": 98.1,
+      "start": 78.44,
+      "end": 81.58,
       "words": [
         {
           "text": "That",
-          "start": 93.2,
-          "end": 93.55,
-          "probability": 0.957,
+          "start": 78.44,
+          "end": 78.92,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1164
+          "char_offset": 1162
         },
         {
           "text": "one",
-          "start": 93.55,
-          "end": 93.812,
-          "probability": 0.941,
+          "start": 78.92,
+          "end": 79.06,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1169
+          "char_offset": 1167
         },
         {
           "text": "doesn't",
-          "start": 93.812,
-          "end": 94.425,
-          "probability": 0.887,
+          "start": 79.06,
+          "end": 79.32,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1173
+          "char_offset": 1171
         },
         {
-          "text": "change,",
-          "start": 94.425,
-          "end": 95.037,
-          "probability": 0.909,
+          "text": "change.",
+          "start": 79.32,
+          "end": 79.56,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1181
+          "char_offset": 1179
         },
         {
-          "text": "just",
-          "start": 95.037,
-          "end": 95.388,
-          "probability": 0.926,
+          "text": "Just",
+          "start": 79.72,
+          "end": 80.12,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1189
+          "char_offset": 1187
         },
         {
           "text": "take",
-          "start": 95.388,
-          "end": 95.737,
-          "probability": 0.964,
+          "start": 80.12,
+          "end": 80.32,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1194
+          "char_offset": 1192
         },
         {
           "text": "it",
-          "start": 95.737,
-          "end": 95.912,
-          "probability": 0.951,
+          "start": 80.32,
+          "end": 80.46,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1199
+          "char_offset": 1197
         },
         {
           "text": "the",
-          "start": 95.912,
-          "end": 96.175,
-          "probability": 0.98,
+          "start": 80.46,
+          "end": 80.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1202
+          "char_offset": 1200
         },
         {
           "text": "way",
-          "start": 96.175,
-          "end": 96.438,
-          "probability": 0.931,
+          "start": 80.62,
+          "end": 80.8,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1206
+          "char_offset": 1204
         },
         {
           "text": "you've",
-          "start": 96.438,
-          "end": 96.962,
-          "probability": 0.922,
+          "start": 80.8,
+          "end": 81.04,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1210
+          "char_offset": 1208
         },
         {
           "text": "been",
-          "start": 96.962,
-          "end": 97.312,
-          "probability": 0.912,
+          "start": 81.04,
+          "end": 81.18,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1217
+          "char_offset": 1215
         },
         {
           "text": "taking",
-          "start": 97.312,
-          "end": 97.837,
-          "probability": 0.869,
+          "start": 81.18,
+          "end": 81.42,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1222
+          "char_offset": 1220
         },
         {
           "text": "it.",
-          "start": 97.837,
-          "end": 98.1,
-          "probability": 0.936,
+          "start": 81.42,
+          "end": 81.58,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1229
+          "char_offset": 1227
         }
       ],
-      "text": "That one doesn't change, just take it the way you've been taking it.",
-      "char_start": 1164,
-      "char_end": 1232
+      "text": "That one doesn't change. Just take it the way you've been taking it.",
+      "char_start": 1162,
+      "char_end": 1230
     },
     {
       "id": 17,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 98.3,
-      "end": 100.2,
+      "start": 82.0,
+      "end": 82.58,
       "words": [
         {
-          "text": "Okay.",
-          "start": 98.3,
-          "end": 100.2,
-          "probability": 0.946,
+          "text": "Oh,",
+          "start": 82.0,
+          "end": 82.4,
+          "probability": 0.975,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1233
+          "char_offset": 1231
+        },
+        {
+          "text": "okay.",
+          "start": 82.4,
+          "end": 82.58,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1235
         }
       ],
-      "text": "Okay.",
-      "char_start": 1233,
-      "char_end": 1238
+      "text": "Oh, okay.",
+      "char_start": 1231,
+      "char_end": 1240
     },
     {
       "id": 18,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 100.4,
-      "end": 111.0,
+      "start": 83.26,
+      "end": 91.42,
       "words": [
         {
           "text": "Though,",
-          "start": 100.4,
-          "end": 101.107,
-          "probability": 0.904,
+          "start": 83.26,
+          "end": 83.74,
+          "probability": 0.972,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1239
+          "char_offset": 1241
         },
         {
           "text": "um,",
-          "start": 101.107,
-          "end": 101.41,
-          "probability": 0.51,
+          "start": 83.76,
+          "end": 84.02,
+          "probability": 0.961,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1247
+          "char_offset": 1249
         },
         {
           "text": "we",
-          "start": 101.41,
-          "end": 101.611,
-          "probability": 0.951,
+          "start": 84.08,
+          "end": 84.4,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1251
+          "char_offset": 1253
         },
         {
           "text": "may",
-          "start": 101.611,
-          "end": 101.914,
-          "probability": 0.908,
+          "start": 84.4,
+          "end": 84.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1254
+          "char_offset": 1256
         },
         {
           "text": "need",
-          "start": 101.914,
-          "end": 102.318,
-          "probability": 0.922,
+          "start": 84.62,
+          "end": 84.82,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1258
+          "char_offset": 1260
         },
         {
           "text": "to",
-          "start": 102.318,
-          "end": 102.52,
-          "probability": 0.941,
+          "start": 84.82,
+          "end": 85.0,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1263
+          "char_offset": 1265
         },
         {
           "text": "adjust",
-          "start": 102.52,
-          "end": 103.126,
-          "probability": 0.932,
+          "start": 85.0,
+          "end": 85.28,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1266
+          "char_offset": 1268
         },
         {
           "text": "the",
-          "start": 103.126,
-          "end": 103.429,
-          "probability": 0.956,
+          "start": 85.28,
+          "end": 85.48,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1273
+          "char_offset": 1275
         },
         {
-          "text": "lisinopril",
-          "start": 103.429,
-          "end": 104.438,
-          "probability": 0.954,
+          "text": "lysinopril",
+          "start": 85.48,
+          "end": 86.8,
+          "probability": 0.996,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1277
+          "char_offset": 1279
         },
         {
           "text": "as",
-          "start": 104.438,
-          "end": 104.64,
-          "probability": 0.887,
+          "start": 86.8,
+          "end": 87.46,
+          "probability": 0.996,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1288
+          "char_offset": 1290
         },
         {
           "text": "well,",
-          "start": 104.64,
-          "end": 105.145,
-          "probability": 0.928,
+          "start": 87.46,
+          "end": 87.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1291
+          "char_offset": 1293
         },
         {
           "text": "depending.",
-          "start": 105.145,
-          "end": 106.154,
-          "probability": 0.965,
+          "start": 87.7,
+          "end": 87.98,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1297
+          "char_offset": 1299
         },
         {
           "text": "Let",
-          "start": 106.154,
-          "end": 106.457,
-          "probability": 0.863,
+          "start": 88.3,
+          "end": 88.68,
+          "probability": 0.969,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1308
+          "char_offset": 1310
         },
         {
           "text": "me",
-          "start": 106.457,
-          "end": 106.659,
-          "probability": 0.935,
+          "start": 88.68,
+          "end": 88.84,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1312
+          "char_offset": 1314
         },
         {
           "text": "have",
-          "start": 106.659,
-          "end": 107.063,
-          "probability": 0.881,
+          "start": 88.84,
+          "end": 89.0,
+          "probability": 0.995,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1315
+          "char_offset": 1317
         },
         {
           "text": "a",
-          "start": 107.063,
-          "end": 107.164,
-          "probability": 0.948,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1320
-        },
-        {
-          "text": "look",
-          "start": 107.164,
-          "end": 107.568,
-          "probability": 0.906,
+          "start": 89.0,
+          "end": 89.1,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1322
         },
         {
-          "text": "at",
-          "start": 107.568,
-          "end": 107.77,
-          "probability": 0.977,
+          "text": "look",
+          "start": 89.1,
+          "end": 89.28,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1327
+          "char_offset": 1324
+        },
+        {
+          "text": "at",
+          "start": 89.28,
+          "end": 89.4,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1329
         },
         {
           "text": "your",
-          "start": 107.77,
-          "end": 108.173,
-          "probability": 0.982,
+          "start": 89.4,
+          "end": 89.52,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1330
+          "char_offset": 1332
         },
         {
           "text": "kidney",
-          "start": 108.173,
-          "end": 108.779,
-          "probability": 0.875,
+          "start": 89.52,
+          "end": 89.8,
+          "probability": 0.995,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1335
+          "char_offset": 1337
         },
         {
           "text": "numbers.",
-          "start": 108.779,
-          "end": 109.587,
-          "probability": 0.985,
+          "start": 89.8,
+          "end": 90.16,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1342
+          "char_offset": 1344
         },
         {
-          "text": "Now,",
-          "start": 109.587,
-          "end": 109.99,
-          "probability": 0.891,
+          "text": "Now",
+          "start": 90.32,
+          "end": 90.74,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1351
+          "char_offset": 1353
         },
         {
           "text": "the",
-          "start": 109.99,
-          "end": 110.293,
-          "probability": 0.951,
+          "start": 90.74,
+          "end": 90.94,
+          "probability": 0.816,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1356
+          "char_offset": 1357
         },
         {
           "text": "dosing.",
-          "start": 110.293,
-          "end": 111.0,
-          "probability": 0.968,
+          "start": 90.94,
+          "end": 91.42,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1360
+          "char_offset": 1361
         }
       ],
-      "text": "Though, um, we may need to adjust the lisinopril as well, depending. Let me have a look at your kidney numbers. Now, the dosing.",
-      "char_start": 1239,
-      "char_end": 1367
+      "text": "Though, um, we may need to adjust the lysinopril as well, depending. Let me have a look at your kidney numbers. Now the dosing.",
+      "char_start": 1241,
+      "char_end": 1368
     },
     {
       "id": 19,
       "speaker_cluster": "SPEAKER_01",
       "role": "unknown",
-      "start": 111.0,
-      "end": 114.2,
+      "start": 96.24,
+      "end": 98.28,
       "words": [
         {
           "text": "So",
-          "start": 111.0,
-          "end": 111.221,
-          "probability": 0.935,
+          "start": 96.24,
+          "end": 96.68,
+          "probability": 0.987,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1368
+          "char_offset": 1369
         },
         {
           "text": "that's",
-          "start": 111.221,
-          "end": 111.883,
-          "probability": 0.912,
+          "start": 96.68,
+          "end": 97.12,
+          "probability": 0.979,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1371
+          "char_offset": 1372
         },
         {
           "text": "two",
-          "start": 111.883,
-          "end": 112.214,
-          "probability": 0.864,
+          "start": 97.12,
+          "end": 97.44,
+          "probability": 0.891,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1378
+          "char_offset": 1379
         },
         {
           "text": "of",
-          "start": 112.214,
-          "end": 112.434,
-          "probability": 0.89,
+          "start": 97.44,
+          "end": 97.58,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1382
+          "char_offset": 1383
         },
         {
           "text": "the",
-          "start": 112.434,
-          "end": 112.766,
-          "probability": 0.993,
+          "start": 97.58,
+          "end": 97.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1385
+          "char_offset": 1386
         },
         {
-          "text": "twenty-fives?",
-          "start": 112.766,
-          "end": 114.2,
-          "probability": 0.58,
+          "text": "25s?",
+          "start": 97.62,
+          "end": 98.28,
+          "probability": 0.898,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1389
+          "char_offset": 1390
         }
       ],
-      "text": "So that's two of the twenty-fives?",
-      "char_start": 1368,
-      "char_end": 1402
+      "text": "So that's two of the 25s?",
+      "char_start": 1369,
+      "char_end": 1394
     },
     {
       "id": 20,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 114.4,
-      "end": 125.0,
+      "start": 99.5,
+      "end": 105.44,
       "words": [
         {
           "text": "Let's",
-          "start": 114.4,
-          "end": 115.071,
-          "probability": 0.962,
+          "start": 99.5,
+          "end": 99.94,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1403
+          "char_offset": 1395
         },
         {
           "text": "get",
-          "start": 115.071,
-          "end": 115.473,
-          "probability": 0.873,
+          "start": 99.94,
+          "end": 100.06,
+          "probability": 0.991,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1401
+        },
+        {
+          "text": "you",
+          "start": 100.06,
+          "end": 100.22,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1405
+        },
+        {
+          "text": "the",
+          "start": 100.22,
+          "end": 100.38,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1409
         },
         {
-          "text": "you",
-          "start": 115.473,
-          "end": 115.876,
-          "probability": 0.896,
+          "text": "50s.",
+          "start": 100.38,
+          "end": 100.84,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1413
         },
         {
-          "text": "the",
-          "start": 115.876,
-          "end": 116.278,
-          "probability": 0.966,
+          "text": "It's",
+          "start": 100.84,
+          "end": 101.18,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1417
-        },
-        {
-          "text": "fifties,",
-          "start": 116.278,
-          "end": 117.352,
-          "probability": 0.89,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1421
-        },
-        {
-          "text": "it's",
-          "start": 117.352,
-          "end": 117.889,
-          "probability": 0.92,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1430
+          "char_offset": 1418
         },
         {
           "text": "one",
-          "start": 117.889,
-          "end": 118.291,
-          "probability": 0.882,
+          "start": 101.18,
+          "end": 101.32,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1435
+          "char_offset": 1423
         },
         {
           "text": "tablet",
-          "start": 118.291,
-          "end": 119.096,
-          "probability": 0.926,
+          "start": 101.32,
+          "end": 101.58,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1439
+          "char_offset": 1427
         },
         {
           "text": "instead",
-          "start": 119.096,
-          "end": 120.035,
-          "probability": 0.958,
+          "start": 101.58,
+          "end": 101.8,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1446
+          "char_offset": 1434
         },
         {
           "text": "of",
-          "start": 120.035,
-          "end": 120.304,
-          "probability": 0.964,
+          "start": 101.8,
+          "end": 102.08,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1442
+        },
+        {
+          "text": "two,",
+          "start": 102.08,
+          "end": 102.22,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1445
+        },
+        {
+          "text": "and",
+          "start": 102.28,
+          "end": 102.52,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1450
+        },
+        {
+          "text": "that's",
+          "start": 102.52,
+          "end": 102.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1454
         },
         {
-          "text": "two.",
-          "start": 120.304,
-          "end": 120.841,
-          "probability": 0.87,
+          "text": "once",
+          "start": 102.88,
+          "end": 103.34,
+          "probability": 0.987,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1457
+          "char_offset": 1461
         },
         {
-          "text": "And",
-          "start": 120.841,
-          "end": 121.243,
-          "probability": 0.893,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1462
-        },
-        {
-          "text": "that",
-          "start": 121.243,
-          "end": 121.78,
-          "probability": 0.959,
+          "text": "twice",
+          "start": 103.34,
+          "end": 104.4,
+          "probability": 0.948,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1466
         },
         {
-          "text": "one's",
-          "start": 121.78,
-          "end": 122.451,
-          "probability": 0.994,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1471
-        },
-        {
-          "text": "twice",
-          "start": 122.451,
-          "end": 123.122,
-          "probability": 0.896,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1477
-        },
-        {
           "text": "a",
-          "start": 123.122,
-          "end": 123.256,
-          "probability": 0.956,
+          "start": 104.4,
+          "end": 104.64,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1483
+          "char_offset": 1472
         },
         {
-          "text": "day,",
-          "start": 123.256,
-          "end": 123.792,
-          "probability": 0.968,
+          "text": "day",
+          "start": 104.64,
+          "end": 104.8,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1485
+          "char_offset": 1474
         },
         {
           "text": "with",
-          "start": 123.792,
-          "end": 124.329,
-          "probability": 0.871,
+          "start": 104.8,
+          "end": 105.14,
+          "probability": 0.982,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1490
+          "char_offset": 1478
         },
         {
           "text": "food.",
-          "start": 124.329,
-          "end": 125.0,
-          "probability": 0.943,
+          "start": 105.14,
+          "end": 105.44,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1495
+          "char_offset": 1483
         }
       ],
-      "text": "Let's get you the fifties, it's one tablet instead of two. And that one's twice a day, with food.",
-      "char_start": 1403,
-      "char_end": 1500
+      "text": "Let's get you the 50s. It's one tablet instead of two, and that's once twice a day with food.",
+      "char_start": 1395,
+      "char_end": 1488
     },
     {
       "id": 21,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 125.2,
-      "end": 129.0,
+      "start": 106.64,
+      "end": 108.8,
       "words": [
         {
-          "text": "Twice",
-          "start": 125.2,
-          "end": 125.931,
-          "probability": 0.961,
+          "text": "Uh,",
+          "start": 106.64,
+          "end": 107.08,
+          "probability": 0.046,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1489
+        },
+        {
+          "text": "twice",
+          "start": 107.18,
+          "end": 107.54,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1493
+        },
+        {
+          "text": "a",
+          "start": 107.54,
+          "end": 107.74,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1499
+        },
+        {
+          "text": "day,",
+          "start": 107.74,
+          "end": 107.86,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 1501
         },
         {
-          "text": "a",
-          "start": 125.931,
-          "end": 126.077,
-          "probability": 0.909,
+          "text": "morning",
+          "start": 107.92,
+          "end": 108.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1507
+          "char_offset": 1506
         },
         {
-          "text": "day.",
-          "start": 126.077,
-          "end": 126.662,
-          "probability": 0.919,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1509
-        },
-        {
-          "text": "Morning",
-          "start": 126.662,
-          "end": 127.685,
-          "probability": 0.933,
+          "text": "and",
+          "start": 108.14,
+          "end": 108.58,
+          "probability": 0.986,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 1514
         },
         {
-          "text": "and",
-          "start": 127.685,
-          "end": 128.123,
-          "probability": 0.885,
+          "text": "night?",
+          "start": 108.58,
+          "end": 108.8,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1522
-        },
-        {
-          "text": "night.",
-          "start": 128.123,
-          "end": 129.0,
-          "probability": 0.87,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1526
+          "char_offset": 1518
         }
       ],
-      "text": "Twice a day. Morning and night.",
-      "char_start": 1501,
-      "char_end": 1532
+      "text": "Uh, twice a day, morning and night?",
+      "char_start": 1489,
+      "char_end": 1524
     },
     {
       "id": 22,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 129.2,
-      "end": 139.0,
+      "start": 109.18,
+      "end": 116.14,
       "words": [
         {
           "text": "Right.",
-          "start": 129.2,
-          "end": 129.716,
-          "probability": 0.883,
+          "start": 109.18,
+          "end": 109.62,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1533
+          "char_offset": 1525
         },
         {
           "text": "And",
-          "start": 129.716,
-          "end": 129.974,
-          "probability": 0.962,
+          "start": 109.74,
+          "end": 110.18,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1540
+          "char_offset": 1532
         },
         {
           "text": "I",
-          "start": 129.974,
-          "end": 130.06,
-          "probability": 0.967,
+          "start": 110.18,
+          "end": 110.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1544
+          "char_offset": 1536
         },
         {
           "text": "want",
-          "start": 130.06,
-          "end": 130.404,
-          "probability": 0.989,
+          "start": 110.3,
+          "end": 110.42,
+          "probability": 0.897,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1538
+        },
+        {
+          "text": "to",
+          "start": 110.42,
+          "end": 110.52,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1543
+        },
+        {
+          "text": "see",
+          "start": 110.52,
+          "end": 110.66,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1546
         },
         {
-          "text": "to",
-          "start": 130.404,
-          "end": 130.575,
-          "probability": 0.961,
+          "text": "you",
+          "start": 110.66,
+          "end": 110.76,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1551
+          "char_offset": 1550
         },
         {
-          "text": "see",
-          "start": 130.575,
-          "end": 130.833,
-          "probability": 0.971,
+          "text": "back",
+          "start": 110.76,
+          "end": 110.96,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1554
         },
         {
-          "text": "you",
-          "start": 130.833,
-          "end": 131.091,
-          "probability": 0.909,
+          "text": "in",
+          "start": 110.96,
+          "end": 111.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1558
+          "char_offset": 1559
         },
         {
-          "text": "back",
-          "start": 131.091,
-          "end": 131.435,
-          "probability": 0.965,
+          "text": "about",
+          "start": 111.14,
+          "end": 111.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1562
         },
         {
-          "text": "in",
-          "start": 131.435,
-          "end": 131.607,
-          "probability": 0.977,
+          "text": "10",
+          "start": 111.3,
+          "end": 111.6,
+          "probability": 0.728,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1567
+          "char_offset": 1568
         },
         {
-          "text": "about",
-          "start": 131.607,
-          "end": 132.037,
-          "probability": 0.926,
+          "text": "days",
+          "start": 111.6,
+          "end": 111.84,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1570
+          "char_offset": 1571
         },
         {
-          "text": "ten",
-          "start": 132.037,
-          "end": 132.295,
-          "probability": 0.9,
+          "text": "so",
+          "start": 111.84,
+          "end": 112.12,
+          "probability": 0.985,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1576
         },
         {
-          "text": "days",
-          "start": 132.295,
-          "end": 132.639,
-          "probability": 0.868,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1580
-        },
-        {
-          "text": "so",
-          "start": 132.639,
-          "end": 132.811,
-          "probability": 0.973,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1585
-        },
-        {
           "text": "we",
-          "start": 132.811,
-          "end": 132.982,
-          "probability": 0.881,
+          "start": 112.12,
+          "end": 112.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1588
+          "char_offset": 1579
         },
         {
           "text": "can",
-          "start": 132.982,
-          "end": 133.24,
-          "probability": 0.897,
+          "start": 112.3,
+          "end": 112.54,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1591
+          "char_offset": 1582
         },
         {
           "text": "check",
-          "start": 133.24,
-          "end": 133.67,
-          "probability": 0.875,
+          "start": 112.54,
+          "end": 112.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1595
+          "char_offset": 1586
         },
         {
           "text": "the",
-          "start": 133.67,
-          "end": 133.928,
-          "probability": 0.875,
+          "start": 112.88,
+          "end": 113.04,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1601
+          "char_offset": 1592
         },
         {
           "text": "pressure",
-          "start": 133.928,
-          "end": 134.616,
-          "probability": 0.965,
+          "start": 113.04,
+          "end": 113.26,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1596
+        },
+        {
+          "text": "again",
+          "start": 113.26,
+          "end": 113.54,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1605
         },
         {
-          "text": "again",
-          "start": 134.616,
-          "end": 135.046,
-          "probability": 0.894,
+          "text": "and",
+          "start": 113.54,
+          "end": 113.98,
+          "probability": 0.973,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1614
+          "char_offset": 1611
         },
         {
-          "text": "and",
-          "start": 135.046,
-          "end": 135.304,
-          "probability": 0.933,
+          "text": "make",
+          "start": 113.98,
+          "end": 114.18,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1615
+        },
+        {
+          "text": "sure",
+          "start": 114.18,
+          "end": 114.36,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1620
         },
         {
-          "text": "make",
-          "start": 135.304,
-          "end": 135.647,
-          "probability": 0.956,
+          "text": "the",
+          "start": 114.36,
+          "end": 114.5,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1624
+          "char_offset": 1625
         },
         {
-          "text": "sure",
-          "start": 135.647,
-          "end": 135.991,
-          "probability": 0.918,
+          "text": "higher",
+          "start": 114.5,
+          "end": 114.66,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1629
         },
         {
-          "text": "the",
-          "start": 135.991,
-          "end": 136.249,
-          "probability": 0.991,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1634
-        },
-        {
-          "text": "higher",
-          "start": 136.249,
-          "end": 136.765,
-          "probability": 0.882,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1638
-        },
-        {
           "text": "dose",
-          "start": 136.765,
-          "end": 137.109,
-          "probability": 0.945,
+          "start": 114.66,
+          "end": 114.92,
+          "probability": 0.996,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1645
+          "char_offset": 1636
         },
         {
           "text": "isn't",
-          "start": 137.109,
-          "end": 137.539,
-          "probability": 0.976,
+          "start": 114.92,
+          "end": 115.22,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1650
+          "char_offset": 1641
         },
         {
-          "text": "dropping",
-          "start": 137.539,
-          "end": 138.226,
-          "probability": 0.954,
+          "text": "doping",
+          "start": 115.22,
+          "end": 115.46,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1656
+          "char_offset": 1647
         },
         {
           "text": "it",
-          "start": 138.226,
-          "end": 138.398,
-          "probability": 0.919,
+          "start": 115.46,
+          "end": 115.64,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1665
+          "char_offset": 1654
         },
         {
           "text": "too",
-          "start": 138.398,
-          "end": 138.656,
-          "probability": 0.941,
+          "start": 115.64,
+          "end": 115.92,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1668
+          "char_offset": 1657
         },
         {
           "text": "far.",
-          "start": 138.656,
-          "end": 139.0,
-          "probability": 0.978,
+          "start": 115.92,
+          "end": 116.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1672
+          "char_offset": 1661
         }
       ],
-      "text": "Right. And I want to see you back in about ten days so we can check the pressure again and make sure the higher dose isn't dropping it too far.",
-      "char_start": 1533,
-      "char_end": 1676
+      "text": "Right. And I want to see you back in about 10 days so we can check the pressure again and make sure the higher dose isn't doping it too far.",
+      "char_start": 1525,
+      "char_end": 1665
     },
     {
       "id": 23,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 139.2,
-      "end": 154.0,
+      "start": 116.8,
+      "end": 126.14,
       "words": [
         {
-          "text": "Ten",
-          "start": 139.2,
-          "end": 139.576,
-          "probability": 0.981,
+          "text": "Uh,",
+          "start": 116.8,
+          "end": 117.24,
+          "probability": 0.988,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1677
+          "char_offset": 1666
+        },
+        {
+          "text": "10",
+          "start": 117.4,
+          "end": 117.7,
+          "probability": 0.997,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1670
         },
         {
           "text": "days.",
-          "start": 139.576,
-          "end": 140.203,
-          "probability": 0.865,
+          "start": 117.7,
+          "end": 117.9,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1681
+          "char_offset": 1673
+        },
+        {
+          "text": "Okay,",
+          "start": 118.3,
+          "end": 118.46,
+          "probability": 0.944,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1679
         },
         {
           "text": "I'll",
-          "start": 140.203,
-          "end": 140.705,
-          "probability": 0.949,
+          "start": 118.5,
+          "end": 118.72,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1687
+          "char_offset": 1685
         },
         {
           "text": "get",
-          "start": 140.705,
-          "end": 141.081,
-          "probability": 0.936,
+          "start": 118.72,
+          "end": 118.96,
+          "probability": 0.997,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1692
+          "char_offset": 1690
         },
         {
           "text": "that",
-          "start": 141.081,
-          "end": 141.583,
-          "probability": 0.939,
+          "start": 118.96,
+          "end": 119.1,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1696
+          "char_offset": 1694
         },
         {
           "text": "on",
-          "start": 141.583,
-          "end": 141.834,
-          "probability": 0.904,
+          "start": 119.1,
+          "end": 119.22,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1701
+          "char_offset": 1699
         },
         {
-          "text": "the",
-          "start": 141.834,
-          "end": 142.21,
-          "probability": 0.949,
+          "text": "my",
+          "start": 119.22,
+          "end": 119.34,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1704
+          "char_offset": 1702
         },
         {
           "text": "calendar.",
-          "start": 142.21,
-          "end": 143.339,
-          "probability": 0.947,
+          "start": 119.34,
+          "end": 119.7,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1708
+          "char_offset": 1705
         },
         {
           "text": "Will",
-          "start": 143.339,
-          "end": 143.841,
-          "probability": 0.982,
+          "start": 120.0,
+          "end": 120.36,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1718
+          "char_offset": 1715
         },
         {
           "text": "the",
-          "start": 143.841,
-          "end": 144.217,
-          "probability": 0.952,
+          "start": 120.36,
+          "end": 120.48,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1723
+          "char_offset": 1720
         },
         {
-          "text": "fifty",
-          "start": 144.217,
-          "end": 144.844,
-          "probability": 0.896,
+          "text": "50",
+          "start": 120.48,
+          "end": 120.64,
+          "probability": 0.137,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1724
+        },
+        {
+          "text": "make",
+          "start": 120.64,
+          "end": 120.8,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 1727
         },
         {
-          "text": "make",
-          "start": 144.844,
-          "end": 145.346,
-          "probability": 0.92,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1733
-        },
-        {
           "text": "me",
-          "start": 145.346,
-          "end": 145.597,
-          "probability": 0.887,
+          "start": 120.8,
+          "end": 120.96,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1738
+          "char_offset": 1732
         },
         {
           "text": "more",
-          "start": 145.597,
-          "end": 146.098,
-          "probability": 0.916,
+          "start": 120.96,
+          "end": 121.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1741
+          "char_offset": 1735
         },
         {
           "text": "tired?",
-          "start": 146.098,
-          "end": 146.851,
-          "probability": 0.921,
+          "start": 121.14,
+          "end": 121.44,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1746
+          "char_offset": 1740
         },
         {
           "text": "When",
-          "start": 146.851,
-          "end": 147.353,
-          "probability": 0.932,
+          "start": 121.56,
+          "end": 121.92,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1753
+          "char_offset": 1747
         },
         {
           "text": "I",
-          "start": 147.353,
-          "end": 147.478,
-          "probability": 0.974,
+          "start": 121.92,
+          "end": 122.06,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1758
+          "char_offset": 1752
         },
         {
           "text": "started",
-          "start": 147.478,
-          "end": 148.356,
-          "probability": 0.873,
+          "start": 122.06,
+          "end": 122.72,
+          "probability": 0.992,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1760
+          "char_offset": 1754
         },
         {
           "text": "the",
-          "start": 148.356,
-          "end": 148.732,
-          "probability": 0.969,
+          "start": 122.72,
+          "end": 122.92,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1768
+          "char_offset": 1762
         },
         {
-          "text": "twenty-five",
-          "start": 148.732,
-          "end": 150.112,
-          "probability": 0.937,
+          "text": "20,",
+          "start": 122.92,
+          "end": 123.2,
+          "probability": 0.609,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1772
+          "char_offset": 1766
+        },
+        {
+          "text": "uh,",
+          "start": 123.28,
+          "end": 123.52,
+          "probability": 0.515,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1770
+        },
+        {
+          "text": "25,",
+          "start": 123.62,
+          "end": 123.92,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1774
         },
         {
           "text": "I",
-          "start": 150.112,
-          "end": 150.237,
-          "probability": 0.91,
+          "start": 124.22,
+          "end": 124.4,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1778
+        },
+        {
+          "text": "was",
+          "start": 124.4,
+          "end": 124.6,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 1780
+        },
+        {
+          "text": "dragging",
+          "start": 124.6,
+          "end": 125.34,
+          "probability": 0.426,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 1784
         },
         {
-          "text": "was,",
-          "start": 150.237,
-          "end": 150.739,
-          "probability": 0.921,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1786
-        },
-        {
-          "text": "I",
-          "start": 150.739,
-          "end": 150.864,
-          "probability": 0.962,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1791
-        },
-        {
-          "text": "was",
-          "start": 150.864,
-          "end": 151.241,
-          "probability": 0.988,
+          "text": "for",
+          "start": 125.34,
+          "end": 125.7,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 1793
         },
         {
-          "text": "dragging",
-          "start": 151.241,
-          "end": 152.244,
-          "probability": 0.951,
+          "text": "about",
+          "start": 125.7,
+          "end": 125.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 1797
         },
         {
-          "text": "for",
-          "start": 152.244,
-          "end": 152.62,
-          "probability": 0.953,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1806
-        },
-        {
-          "text": "about",
-          "start": 152.62,
-          "end": 153.247,
-          "probability": 0.908,
-          "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1810
-        },
-        {
           "text": "a",
-          "start": 153.247,
-          "end": 153.373,
-          "probability": 0.931,
+          "start": 125.88,
+          "end": 125.98,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1816
+          "char_offset": 1803
         },
         {
           "text": "week.",
-          "start": 153.373,
-          "end": 154.0,
-          "probability": 0.957,
+          "start": 125.98,
+          "end": 126.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1818
+          "char_offset": 1805
         }
       ],
-      "text": "Ten days. I'll get that on the calendar. Will the fifty make me more tired? When I started the twenty-five I was, I was dragging for about a week.",
-      "char_start": 1677,
-      "char_end": 1823
+      "text": "Uh, 10 days. Okay, I'll get that on my calendar. Will the 50 make me more tired? When I started the 20, uh, 25, I was dragging for about a week.",
+      "char_start": 1666,
+      "char_end": 1810
     },
     {
       "id": 24,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 154.2,
-      "end": 164.0,
+      "start": 126.58,
+      "end": 131.98,
       "words": [
         {
           "text": "It",
-          "start": 154.2,
-          "end": 154.413,
-          "probability": 0.882,
+          "start": 126.58,
+          "end": 126.94,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1824
+          "char_offset": 1811
         },
         {
-          "text": "can,",
-          "start": 154.413,
-          "end": 154.839,
-          "probability": 0.911,
+          "text": "can",
+          "start": 126.94,
+          "end": 127.12,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1827
+          "char_offset": 1814
         },
         {
           "text": "at",
-          "start": 154.839,
-          "end": 155.052,
-          "probability": 0.993,
+          "start": 127.12,
+          "end": 127.32,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1832
+          "char_offset": 1818
         },
         {
           "text": "first.",
-          "start": 155.052,
-          "end": 155.691,
-          "probability": 0.955,
+          "start": 127.32,
+          "end": 127.6,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1835
+          "char_offset": 1821
         },
         {
           "text": "Tiredness,",
-          "start": 155.691,
-          "end": 156.757,
-          "probability": 0.985,
+          "start": 127.88,
+          "end": 128.24,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1842
+          "char_offset": 1828
         },
         {
           "text": "cold",
-          "start": 156.757,
-          "end": 157.183,
-          "probability": 0.978,
+          "start": 128.32,
+          "end": 128.52,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1853
+          "char_offset": 1839
         },
         {
           "text": "hands,",
-          "start": 157.183,
-          "end": 157.822,
-          "probability": 0.962,
+          "start": 128.52,
+          "end": 128.76,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1858
+          "char_offset": 1844
         },
         {
           "text": "those",
-          "start": 157.822,
-          "end": 158.354,
-          "probability": 0.916,
+          "start": 128.96,
+          "end": 129.34,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1851
+        },
+        {
+          "text": "are",
+          "start": 129.34,
+          "end": 129.52,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1857
+        },
+        {
+          "text": "the",
+          "start": 129.52,
+          "end": 129.64,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1861
+        },
+        {
+          "text": "common",
+          "start": 129.64,
+          "end": 129.88,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1865
         },
         {
-          "text": "are",
-          "start": 158.354,
-          "end": 158.674,
-          "probability": 0.895,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1871
-        },
-        {
-          "text": "the",
-          "start": 158.674,
-          "end": 158.993,
-          "probability": 0.944,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1875
-        },
-        {
-          "text": "common",
-          "start": 158.993,
-          "end": 159.633,
-          "probability": 0.928,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1879
-        },
-        {
           "text": "ones,",
-          "start": 159.633,
-          "end": 160.165,
-          "probability": 0.894,
+          "start": 129.88,
+          "end": 130.14,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1886
+          "char_offset": 1872
         },
         {
           "text": "and",
-          "start": 160.165,
-          "end": 160.485,
-          "probability": 0.885,
+          "start": 130.28,
+          "end": 130.4,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1892
+          "char_offset": 1878
         },
         {
           "text": "they",
-          "start": 160.485,
-          "end": 160.911,
-          "probability": 0.871,
+          "start": 130.4,
+          "end": 130.5,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1896
+          "char_offset": 1882
         },
         {
           "text": "usually",
-          "start": 160.911,
-          "end": 161.657,
-          "probability": 0.971,
+          "start": 130.5,
+          "end": 130.76,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1901
+          "char_offset": 1887
         },
         {
           "text": "settle",
-          "start": 161.657,
-          "end": 162.296,
-          "probability": 0.942,
+          "start": 130.76,
+          "end": 131.1,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1909
+          "char_offset": 1895
         },
         {
           "text": "after",
-          "start": 162.296,
-          "end": 162.828,
-          "probability": 0.92,
+          "start": 131.1,
+          "end": 131.38,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1916
+          "char_offset": 1902
         },
         {
           "text": "a",
-          "start": 162.828,
-          "end": 162.935,
-          "probability": 0.869,
+          "start": 131.38,
+          "end": 131.54,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1922
+          "char_offset": 1908
         },
         {
           "text": "week",
-          "start": 162.935,
-          "end": 163.361,
-          "probability": 0.974,
+          "start": 131.54,
+          "end": 131.7,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1924
+          "char_offset": 1910
         },
         {
           "text": "or",
-          "start": 163.361,
-          "end": 163.574,
-          "probability": 0.908,
+          "start": 131.7,
+          "end": 131.8,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1929
+          "char_offset": 1915
         },
         {
           "text": "two.",
-          "start": 163.574,
-          "end": 164.0,
-          "probability": 0.946,
+          "start": 131.8,
+          "end": 131.98,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1932
+          "char_offset": 1918
         }
       ],
-      "text": "It can, at first. Tiredness, cold hands, those are the common ones, and they usually settle after a week or two.",
-      "char_start": 1824,
-      "char_end": 1936
+      "text": "It can at first. Tiredness, cold hands, those are the common ones, and they usually settle after a week or two.",
+      "char_start": 1811,
+      "char_end": 1922
     },
     {
       "id": 25,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 164.2,
-      "end": 167.0,
+      "start": 132.4,
+      "end": 133.46,
       "words": [
         {
           "text": "And",
-          "start": 164.2,
-          "end": 164.76,
-          "probability": 0.883,
+          "start": 132.4,
+          "end": 132.76,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1937
+          "char_offset": 1923
         },
         {
           "text": "if",
-          "start": 164.76,
-          "end": 165.133,
-          "probability": 0.926,
+          "start": 132.76,
+          "end": 133.06,
+          "probability": 0.99,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1941
+          "char_offset": 1927
         },
         {
           "text": "they",
-          "start": 165.133,
-          "end": 165.88,
-          "probability": 0.946,
+          "start": 133.06,
+          "end": 133.24,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1944
+          "char_offset": 1930
         },
         {
           "text": "don't?",
-          "start": 165.88,
-          "end": 167.0,
-          "probability": 0.863,
+          "start": 133.24,
+          "end": 133.46,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 1949
+          "char_offset": 1935
         }
       ],
       "text": "And if they don't?",
-      "char_start": 1937,
-      "char_end": 1955
+      "char_start": 1923,
+      "char_end": 1941
     },
     {
       "id": 26,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 167.2,
-      "end": 175.0,
+      "start": 134.58,
+      "end": 138.82,
       "words": [
         {
-          "text": "Then",
-          "start": 167.2,
-          "end": 167.639,
-          "probability": 0.897,
+          "text": "Uh,",
+          "start": 134.58,
+          "end": 134.94,
+          "probability": 0.596,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1956
+          "char_offset": 1942
+        },
+        {
+          "text": "then",
+          "start": 135.0,
+          "end": 135.22,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1946
         },
         {
           "text": "we",
-          "start": 167.639,
-          "end": 167.859,
-          "probability": 0.899,
+          "start": 135.22,
+          "end": 135.32,
+          "probability": 0.894,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1961
+          "char_offset": 1951
         },
         {
           "text": "look",
-          "start": 167.859,
-          "end": 168.299,
-          "probability": 0.877,
+          "start": 135.32,
+          "end": 135.44,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1964
+          "char_offset": 1954
         },
         {
           "text": "at",
-          "start": 168.299,
-          "end": 168.518,
-          "probability": 0.892,
+          "start": 135.44,
+          "end": 135.6,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1969
+          "char_offset": 1959
         },
         {
           "text": "it",
-          "start": 168.518,
-          "end": 168.738,
-          "probability": 0.886,
+          "start": 135.6,
+          "end": 135.68,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1962
+        },
+        {
+          "text": "again.",
+          "start": 135.68,
+          "end": 135.88,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1965
+        },
+        {
+          "text": "But",
+          "start": 135.96,
+          "end": 136.32,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1972
         },
         {
-          "text": "again.",
-          "start": 168.738,
-          "end": 169.397,
-          "probability": 0.879,
+          "text": "don't",
+          "start": 136.32,
+          "end": 136.6,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1975
+          "char_offset": 1976
         },
         {
-          "text": "But",
-          "start": 169.397,
-          "end": 169.727,
-          "probability": 0.925,
+          "text": "stop",
+          "start": 136.6,
+          "end": 136.74,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 1982
         },
         {
-          "text": "don't",
-          "start": 169.727,
-          "end": 170.276,
-          "probability": 0.906,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1986
-        },
-        {
-          "text": "stop",
-          "start": 170.276,
-          "end": 170.715,
-          "probability": 0.884,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1992
-        },
-        {
           "text": "it",
-          "start": 170.715,
-          "end": 170.935,
-          "probability": 0.93,
+          "start": 136.74,
+          "end": 136.92,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 1997
+          "char_offset": 1987
         },
         {
           "text": "on",
-          "start": 170.935,
-          "end": 171.155,
-          "probability": 0.923,
+          "start": 136.92,
+          "end": 137.0,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2000
+          "char_offset": 1990
         },
         {
           "text": "your",
-          "start": 171.155,
-          "end": 171.594,
-          "probability": 0.992,
+          "start": 137.0,
+          "end": 137.14,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1993
+        },
+        {
+          "text": "own.",
+          "start": 137.14,
+          "end": 137.28,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 1998
+        },
+        {
+          "text": "That's",
+          "start": 137.32,
+          "end": 137.54,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 2003
         },
         {
-          "text": "own,",
-          "start": 171.594,
-          "end": 172.034,
-          "probability": 0.892,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2008
-        },
-        {
-          "text": "that's",
-          "start": 172.034,
-          "end": 172.693,
-          "probability": 0.861,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2013
-        },
-        {
           "text": "the",
-          "start": 172.693,
-          "end": 173.023,
-          "probability": 0.963,
+          "start": 137.54,
+          "end": 137.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2020
+          "char_offset": 2010
         },
         {
           "text": "one",
-          "start": 173.023,
-          "end": 173.352,
-          "probability": 0.869,
+          "start": 137.62,
+          "end": 137.78,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2014
+        },
+        {
+          "text": "thing",
+          "start": 137.78,
+          "end": 137.94,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2018
+        },
+        {
+          "text": "I'd",
+          "start": 137.94,
+          "end": 138.14,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 2024
         },
         {
-          "text": "thing",
-          "start": 173.352,
-          "end": 173.901,
-          "probability": 0.94,
+          "text": "ask",
+          "start": 138.14,
+          "end": 138.58,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 2028
         },
         {
-          "text": "I'd",
-          "start": 173.901,
-          "end": 174.231,
-          "probability": 0.863,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2034
-        },
-        {
-          "text": "ask",
-          "start": 174.231,
-          "end": 174.561,
-          "probability": 0.892,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2038
-        },
-        {
           "text": "you.",
-          "start": 174.561,
-          "end": 175.0,
-          "probability": 0.979,
+          "start": 138.58,
+          "end": 138.82,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2042
+          "char_offset": 2032
         }
       ],
-      "text": "Then we look at it again. But don't stop it on your own, that's the one thing I'd ask you.",
-      "char_start": 1956,
-      "char_end": 2046
+      "text": "Uh, then we look at it again. But don't stop it on your own. That's the one thing I'd ask you.",
+      "char_start": 1942,
+      "char_end": 2036
     },
     {
       "id": 27,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 175.2,
-      "end": 178.0,
+      "start": 139.16,
+      "end": 140.24,
       "words": [
         {
           "text": "No,",
-          "start": 175.2,
-          "end": 176.04,
-          "probability": 0.97,
+          "start": 139.16,
+          "end": 139.52,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2047
+          "char_offset": 2037
+        },
+        {
+          "text": "no,",
+          "start": 139.52,
+          "end": 139.74,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 2041
+        },
+        {
+          "text": "okay,",
+          "start": 139.76,
+          "end": 139.94,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 2045
         },
         {
           "text": "I",
-          "start": 176.04,
-          "end": 176.32,
-          "probability": 0.89,
+          "start": 140.04,
+          "end": 140.08,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 2051
         },
         {
           "text": "won't.",
-          "start": 176.32,
-          "end": 178.0,
-          "probability": 0.882,
+          "start": 140.08,
+          "end": 140.24,
+          "probability": 0.994,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 2053
         }
       ],
-      "text": "No, I won't.",
-      "char_start": 2047,
+      "text": "No, no, okay, I won't.",
+      "char_start": 2037,
       "char_end": 2059
     },
     {
       "id": 28,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 178.2,
-      "end": 187.0,
+      "start": 140.76,
+      "end": 146.72,
       "words": [
         {
-          "text": "So,",
-          "start": 178.2,
-          "end": 178.507,
-          "probability": 0.919,
+          "text": "So",
+          "start": 140.76,
+          "end": 141.12,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 2060
         },
         {
           "text": "going",
-          "start": 178.507,
-          "end": 179.019,
-          "probability": 0.964,
+          "start": 141.12,
+          "end": 141.36,
+          "probability": 0.769,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2064
+          "char_offset": 2063
         },
         {
           "text": "back",
-          "start": 179.019,
-          "end": 179.428,
-          "probability": 0.937,
+          "start": 141.36,
+          "end": 141.56,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2070
+          "char_offset": 2069
         },
         {
           "text": "over",
-          "start": 179.428,
-          "end": 179.837,
-          "probability": 0.888,
+          "start": 141.56,
+          "end": 141.78,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2075
+          "char_offset": 2074
         },
         {
           "text": "it,",
-          "start": 179.837,
-          "end": 180.144,
-          "probability": 0.946,
+          "start": 141.78,
+          "end": 141.96,
+          "probability": 0.996,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2080
+          "char_offset": 2079
         },
         {
           "text": "the",
-          "start": 180.144,
-          "end": 180.451,
-          "probability": 0.878,
+          "start": 142.02,
+          "end": 142.16,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2084
+          "char_offset": 2083
         },
         {
-          "text": "metropolol,",
-          "start": 180.451,
-          "end": 181.577,
-          "probability": 0.66,
+          "text": "metoprolol,",
+          "start": 142.16,
+          "end": 143.1,
+          "probability": 0.848,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2088
+          "char_offset": 2087
         },
         {
-          "text": "twenty-five,",
-          "start": 181.577,
-          "end": 182.805,
-          "probability": 0.98,
+          "text": "25,",
+          "start": 143.22,
+          "end": 143.56,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2100
+          "char_offset": 2099
         },
         {
           "text": "twice",
-          "start": 182.805,
-          "end": 183.316,
-          "probability": 0.884,
+          "start": 143.82,
+          "end": 144.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2113
+          "char_offset": 2103
         },
         {
           "text": "a",
-          "start": 183.316,
-          "end": 183.419,
-          "probability": 0.906,
+          "start": 144.3,
+          "end": 144.46,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2119
+          "char_offset": 2109
         },
         {
           "text": "day,",
-          "start": 183.419,
-          "end": 183.828,
-          "probability": 0.883,
+          "start": 144.46,
+          "end": 144.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2121
+          "char_offset": 2111
         },
         {
           "text": "and",
-          "start": 183.828,
-          "end": 184.135,
-          "probability": 0.914,
+          "start": 144.68,
+          "end": 144.86,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2126
+          "char_offset": 2116
         },
         {
           "text": "the",
-          "start": 184.135,
-          "end": 184.442,
-          "probability": 0.984,
+          "start": 144.86,
+          "end": 144.96,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2130
+          "char_offset": 2120
         },
         {
-          "text": "lisinopril",
-          "start": 184.442,
-          "end": 185.465,
-          "probability": 0.875,
+          "text": "lysinopril",
+          "start": 144.96,
+          "end": 145.64,
+          "probability": 0.777,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2134
+          "char_offset": 2124
         },
         {
           "text": "stays",
-          "start": 185.465,
-          "end": 185.977,
-          "probability": 0.876,
+          "start": 145.64,
+          "end": 146.18,
+          "probability": 0.87,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2145
+          "char_offset": 2135
         },
         {
           "text": "where",
-          "start": 185.977,
-          "end": 186.488,
-          "probability": 0.917,
+          "start": 146.18,
+          "end": 146.42,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2151
+          "char_offset": 2141
         },
         {
           "text": "it",
-          "start": 186.488,
-          "end": 186.693,
-          "probability": 0.874,
+          "start": 146.42,
+          "end": 146.56,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2157
+          "char_offset": 2147
         },
         {
           "text": "is.",
-          "start": 186.693,
-          "end": 187.0,
-          "probability": 0.929,
+          "start": 146.56,
+          "end": 146.72,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2160
+          "char_offset": 2150
         }
       ],
-      "text": "So, going back over it, the metropolol, twenty-five, twice a day, and the lisinopril stays where it is.",
+      "text": "So going back over it, the metoprolol, 25, twice a day, and the lysinopril stays where it is.",
       "char_start": 2060,
-      "char_end": 2163
+      "char_end": 2153
     },
     {
       "id": 29,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 187.2,
-      "end": 189.0,
+      "start": 148.3,
+      "end": 149.42,
       "words": [
         {
           "text": "Got",
-          "start": 187.2,
-          "end": 188.1,
-          "probability": 0.983,
+          "start": 148.3,
+          "end": 148.66,
+          "probability": 0.95,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2164
+          "char_offset": 2154
+        },
+        {
+          "text": "it,",
+          "start": 148.66,
+          "end": 148.76,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 2158
+        },
+        {
+          "text": "got",
+          "start": 148.82,
+          "end": 149.2,
+          "probability": 0.992,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 2162
         },
         {
           "text": "it.",
-          "start": 188.1,
-          "end": 189.0,
-          "probability": 0.879,
+          "start": 149.2,
+          "end": 149.42,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2168
+          "char_offset": 2166
         }
       ],
-      "text": "Got it.",
-      "char_start": 2164,
-      "char_end": 2171
+      "text": "Got it, got it.",
+      "char_start": 2154,
+      "char_end": 2169
     },
     {
       "id": 30,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 189.2,
-      "end": 198.0,
+      "start": 150.1,
+      "end": 156.78,
       "words": [
         {
           "text": "One",
-          "start": 189.2,
-          "end": 189.44,
-          "probability": 0.954,
+          "start": 150.1,
+          "end": 150.46,
+          "probability": 0.993,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2172
+          "char_offset": 2170
         },
         {
           "text": "more",
-          "start": 189.44,
-          "end": 189.76,
-          "probability": 0.92,
+          "start": 150.46,
+          "end": 150.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2176
+          "char_offset": 2174
         },
         {
           "text": "thing.",
-          "start": 189.76,
-          "end": 190.24,
-          "probability": 0.885,
+          "start": 150.62,
+          "end": 150.8,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2181
+          "char_offset": 2179
         },
         {
           "text": "If",
-          "start": 190.24,
-          "end": 190.4,
-          "probability": 0.918,
+          "start": 150.9,
+          "end": 151.24,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2188
+          "char_offset": 2186
         },
         {
           "text": "you",
-          "start": 190.4,
-          "end": 190.64,
-          "probability": 0.947,
+          "start": 151.24,
+          "end": 151.36,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2191
+          "char_offset": 2189
         },
         {
           "text": "feel",
-          "start": 190.64,
-          "end": 190.96,
-          "probability": 0.947,
+          "start": 151.36,
+          "end": 151.68,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2195
+          "char_offset": 2193
         },
         {
           "text": "dizzy",
-          "start": 190.96,
-          "end": 191.36,
-          "probability": 0.922,
+          "start": 151.68,
+          "end": 152.26,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2200
+          "char_offset": 2198
         },
         {
           "text": "when",
-          "start": 191.36,
-          "end": 191.68,
-          "probability": 0.986,
+          "start": 152.26,
+          "end": 152.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2206
+          "char_offset": 2204
         },
         {
           "text": "you",
-          "start": 191.68,
-          "end": 191.92,
-          "probability": 0.87,
+          "start": 152.62,
+          "end": 152.76,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2211
+          "char_offset": 2209
         },
         {
           "text": "stand",
-          "start": 191.92,
-          "end": 192.32,
-          "probability": 0.889,
+          "start": 152.76,
+          "end": 152.96,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2215
+          "char_offset": 2213
         },
         {
           "text": "up,",
-          "start": 192.32,
-          "end": 192.56,
-          "probability": 0.868,
+          "start": 152.96,
+          "end": 153.2,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2221
+          "char_offset": 2219
         },
         {
           "text": "or",
-          "start": 192.56,
-          "end": 192.72,
-          "probability": 0.983,
+          "start": 153.24,
+          "end": 153.46,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2225
+          "char_offset": 2223
         },
         {
           "text": "your",
-          "start": 192.72,
-          "end": 193.04,
-          "probability": 0.993,
+          "start": 153.46,
+          "end": 153.62,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2228
+          "char_offset": 2226
         },
         {
           "text": "heart",
-          "start": 193.04,
-          "end": 193.44,
-          "probability": 0.993,
+          "start": 153.62,
+          "end": 153.86,
+          "probability": 0.998,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2233
+          "char_offset": 2231
         },
         {
           "text": "feels",
-          "start": 193.44,
-          "end": 193.84,
-          "probability": 0.937,
+          "start": 153.86,
+          "end": 154.06,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2239
+          "char_offset": 2237
         },
         {
           "text": "like",
-          "start": 193.84,
-          "end": 194.16,
-          "probability": 0.922,
+          "start": 154.06,
+          "end": 154.24,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2245
+          "char_offset": 2243
         },
         {
           "text": "it's",
-          "start": 194.16,
-          "end": 194.48,
-          "probability": 0.974,
+          "start": 154.24,
+          "end": 154.48,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2250
+          "char_offset": 2248
         },
         {
           "text": "racing,",
-          "start": 194.48,
-          "end": 195.04,
-          "probability": 0.934,
+          "start": 154.48,
+          "end": 154.68,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2255
+          "char_offset": 2253
         },
         {
           "text": "call",
-          "start": 195.04,
-          "end": 195.36,
-          "probability": 0.973,
+          "start": 154.86,
+          "end": 155.18,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2263
+          "char_offset": 2261
         },
         {
           "text": "the",
-          "start": 195.36,
-          "end": 195.6,
-          "probability": 0.917,
+          "start": 155.18,
+          "end": 155.36,
+          "probability": 0.997,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2268
+          "char_offset": 2266
         },
         {
           "text": "office.",
-          "start": 195.6,
-          "end": 196.16,
-          "probability": 0.964,
+          "start": 155.36,
+          "end": 155.62,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2272
+          "char_offset": 2270
         },
         {
           "text": "Don't",
-          "start": 196.16,
-          "end": 196.56,
-          "probability": 0.899,
+          "start": 155.72,
+          "end": 156.02,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2280
+          "char_offset": 2278
         },
         {
           "text": "wait",
-          "start": 196.56,
-          "end": 196.88,
-          "probability": 0.956,
+          "start": 156.02,
+          "end": 156.1,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2286
+          "char_offset": 2284
         },
         {
           "text": "for",
-          "start": 196.88,
-          "end": 197.12,
-          "probability": 0.926,
+          "start": 156.1,
+          "end": 156.26,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2291
+          "char_offset": 2289
         },
         {
           "text": "the",
-          "start": 197.12,
-          "end": 197.36,
-          "probability": 0.902,
+          "start": 156.26,
+          "end": 156.36,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2295
+          "char_offset": 2293
         },
         {
-          "text": "ten",
-          "start": 197.36,
-          "end": 197.6,
-          "probability": 0.927,
+          "text": "10",
+          "start": 156.36,
+          "end": 156.54,
+          "probability": 0.803,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2299
+          "char_offset": 2297
         },
         {
           "text": "days.",
-          "start": 197.6,
-          "end": 198.0,
-          "probability": 0.968,
+          "start": 156.54,
+          "end": 156.78,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2303
+          "char_offset": 2300
         }
       ],
-      "text": "One more thing. If you feel dizzy when you stand up, or your heart feels like it's racing, call the office. Don't wait for the ten days.",
-      "char_start": 2172,
-      "char_end": 2308
+      "text": "One more thing. If you feel dizzy when you stand up, or your heart feels like it's racing, call the office. Don't wait for the 10 days.",
+      "char_start": 2170,
+      "char_end": 2305
     },
     {
       "id": 31,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 198.2,
-      "end": 201.0,
+      "start": 157.32,
+      "end": 159.14,
       "words": [
         {
           "text": "Dizzy",
-          "start": 198.2,
-          "end": 198.937,
-          "probability": 0.94,
+          "start": 157.32,
+          "end": 157.68,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2309
+          "char_offset": 2306
         },
         {
           "text": "or",
-          "start": 198.937,
-          "end": 199.232,
-          "probability": 0.892,
+          "start": 157.68,
+          "end": 157.88,
+          "probability": 0.999,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 2312
+        },
+        {
+          "text": "racing,",
+          "start": 157.88,
+          "end": 158.16,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
           "char_offset": 2315
         },
         {
-          "text": "racing.",
-          "start": 199.232,
-          "end": 200.263,
-          "probability": 0.902,
+          "text": "okay,",
+          "start": 158.32,
+          "end": 158.5,
+          "probability": 0.976,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2318
+          "char_offset": 2323
         },
         {
-          "text": "Okay.",
-          "start": 200.263,
-          "end": 201.0,
-          "probability": 0.912,
+          "text": "okay,",
+          "start": 158.6,
+          "end": 158.84,
+          "probability": 0.959,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2326
+          "char_offset": 2329
+        },
+        {
+          "text": "I'll",
+          "start": 158.88,
+          "end": 159.04,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 2335
+        },
+        {
+          "text": "call.",
+          "start": 159.04,
+          "end": 159.14,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_01",
+          "char_offset": 2340
         }
       ],
-      "text": "Dizzy or racing. Okay.",
-      "char_start": 2309,
-      "char_end": 2331
+      "text": "Dizzy or racing, okay, okay, I'll call.",
+      "char_start": 2306,
+      "char_end": 2345
     },
     {
       "id": 32,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 201.2,
-      "end": 206.0,
+      "start": 159.36,
+      "end": 163.08,
       "words": [
         {
           "text": "And",
-          "start": 201.2,
-          "end": 201.425,
-          "probability": 0.92,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2332
-        },
-        {
-          "text": "bring",
-          "start": 201.425,
-          "end": 201.8,
-          "probability": 0.943,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2336
-        },
-        {
-          "text": "the",
-          "start": 201.8,
-          "end": 202.025,
-          "probability": 0.871,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2342
-        },
-        {
-          "text": "home",
-          "start": 202.025,
-          "end": 202.325,
-          "probability": 0.98,
+          "start": 159.36,
+          "end": 159.72,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 2346
         },
         {
-          "text": "monitor",
-          "start": 202.325,
-          "end": 202.85,
-          "probability": 0.912,
+          "text": "bring",
+          "start": 159.72,
+          "end": 159.9,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2351
+          "char_offset": 2350
+        },
+        {
+          "text": "the",
+          "start": 159.9,
+          "end": 160.06,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2356
+        },
+        {
+          "text": "home",
+          "start": 160.06,
+          "end": 160.34,
+          "probability": 0.991,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2360
+        },
+        {
+          "text": "monitor",
+          "start": 160.34,
+          "end": 160.7,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2365
         },
         {
           "text": "with",
-          "start": 202.85,
-          "end": 203.15,
-          "probability": 0.959,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2359
-        },
-        {
-          "text": "you",
-          "start": 203.15,
-          "end": 203.375,
-          "probability": 0.88,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2364
-        },
-        {
-          "text": "next",
-          "start": 203.375,
-          "end": 203.675,
-          "probability": 0.946,
-          "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2368
-        },
-        {
-          "text": "time,",
-          "start": 203.675,
-          "end": 204.05,
-          "probability": 0.96,
+          "start": 160.7,
+          "end": 160.94,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
           "char_offset": 2373
         },
         {
-          "text": "I'd",
-          "start": 204.05,
-          "end": 204.275,
-          "probability": 0.965,
+          "text": "you",
+          "start": 160.94,
+          "end": 161.06,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2379
+          "char_offset": 2378
+        },
+        {
+          "text": "next",
+          "start": 161.06,
+          "end": 161.26,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2382
+        },
+        {
+          "text": "time.",
+          "start": 161.26,
+          "end": 161.48,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2387
+        },
+        {
+          "text": "I'd",
+          "start": 161.64,
+          "end": 162.0,
+          "probability": 1.0,
+          "speaker_cluster": "SPEAKER_00",
+          "char_offset": 2393
         },
         {
           "text": "like",
-          "start": 204.275,
-          "end": 204.575,
-          "probability": 0.918,
+          "start": 162.0,
+          "end": 162.12,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2383
+          "char_offset": 2397
         },
         {
           "text": "to",
-          "start": 204.575,
-          "end": 204.725,
-          "probability": 0.993,
+          "start": 162.12,
+          "end": 162.24,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2388
+          "char_offset": 2402
         },
         {
           "text": "see",
-          "start": 204.725,
-          "end": 204.95,
-          "probability": 0.904,
+          "start": 162.24,
+          "end": 162.44,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2391
+          "char_offset": 2405
         },
         {
           "text": "it",
-          "start": 204.95,
-          "end": 205.1,
-          "probability": 0.912,
+          "start": 162.44,
+          "end": 162.54,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2395
+          "char_offset": 2409
         },
         {
           "text": "against",
-          "start": 205.1,
-          "end": 205.625,
-          "probability": 0.874,
+          "start": 162.54,
+          "end": 162.74,
+          "probability": 0.626,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2398
+          "char_offset": 2412
         },
         {
           "text": "ours.",
-          "start": 205.625,
-          "end": 206.0,
-          "probability": 0.912,
+          "start": 162.74,
+          "end": 163.08,
+          "probability": 0.978,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2406
+          "char_offset": 2420
         }
       ],
-      "text": "And bring the home monitor with you next time, I'd like to see it against ours.",
-      "char_start": 2332,
-      "char_end": 2411
+      "text": "And bring the home monitor with you next time. I'd like to see it against ours.",
+      "char_start": 2346,
+      "char_end": 2425
     },
     {
       "id": 33,
       "speaker_cluster": "SPEAKER_01",
       "role": "other",
-      "start": 206.2,
-      "end": 209.0,
+      "start": 163.6,
+      "end": 164.72,
       "words": [
         {
           "text": "Will",
-          "start": 206.2,
-          "end": 206.822,
-          "probability": 0.993,
+          "start": 163.6,
+          "end": 163.96,
+          "probability": 0.999,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2412
+          "char_offset": 2426
         },
         {
           "text": "do.",
-          "start": 206.822,
-          "end": 207.289,
-          "probability": 0.972,
+          "start": 163.96,
+          "end": 164.08,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2417
+          "char_offset": 2431
         },
         {
           "text": "Thanks,",
-          "start": 207.289,
-          "end": 208.378,
-          "probability": 0.862,
+          "start": 164.2,
+          "end": 164.52,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2421
+          "char_offset": 2435
         },
         {
           "text": "doc.",
-          "start": 208.378,
-          "end": 209.0,
-          "probability": 0.992,
+          "start": 164.58,
+          "end": 164.72,
+          "probability": 0.228,
           "speaker_cluster": "SPEAKER_01",
-          "char_offset": 2429
+          "char_offset": 2443
         }
       ],
       "text": "Will do. Thanks, doc.",
-      "char_start": 2412,
-      "char_end": 2433
+      "char_start": 2426,
+      "char_end": 2447
     },
     {
       "id": 34,
       "speaker_cluster": "SPEAKER_00",
       "role": "clinician",
-      "start": 209.2,
-      "end": 212.0,
+      "start": 164.94,
+      "end": 165.68,
       "words": [
         {
           "text": "Take",
-          "start": 209.2,
-          "end": 210.062,
-          "probability": 0.9,
+          "start": 164.94,
+          "end": 165.3,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2434
+          "char_offset": 2448
         },
         {
           "text": "care,",
-          "start": 210.062,
-          "end": 211.138,
-          "probability": 0.987,
+          "start": 165.3,
+          "end": 165.5,
+          "probability": 1.0,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2439
+          "char_offset": 2453
         },
         {
           "text": "Ray.",
-          "start": 211.138,
-          "end": 212.0,
-          "probability": 0.906,
+          "start": 165.56,
+          "end": 165.68,
+          "probability": 0.545,
           "speaker_cluster": "SPEAKER_00",
-          "char_offset": 2445
+          "char_offset": 2459
         }
       ],
       "text": "Take care, Ray.",
-      "char_start": 2434,
-      "char_end": 2449
+      "char_start": 2448,
+      "char_end": 2463
     }
   ],
   "consent": {

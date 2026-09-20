@@ -151,11 +151,13 @@ button.play:hover { text-decoration: underline; }
                          margin: .3rem 0 .6rem; letter-spacing: .02em; }
 .record button         { margin-right: .5rem; }
 
-.bar                   { height: 6px; border-radius: 3px; background: #e6e6e6;
+/* NOT `.bar` — that is the review header (line 45), and a second rule with
+   the same name clipped its title to 6px. Scope anything added here. */
+.record-progress       { height: 6px; border-radius: 3px; background: #e6e6e6;
                          overflow: hidden; margin: .8rem 0; }
-.bar-fill              { height: 100%; width: 12%; background: #1c6b3f;
+.record-progress-fill  { height: 100%; width: 12%; background: #1c6b3f;
                          transition: width .4s ease; }
 
 @media (prefers-reduced-motion: reduce) {
-  .bar-fill { transition: none; }
+  .record-progress-fill { transition: none; }
 }

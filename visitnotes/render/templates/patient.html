@@ -25,10 +25,18 @@
   }
   h1 { font-size: 30px; line-height: 1.25; margin: 0 0 .25rem; }
   .visit-date { font-size: 19px; color: #333; margin: 0 0 2rem; }
+  /* Two parts, each with sections inside it. The part rule is heavy and the
+     section rule is light, so the hierarchy survives being photocopied. */
   h2 {
-    font-size: 23px; margin: 2.5rem 0 .75rem; padding-bottom: .3rem;
-    border-bottom: 3px solid #111;
+    font-size: 26px; margin: 3rem 0 1.25rem; padding-bottom: .4rem;
+    border-bottom: 5px solid #111;
   }
+  h2:first-of-type { margin-top: 2rem; }
+  h3 {
+    font-size: 21px; margin: 2rem 0 .7rem; padding-bottom: .25rem;
+    border-bottom: 1px solid #767676;
+  }
+  section.part > h3:first-of-type { margin-top: 1.2rem; }
   ul { list-style: none; margin: 0; padding: 0; }
 
   /* U8b — medicines as a table. Scanning beats reading when the question is
@@ -73,17 +81,34 @@
   }
   @media print {
     body { max-width: none; padding: 0; font-size: 12.5pt; }
-    h1 { font-size: 19pt; } h2 { font-size: 15pt; }
+    h1 { font-size: 19pt; } h2 { font-size: 16pt; } h3 { font-size: 13.5pt; }
+    h2, h3 { break-after: avoid; }
+    section.part { break-inside: auto; }
     li.entry, blockquote { break-inside: avoid; }
-    h2 { break-after: avoid; }
   }
 </style>
 
 <h1>Your visit summary</h1>
 <p class="visit-date">{{ visit_date_long }} &middot; with {{ clinician_name }}</p>
 
+{% if presentation|selectattr('lines')|list %}
+<section class="part">
+<h2>Why you came in</h2>
+{% for section in presentation %}{% if section.lines %}
+<h3>{{ section.heading }}</h3>
+{% for line in section.lines %}
+<p class="said">{{ line.speaker_label }}:</p>
+<blockquote>&ldquo;{{ line.quote.text }}&rdquo;</blockquote>
+{% endfor %}
+{% endif %}{% endfor %}
+</section>
+{% endif %}
+
+<section class="part">
+<h2>What your doctor advised</h2>
+
 {% if medications %}
-<h2>Your medicines</h2>
+<h3>Your medicines</h3>
 {% macro cell(sentence) -%}
   {%- for f in sentence.fragments -%}
     {%- if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif -%}
@@ -111,7 +136,7 @@
 {% endif %}
 
 {% if red_flags %}
-<h2>Call the office if&hellip;</h2>
+<h3>Call the office if&hellip;</h3>
 {% for flag in red_flags %}
 <div class="callout">
   <p class="said">Your doctor said:</p>
@@ -124,7 +149,7 @@
 {# Not "What happens next" — U7's third heading is already called that, and
    two identical headings on one page is the kind of small confusion this
    document exists to avoid. #}
-<h2>Your next visit</h2>
+<h3>Your next visit</h3>
 <ul>
   {% for appt in appointments %}
   <li class="entry">
@@ -134,13 +159,14 @@
 </ul>
 {% endif %}
 
-{% for section in summary %}{% if section.lines %}
-<h2>{{ section.heading }}</h2>
+{% for section in advice %}{% if section.lines %}
+<h3>{{ section.heading }}</h3>
 {% for line in section.lines %}
 <p class="said">{{ line.speaker_label }}:</p>
 <blockquote>&ldquo;{{ line.quote.text }}&rdquo;</blockquote>
 {% endfor %}
 {% endif %}{% endfor %}
+</section>
 
 <footer>
   {# D10 names the responsible human; D27's clause is what makes the consent a

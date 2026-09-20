@@ -39,9 +39,28 @@ GRAMMAR_VERSION = "1.0"
 _NUMBER_WORDS = {
     "a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
     "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11,
-    "twelve": 12, "fourteen": 14, "twenty": 20, "thirty": 30, "sixty": 60,
-    "ninety": 90, "half": 0.5, "quarter": 0.25,
+    "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
+    "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19,
+    "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60,
+    "seventy": 70, "eighty": 80, "ninety": 90,
+    "half": 0.5, "quarter": 0.25,
 }
+"""Doses are spoken, so they arrive as words at least as often as digits.
+
+The gaps here were not cosmetic. `fifteen` and `fifty` were both missing — the
+pair most often confused by ear, and the one D16 category 2 exists to flag —
+and so were every ten from forty up.
+"""
+
+_MULTIPLIERS = {"hundred": 100, "thousand": 1000}
+"""Scale words, which the old flat table had no way to express.
+
+`"five hundred milligrams"` parsed to **None**, and `"twenty-five mg"` parsed
+to **5** — the hyphen is a word boundary, so a single-token alternation
+matched `five mg` and silently dropped the `twenty`. A wrong dose that prints
+as fact is the one outcome this system is built to make impossible, so the
+number grammar has to fold a phrase rather than match a token.
+"""
 
 _UNIT_CANON = {
     "mg": "mg", "milligram": "mg", "milligrams": "mg", "mgs": "mg",
@@ -108,7 +127,14 @@ _DAYS = {"monday": "monday", "tuesday": "tuesday", "wednesday": "wednesday",
          "thursday": "thursday", "friday": "friday", "saturday": "saturday",
          "sunday": "sunday"}
 
-_NUM = r"(?:\d+(?:\.\d+)?|" + "|".join(_NUMBER_WORDS) + r")"
+# Longest-first so `seventeen` cannot be matched as `seven`, and a phrase of
+# number words — `twenty-five`, `five hundred`, `one thousand two hundred` —
+# rather than one token.
+_NUM_WORD = "|".join(
+    sorted([*_NUMBER_WORDS, *_MULTIPLIERS], key=len, reverse=True)
+)
+_NUM = (r"(?:\d+(?:\.\d+)?|"
+        rf"(?:{_NUM_WORD})(?:[\s-]+(?:and[\s-]+)?(?:{_NUM_WORD}))*)")
 _UNITS = "|".join(sorted(_UNIT_CANON, key=len, reverse=True))
 
 _RE_DOSE = re.compile(rf"\b({_NUM})\s*({_UNITS})\b", re.IGNORECASE)
@@ -151,10 +177,39 @@ _RE_PRN_COND = re.compile(
 
 
 def _number(token: str) -> float:
-    t = token.lower()
-    if t in _NUMBER_WORDS:
-        return float(_NUMBER_WORDS[t])
-    return float(t)
+    """Fold a number phrase to a value: `"twenty-five"` -> 25.0.
+
+    Standard English composition — units and tens accumulate, `hundred`
+    scales what is pending, `thousand` banks it. `"one thousand two hundred
+    and fifty"` is 1250.0.
+    """
+    t = token.lower().strip()
+    try:
+        return float(t)
+    except ValueError:
+        pass
+
+    total = current = 0.0
+    seen = False
+    for word in re.split(r"[\s-]+", t):
+        if word in ("and", ""):
+            continue
+        if word in _MULTIPLIERS:
+            scale = _MULTIPLIERS[word]
+            if scale == 100:
+                current = (current or 1) * 100
+            else:
+                total += (current or 1) * scale
+                current = 0.0
+            seen = True
+        elif word in _NUMBER_WORDS:
+            current += _NUMBER_WORDS[word]
+            seen = True
+        else:
+            raise ValueError(f"not a number phrase: {token!r}")
+    if not seen:
+        raise ValueError(f"not a number phrase: {token!r}")
+    return total + current
 
 
 def _consume(spans: list[tuple[int, int]], m: re.Match) -> None:

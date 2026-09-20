@@ -31,6 +31,7 @@ from visitnotes.render.model import (
     identity_is_verified,
     item_is_resolved,
 )
+from visitnotes.render import summary
 from visitnotes.render.summary import build_summary
 
 __all__ = ["render_patient_document", "long_date"]
@@ -127,15 +128,22 @@ def render_patient_document(
     ]
 
     consent = session.consent
+    summary_sections = build_summary(
+        extraction, session, unexpected_speaker=unexpected_speaker
+    )
     return _env.get_template("patient.html").render(
         visit_date_long=long_date(extraction.visit_date),
         clinician_name=clinician_name,
         medications=medications,
         appointments=appointments,
         red_flags=red_flags,
-        summary=build_summary(
-            extraction, session, unexpected_speaker=unexpected_speaker
-        ),
+        # Split by part rather than filtered in the template: which heading
+        # belongs where is a content decision, and content decisions do not
+        # belong in markup.
+        presentation=[s for s in summary_sections
+                      if summary.PART_OF.get(s.key) == "presentation"],
+        advice=[s for s in summary_sections
+                if summary.PART_OF.get(s.key) == "advice"],
         consent_method=consent.method,
         consent_date_long=long_date(consent.obtained_at),
         approved_date_long=long_date(approved_on),

@@ -85,9 +85,23 @@ would decide later and then never settled — "we may need to adjust the other \
 one as well", with no dose and no date anywhere. Not a plan that was carried \
 out in the same breath.
 - summary_quotes: at most ONE quote from this turn, and only if the turn \
-directly answers its heading's question — why the patient came in, what the \
-doctor found, what happens next. Most turns answer none of the three. \
-Pleasantries, acknowledgements and "okay, I'll call" are not findings.
+directly answers one heading. Most turns answer none. Pleasantries, \
+acknowledgements and "okay, I'll call" answer nothing. The three headings are \
+narrow and do not overlap:
+  * why_you_came_in - a SYMPTOM or problem the patient reports. What they \
+feel, where, for how long. Usually spoken by the patient. Not what the doctor \
+decides to do about it. A symptom usually arrives wrapped in a polite answer \
+- "oh, not too bad, but my feet have been bothering me" - and patients often \
+play it down. Quote the symptom clause, not the pleasantry around it, and do \
+not skip a symptom because the patient called it nothing.
+  * what_the_doctor_found - a FINDING, test result or diagnosis the clinician \
+states. A number, a reading, a name for the problem. "Your A1C came back at \
+seven point four" is a finding. "I'm sending you for bloods" is not - that is \
+a plan.
+  * what_happens_next - a recommendation that is NOT already captured \
+elsewhere. Medications, appointments and call-the-office warnings each have \
+their own field and must NOT be repeated here. This heading is for the \
+leftovers: lifestyle advice, a referral, something to watch for.
 
 Answer with JSON only."""
 

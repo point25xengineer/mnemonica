@@ -32,7 +32,9 @@ from dataclasses import dataclass, field
 
 from visitnotes.contracts import Session
 from visitnotes.render import actioncard
+from visitnotes.render import summary as summary_mod
 from visitnotes.render.audio import AudioCue, cue_for
+from visitnotes.render.summary import build_summary
 from visitnotes.render.model import (
     Extraction,
     Item,
@@ -265,6 +267,54 @@ def _sentences(
     if quote:
         return [actioncard.Sentence((actioncard.Fragment(quote.text),))]
     return []
+
+
+@dataclass
+class SummaryReviewLine:
+    """A summary quote on the clinician's screen, with its audio.
+
+    These were rendered on the patient's page and nowhere else, so the
+    clinician attested to a section they had never been shown — the one part
+    of the document their signature covered sight unseen. Showing them here
+    is not a feature so much as closing that.
+
+    Read-only: a summary line carries no flag to settle. Playback is the
+    review.
+    """
+
+    text: str
+    speaker_label: str
+    cue: AudioCue | None
+    attribution_uncertain: bool = False
+
+
+@dataclass
+class SummaryReviewSection:
+    heading: str
+    lines: list[SummaryReviewLine]
+
+
+def build_summary_review(
+    extraction: Extraction, session: Session, *, unexpected_speaker: bool = False
+) -> list[SummaryReviewSection]:
+    """The presentation half of the page, as the clinician sees it."""
+    out: list[SummaryReviewSection] = []
+    for section in build_summary(extraction, session,
+                                 unexpected_speaker=unexpected_speaker):
+        if summary_mod.PART_OF.get(section.key) != "presentation":
+            continue
+        lines = [
+            SummaryReviewLine(
+                text=line.quote.text,
+                speaker_label=line.speaker_label,
+                cue=cue_for(session, line.quote, flagged=False),
+                attribution_uncertain=line.attribution_uncertain,
+            )
+            for line in section.lines
+        ]
+        if lines:
+            out.append(SummaryReviewSection(heading=section.heading, lines=lines))
+    return out
 
 
 def build_review(

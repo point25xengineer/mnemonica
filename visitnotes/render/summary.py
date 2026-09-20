@@ -24,12 +24,31 @@ from visitnotes.render.model import Extraction, Quote
 __all__ = ["HEADINGS", "SummaryLine", "SummarySection", "build_summary"]
 
 HEADINGS: dict[str, str] = {
-    "why_you_came_in": "Why you came in",
+    "why_you_came_in": "What you told the doctor",
     "what_the_doctor_found": "What the doctor found",
-    "what_happens_next": "What happens next",
+    "what_happens_next": "Other advice",
 }
 """Fixed. A model-chosen heading would be model-authored prose at the top of
-every section."""
+every section.
+
+These are sub-headings now. The page has two parts — what the visit was about,
+then what to do about it — and each of these sits under one of them (see
+`PART_OF`). The wording changed with the demotion: "Why you came in" became the
+part's own title, so the section under it names who was speaking instead of
+repeating it."""
+
+PART_OF: dict[str, str] = {
+    "why_you_came_in": "presentation",
+    "what_the_doctor_found": "presentation",
+    "what_happens_next": "advice",
+}
+"""Which of the page's two parts each heading belongs to.
+
+The split is the reader's question, not the data's shape: *what was wrong with
+me* and *what do I do now* are read at different moments and often by
+different people. Medicines, warnings and the next visit all live in the
+second part, which is why "what happens next" had to be renamed — it was
+describing the whole part it sits in."""
 
 PATIENT_ATTRIBUTED = {"why_you_came_in"}
 

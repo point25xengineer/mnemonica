@@ -163,3 +163,20 @@ button.play:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) {
   .record-progress-fill { transition: none; }
 }
+
+/* -- U3b: the two parts ------------------------------------------------- */
+h2.part {
+  font: 600 13px/1 inherit; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--muted); margin: 1.6rem 0 .5rem; padding-bottom: .4rem;
+  border-bottom: 1px solid var(--line);
+}
+h2.part:first-child { margin-top: 0; }
+.summary-block { margin: 0 0 .9rem; }
+.summary-block h3 { font: 600 14px/1.4 inherit; margin: .5rem 0 .3rem; }
+.summary-block .said { color: var(--muted); font-size: 12px; margin: .35rem 0 .15rem; }
+.summary-quote {
+  display: block; width: 100%; text-align: left; font: inherit; font-size: 14px;
+  background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--line);
+  border-radius: 6px; padding: .45rem .7rem; cursor: pointer; color: var(--ink);
+}
+.summary-quote:hover { border-left-color: var(--ok); }

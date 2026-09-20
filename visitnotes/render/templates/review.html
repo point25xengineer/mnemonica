@@ -38,6 +38,30 @@
 {% endif %}
 
 <main id="rows">
+
+{# U3b — the same two parts the patient's page uses. Order inside the second
+   part is unchanged: blocking first, then expanded, then the rest (D9's
+   eye-path). Grouping is what the clinician reads; ordering is what they
+   act on, and the grouping must not disturb it. #}
+{% if presentation %}
+<h2 class="part">Why they came in</h2>
+{% for section in presentation %}
+<section class="summary-block">
+  <h3>{{ section.heading }}</h3>
+  {% for line in section.lines %}
+  <p class="said">{{ line.speaker_label }}{% if line.attribution_uncertain %}
+    <span class="status check">unverified speaker</span>{% endif %}:</p>
+  <button type="button" class="play summary-quote"
+          {% if line.cue %}data-cue-start="{{ '%.3f'|format(line.cue.start) }}"
+          data-cue-end="{{ '%.3f'|format(line.cue.end) }}"{% endif %}>
+    &ldquo;{{ line.text }}&rdquo;
+  </button>
+  {% endfor %}
+</section>
+{% endfor %}
+{% endif %}
+
+<h2 class="part">What the doctor advised</h2>
 {% for row in rows %}
   <article class="row{% if row.blocking %} blocking{% endif %}{% if row.dropped %} dropped{% endif %}"
            id="row-{{ row.id }}" data-item="{{ row.id }}" tabindex="0"

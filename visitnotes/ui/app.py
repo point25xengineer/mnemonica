@@ -238,6 +238,10 @@ class Handler(BaseHTTPRequestHandler):
         self._html(
             "review.html",
             rows=rows,
+            presentation=review_view.build_summary_review(
+                current.extraction, current.session,
+                unexpected_speaker=current.unexpected_speaker,
+            ),
             header_line=review_view.header_line(current.extraction),
             discarded=current.extraction.discarded,
             unresolved=current.unresolved(),

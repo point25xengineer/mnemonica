@@ -24,7 +24,13 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from visitnotes.contracts import Session
 from visitnotes.render import actioncard
-from visitnotes.render.model import Extraction, Item, Resolution, item_is_resolved
+from visitnotes.render.model import (
+    Extraction,
+    Item,
+    Resolution,
+    identity_is_verified,
+    item_is_resolved,
+)
 from visitnotes.render.summary import build_summary
 
 __all__ = ["render_patient_document", "long_date"]
@@ -60,6 +66,12 @@ def _printable(
         if res and res.dropped:
             continue
         if not item_is_resolved(item, res):
+            continue
+        # D16: nothing unverified reaches the printed page. A category 4
+        # identity is not blocking, so approval never paused on it — but
+        # a drug we could not name must not be printed as one the patient
+        # takes. It stays in review, where the clinician can still name it.
+        if not identity_is_verified(item, res):
             continue
         out.append((item, res))
     return out

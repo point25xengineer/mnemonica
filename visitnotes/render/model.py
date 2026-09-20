@@ -378,6 +378,43 @@ class Resolution:
         return self.choices.get(flag_index)
 
 
+def unverified_identity_flag(item: Item) -> int | None:
+    """Index of this item's D16 category 4 flag — no RxNorm concept matched.
+
+    Deliberately separate from `is_blocking`. Category 4 is *not* blocking:
+    D16 says an unresolved drug name is prefilled and flagged, and a clinician
+    may sign without touching it. But SPEC D16 also says nothing unverified
+    reaches the printed page, and both hold at once only if an unresolved name
+    is allowed to sit unanswered in review **and** is kept off the handout.
+
+    The failure this closes: a patient's own stumble over a drug name
+    (`"lyso, ly, lysinop, lysinopril"`) printed as a third medicine on the
+    page their family reads, duplicating one already listed correctly above
+    it. Nothing was blocking, so approval never paused.
+    """
+    med = item.raw.get("medication")
+    if not isinstance(med, dict) or med.get("status") != "unresolved":
+        return None
+    for i, flag in enumerate(item.flags):
+        if flag.d16_category == 4:
+            return i
+    return None
+
+
+def identity_is_verified(item: Item, resolution: Resolution | None) -> bool:
+    """May this item's drug name be printed as a medicine the patient takes?
+
+    True when the resolver named the drug, or when the clinician answered the
+    flag saying it could not. An unanswered category 4 is neither.
+    """
+    index = unverified_identity_flag(item)
+    if index is None:
+        return True
+    if resolution is None:
+        return False
+    return resolution.settles(index) is not None
+
+
 def item_is_resolved(item: Item, resolution: Resolution | None) -> bool:
     """Has every blocking flag on this item been answered?
 

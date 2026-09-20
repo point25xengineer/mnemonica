@@ -29,7 +29,7 @@ import unicodedata
 from dataclasses import dataclass
 
 __all__ = ["normalize", "NormalizedName", "SALT_WORDS", "RELEASE_MODIFIERS",
-           "DOSE_PATTERN", "has_dose"]
+           "DOSE_PATTERN", "has_dose", "names_a_dose_form"]
 
 
 SALT_WORDS = (
@@ -90,6 +90,29 @@ again. A form word is a separate token, not a suffix."""
 def has_dose(s: str) -> bool:
     """A3.5's predicate — does this string carry a dose? (`SY`/`TMSY` filter)"""
     return DOSE_PATTERN.search(s) is not None
+
+
+def names_a_dose_form(raw: str) -> bool:
+    """Did this mention end in a dose form — *"water pill"*, *"50 mg tablet"*?
+
+    Reported separately from `normalize` rather than folded into it, because
+    the key must stay byte-identical between build and query. This is a
+    property *of the mention*, read at query time only; no index key changes.
+
+    `resolve_medication` needs it because stripping a trailing form word is
+    safe in one direction and not the other. In *"metoprolol tablet"* the form
+    word sits after the drug's name. In *"water pill"* it sits after a word
+    describing what the pill **does**, and dropping it turns a description
+    into a false ingredient match.
+    """
+    s = _strip_diacritics(raw).lower()
+    s = _drop_punctuation(s)
+    s = re.sub(r"\s+", " ", s).strip()
+    tokens = s.split()
+    while tokens and tokens[0] in _LEADING_ARTICLES:
+        tokens.pop(0)
+    s = _TRAILING_DOSE.sub("", " ".join(tokens)).strip()
+    return bool(_TRAILING_FORM.search(s)) and len(s.split()) > 1
 
 
 @dataclass(frozen=True)

@@ -46,7 +46,7 @@ from jellyfish import jaro_winkler_similarity, levenshtein_distance
 from metaphone import doublemetaphone
 
 from visitnotes.kb.db import connect, source_release
-from visitnotes.kb.normalize import normalize
+from visitnotes.kb.normalize import names_a_dose_form, normalize
 from visitnotes.tools.schemas import (
     MedicationCandidate, MedicationResolution, ResolveMedicationCall,
 )
@@ -152,6 +152,42 @@ def _self_correction_tail(raw: str) -> str | None:
         if len(word) < 2 or not tail.startswith(word[:2]):
             return None
     return tail
+
+
+COLLOQUIAL_DESCRIPTORS = frozenset({
+    "water", "sugar", "fluid", "oxygen", "iron", "air", "salt", "starch",
+    "blood", "heart", "nerve", "pain", "sleep", "stomach", "chest", "breathing",
+})
+"""Words that name what a pill *does*, and are also RxNorm ingredients.
+
+A deliberately short list, and deliberately not dressed up as a principle. The
+frequency prior was tried first and cannot do this job: `water` has 7
+prescribable products and `oxygen` 12, against `lisinopril` 16 — but
+`potassium` has 1 and `calcium` 0, so any threshold that rejects water also
+rejects two real prescriptions.
+
+So: an enumerated list, applied only to the `<descriptor> <form word>` shape.
+`metoprolol` is not in it, so *"metoprolol tablet"* is untouched. Measured on
+this release, *"my water pill"* and *"the oxygen pill"* were the only mentions
+of that shape resolving wrongly; *"my heart pill"*, *"my sugar pill"* and
+*"your blood pressure pill"* already came back `unresolved`, and stay that way.
+
+Note what this does **not** cover: *"the oxygen"*, with no form word, still
+resolves — supplemental oxygen is a real prescribed therapy and a clinician
+saying it means it.
+"""
+
+
+def _is_colloquial_reference(raw: str, key: str) -> bool:
+    """*"my water pill"* names an effect, not an ingredient.
+
+    Fires only when both halves of the shape are present: the mention ended in
+    a dose form, and what remained is a single descriptor word. TOOLS.md §1
+    requires a reference like this to report `unresolved` — the resolver may
+    offer what it suspects, but never as a result.
+    """
+    return " " not in key and key in COLLOQUIAL_DESCRIPTORS \
+        and names_a_dose_form(raw)
 
 
 def _head_of_phrase(key: str) -> str:
@@ -403,6 +439,27 @@ def resolve_medication(
                                     source_release=kb.release)
 
     res = _resolve_normalized(n, call.mention_quote, kb)
+
+    # *"my water pill"* — a description of an effect, whose residue after the
+    # form word is stripped happens to be a real RxNorm ingredient. Demote it
+    # before anything downstream can treat it as an identified drug; what we
+    # suspect travels as a candidate, which is where a suspicion belongs.
+    if res.status == "resolved" and _is_colloquial_reference(
+        call.mention_quote, n.key
+    ):
+        return MedicationResolution(
+            status="unresolved",
+            match_type="none",
+            match_confidence=0.0,
+            candidates=[MedicationCandidate(
+                rxcui=res.rxcui, name=res.canonical_name or n.key,
+                tty=res.tty or "IN",
+                score=round(res.match_confidence or 0.0, 4),
+                edit_distance=res.edit_distance or 0,
+            )] if res.rxcui else [],
+            source_release=kb.release,
+        )
+
     if res.status != "unresolved":
         return res
 

@@ -11,7 +11,35 @@ Nothing leaves the device. No API calls, no telemetry.
 
 ---
 
-## Running it
+## The app
+
+```bash
+./tools/build_app.sh --install
+```
+
+Puts **Mnemonica.app** in `~/Applications`, where Spotlight and Launchpad find
+it and the Dock will hold it. Double-click and it opens a chromeless window on
+the consent screen — no terminal, no address bar, no "now go to this URL".
+
+Closing the window stops the server. That is less obvious than it sounds:
+Chrome on macOS keeps running with zero windows, so waiting on the process
+would block forever and leave the port bound. The launcher counts renderer
+processes scoped to its own browser profile instead — one per window, none
+when the last closes — debounced, because a page navigation briefly drops
+every renderer and treating that as a quit would close the app mid-visit.
+
+The bundle hardcodes this checkout's path and this machine's interpreter, so
+it is a build artifact rather than source: gitignored, and rebuilt by the
+script above. Override with `MNEMONICA_PYTHON` and `MNEMONICA_LOGO`.
+
+Its log is `~/Library/Application Support/Mnemonica/mnemonica.log`. The
+browser profile beside it is persisted on purpose — it is what makes the
+microphone a one-time question rather than one per launch.
+
+Without Chrome the launcher falls back to the default browser, which cannot
+report when you are finished, so it shows a Quit dialog instead.
+
+## Running it from a terminal
 
 Everything uses the shared venv. Set this once per shell:
 

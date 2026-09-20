@@ -180,3 +180,34 @@ h2.part:first-child { margin-top: 0; }
   border-radius: 6px; padding: .45rem .7rem; cursor: pointer; color: var(--ink);
 }
 .summary-quote:hover { border-left-color: var(--ok); }
+
+/* -- transitions between screens ---------------------------------------- *
+ * The app moves consent -> record -> processing -> review -> signed as full
+ * page loads, which lands as a white flash between steps. A short rise on
+ * load smooths that without making anyone wait.
+ *
+ * `animation`, not `transition`, and never a resting state of opacity: 0 —
+ * the content must be readable if the animation never runs at all. */
+@media (prefers-reduced-motion: no-preference) {
+  main, .consent, .done {
+    animation: rise .22s cubic-bezier(.2, .6, .3, 1) both;
+  }
+  .row { animation: rise .26s cubic-bezier(.2, .6, .3, 1) both; }
+  /* Stagger the first few rows only. Past that it stops reading as motion
+     and starts reading as lag. */
+  .row:nth-child(2) { animation-delay: .03s; }
+  .row:nth-child(3) { animation-delay: .06s; }
+  .row:nth-child(4) { animation-delay: .09s; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* The processing bar is the one place a wait is expected, so give the fill a
+   pulse — a bar that only moves on a poll looks stalled between polls. */
+@media (prefers-reduced-motion: no-preference) {
+  .record-progress-fill { animation: breathe 2.4s ease-in-out infinite; }
+}
+@keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .72; } }

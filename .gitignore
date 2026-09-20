@@ -42,3 +42,6 @@ venv/
 
 # macOS
 .DS_Store
+
+# Built app bundle — regenerate with tools/build_app.sh
+build/

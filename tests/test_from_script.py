@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from visitnotes.audio.from_script import parse_script, session_from_script
+from mnemonica.audio.from_script import parse_script, session_from_script
 
 SCRIPT = Path(__file__).resolve().parents[1] / "fixtures" / "roleplay_script_2.md"
 

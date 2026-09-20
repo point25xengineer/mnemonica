@@ -12,11 +12,11 @@ from pathlib import Path
 
 import pytest
 
-from visitnotes.kb import db
-from visitnotes.tools.crossvalidate import cross_validate
-from visitnotes.tools.parse_sig import parse_sig
-from visitnotes.tools.resolve_date import resolve_date
-from visitnotes.tools.schemas import (
+from mnemonica.kb import db
+from mnemonica.tools.crossvalidate import cross_validate
+from mnemonica.tools.parse_sig import parse_sig
+from mnemonica.tools.resolve_date import resolve_date
+from mnemonica.tools.schemas import (
     ParseSigCall, ResolveDateCall, ResolveMedicationCall,
 )
 
@@ -25,18 +25,18 @@ VISIT = date(2026, 9, 18)   # a Friday — golden_visit.json's visit_date
 
 needs_kb = pytest.mark.skipif(
     not db.DB_PATH.exists(),
-    reason="knowledge base not built — run python -m visitnotes.kb.build",
+    reason="knowledge base not built — run python -m mnemonica.kb.build",
 )
 
 
 @pytest.fixture(scope="module")
 def kb():
-    from visitnotes.tools.resolve_medication import MedicationKB
+    from mnemonica.tools.resolve_medication import MedicationKB
     return MedicationKB()
 
 
 def _resolve(kb, text):
-    from visitnotes.tools.resolve_medication import resolve_medication
+    from mnemonica.tools.resolve_medication import resolve_medication
     return resolve_medication(ResolveMedicationCall(mention_quote=text), kb)
 
 
@@ -381,7 +381,7 @@ def test_a11_multiples_of_a_marketed_strength_are_not_flagged(kb):
 
 @pytest.mark.skipif(
     not (REPO / "data" / "openfda_labels.db").exists(),
-    reason="openFDA index not built — run python -m visitnotes.kb.openfda",
+    reason="openFDA index not built — run python -m mnemonica.kb.openfda",
 )
 @needs_kb
 def test_a8_resolved_rxcui_returns_label_text(kb):
@@ -391,7 +391,7 @@ def test_a8_resolved_rxcui_returns_label_text(kb):
     label records carry one, and the missing 75% look exactly like a drug with
     no label rather than like a broken join.
     """
-    from visitnotes.kb.openfda import LabelKB
+    from mnemonica.kb.openfda import LabelKB
     labels = LabelKB()
     r = _resolve(kb, "metoprolol succinate")
     assert r.spl_set_ids

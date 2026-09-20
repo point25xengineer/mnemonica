@@ -13,7 +13,7 @@ The highest-value fifteen minutes of the build. If Track B and Track C are
 written against different ideas of what a transcript *is*, you lose the
 evening at hour 18.
 
-Write it once, in `visitnotes/contracts.py`, and import it everywhere:
+Write it once, in `mnemonica/contracts.py`, and import it everywhere:
 
 ```python
 class Word(BaseModel):
@@ -64,7 +64,7 @@ read it.
 ## 1b — Repo skeleton · ~20 min
 
 ```
-visitnotes/
+mnemonica/
   contracts.py      # 1a
   schemas.py        # C1
   audio/            # Track B

@@ -40,7 +40,7 @@ from pathlib import Path
 # worth four people's setup time.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from visitnotes.contracts import Consent, Session, Turn, Word  # noqa: E402
+from mnemonica.contracts import Consent, Session, Turn, Word  # noqa: E402
 
 HERE = Path(__file__).parent
 VISIT_DATE = date(2026, 9, 18)  # Friday — see roleplay_script.md, "Dates"

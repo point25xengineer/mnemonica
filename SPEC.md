@@ -1,4 +1,4 @@
-# Visit Notes — Design Specification
+# Mnemonica — Design Specification
 
 **HackMIT 2026 · Healthcare track · Sept 19–20, 2026**
 
@@ -63,7 +63,7 @@ argument takes care of itself.
   [7] clinician review UI         -> <= 60s. blocking items resolved.
             |                        click any line to hear the audio
             v  (approve)
-  [8] render + print              -> action card (templated) +
+  [8] render + print              -> medicines table (templated) +
             |                        visit summary (extractive quotes)
             v
   [9] shred audio                 -> immediately on approval
@@ -190,8 +190,8 @@ drafts, a licensed professional attests, the signature is the clinical act.
 
 | Artifact | Content | Rendering |
 |---|---|---|
-| **Action card** | medications, dosages, appointments, tests, red-flag instructions | **templated** — fixed sentence skeletons with extracted values slotted in |
-| **Visit summary** | why you came in / what the doctor found / what happens next | **extractive** — selected verbatim quotes, grouped under fixed headings |
+| **Action card** | medications, dosages, appointments, tests, red-flag instructions | **templated** — fixed skeletons with extracted values slotted in. Medications render as a **table** (medicine / what changed / how to take it); `medication_row` is a second reader over the same item as `medication_sentences`, so the two shapes cannot disagree about a dose |
+| **Visit summary** | *Purpose of visit* (symptom, then finding) and *What your doctor advised* (medicines, warnings, next visit, leftover advice) | **extractive** — selected verbatim spans, joined into one short paragraph per part by template connectives only |
 
 - *Rejected — abstractive summary:* the moment one section is model-authored,
   the thesis in §1 needs a footnote, and that section is what a skeptic will
@@ -531,6 +531,31 @@ one.**
 
 ### 3.6 Output and integration
 
+**D28 — Live capture in the browser.** *(supersedes the original scope cut)*
+
+Numbered last because it was reversed last. Live recording was cut early — a
+pre-recorded file is the same demo from the audience's seat, minus a class of
+microphone failure — but the consent screen grew a button saying **Start
+recording** that did not record. A control promising something the system
+cannot do is worse than the missing feature: a judge clicks it and concludes
+the demo is canned.
+
+`MediaRecorder` in the page, two takes (the clinician's voice for D20's
+enrollment, then the visit), posted as raw blobs to `/upload`. The visit
+upload runs `audio.pipeline` then `verify` on a worker thread while the page
+polls `/progress` and follows the real per-turn extraction count. About 96 s
+end to end on a four-minute visit.
+
+Vanilla JS and stdlib `http.server` — no new dependency, because D1 says
+nothing leaves the laptop and a CDN script is a thing that leaves.
+
+`--session`/`--extraction` still skip capture and go straight to review, so the
+pre-computed path is intact and remains the demo fallback.
+
+- *Rejected — the Web Speech API.* Chrome's built-in recogniser would have
+  given live transcription in an afternoon, and it ships audio to Google's
+  servers. It would work immediately and silently destroy D1.
+
 **D25 — Print locally. Mobile deferred.** *(Collision 2)*
 
 Printing keeps the artifact inside the practice. Mobile delivery of the patient
@@ -616,27 +641,56 @@ MedlinePlus *condition* topics are fine.
 
 ---
 
-## 5. Verified dependency stack
+## 5. Stack, as installed
 
-All confirmed to have cp314 macOS arm64 wheels.
+Versions read off the running environment, not planned. All have cp314 macOS
+arm64 wheels.
 
-```
-Python 3.14.7                 (standard build, not 3.14t)
-mlx            0.32.2         cp314 + macosx_26_0_arm64 — OS natively targeted
-mlx-lm         0.31.3
-xgrammar       0.2.7          cp314 arm64, published 2026-09-15
-mlx-whisper    0.4.3
-pyannote.audio 4.0.7
-torch          2.14.0
-ffmpeg                        HARD dependency for both Whisper and pyannote
-```
+| | Version | Role |
+|---|---|---|
+| Python | 3.14.7 | standard build, not 3.14t |
+| `mlx` | 0.32.2 | cp314 + `macosx_26_0_arm64` — this OS is natively targeted |
+| `mlx-lm` | 0.31.3 | runs the extraction model |
+| `xgrammar` | 0.2.7 | grammar-constrained decoding (D23); mlx-lm has none of its own |
+| `mlx-whisper` | 0.4.3 | B1 — word timestamps and per-word probability |
+| `pyannote.audio` | 4.0.7 | B2 — diarization and speaker embeddings |
+| `torch` | 2.14.0 | pyannote's backend |
+| `transformers` | 5.17.0 | tokenizer for the grammar compiler |
+| `jinja2` | 3.1.6 | the two page templates |
+| `pydantic` | 2.13.5 | `contracts.py`, and the extraction schema xgrammar compiles |
+| `jellyfish` | 1.2.1 | Jaro-Winkler for A6's rescore |
+| `metaphone` | 0.6 | Double Metaphone for A6's phonetic recall |
+| `numpy` | 2.5.3 | — |
+| **ffmpeg** | — | **hard dependency** for both Whisper and pyannote 4.x (torchcodec is ffmpeg-only) |
+
+No web framework: the UI is stdlib `http.server` plus Jinja2, and the
+recording page is vanilla JS. D1 says nothing leaves the laptop, and 4b turns
+the Wi-Fi off — a dependency we would have to install on venue Wi-Fi is a
+demo-day risk taken for a router we do not need.
+
+**Models cached locally** (`~/.cache/huggingface`):
+
+| Model | Size | Used by |
+|---|---|---|
+| `mlx-community/whisper-large-v3-mlx` | 3.08 GB | B1. **Not turbo** — see D21 |
+| `pyannote-community/speaker-diarization-community-1` | ~33 MB | B2. Ungated mirror, no token |
+| `mlx-community/Qwen3.5-9B-4bit` | 5.98 GB | C3, the working model |
+| `mlx-community/Qwen3.6-35B-A3B-4bit` | 20.43 GB | C3 escalation if fidelity drops |
+
+**Databases built locally** (`data/`, gitignored):
+
+| File | Size | From |
+|---|---|---|
+| `rxnorm.db` | 245 MB | RxNorm Current Prescribable (A1–A7) |
+| `openfda_labels.db` | 1.82 GB | openFDA drug labels (A8) |
 
 Hardware: MacBook Pro, Apple M5 Pro, 18 cores, 48 GB unified memory.
 Practical GPU working set ~36 GB.
 
-Licenses: pyannote.audio MIT (© 2020 CNRS); `speaker-diarization-community-1`
+Licenses: `pyannote.audio` MIT (© 2020 CNRS); `speaker-diarization-community-1`
 weights CC-BY-4.0 (commercial use permitted, attribution required — credit
-pyannote and cite the two Interspeech papers).
+pyannote and cite the two Interspeech papers). RxNorm and openFDA are public
+domain / CC0.
 
 ---
 
@@ -863,6 +917,7 @@ Do these before building on top of the assumption.
 | D25 | Print locally, mobile deferred | — |
 | D26 | Local FHIR DocumentReference, identical to print | Q17a |
 | D27 | Patient consents to the recording; the artifact proves it | — |
+| D28 | Live capture in the browser (reverses the original scope cut) | — |
 
 See also [PRESENTATION-NOTES.md](PRESENTATION-NOTES.md) for what must be said
 on stage.

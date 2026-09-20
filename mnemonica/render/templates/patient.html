@@ -1,0 +1,195 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Your visit summary — {{ visit_date_long }}</title>
+{#
+  U8. The accessibility floor is not a preference: 18px body minimum, real
+  contrast, nothing carried by colour alone, generous leading. This page is
+  read by a 78-year-old at arm's length, possibly through the wrong glasses.
+
+  It is also deliberately self-contained — one file, no external stylesheet,
+  no script. These exact bytes are what U9 embeds in the FHIR
+  DocumentReference (D26), so the chart copy must not depend on a server being
+  up to look like the paper did.
+
+  No audio affordance anywhere (D8): provenance is the doctor's review tool.
+  No "AI GENERATED" banner (D10): by the time this prints, a clinician has
+  attested to every line.
+#}
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font: 19px/1.65 Georgia, "Iowan Old Style", "Times New Roman", serif;
+    color: #111; background: #fff;
+    max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem;
+  }
+  h1 { font-size: 30px; line-height: 1.25; margin: 0 0 .25rem; }
+  .visit-date { font-size: 19px; color: #333; margin: 0 0 2rem; }
+  p.lede { margin: 0 0 1rem; }
+  /* Two parts, each with sections inside it. The part rule is heavy and the
+     section rule is light, so the hierarchy survives being photocopied. */
+  h2 {
+    font-size: 26px; margin: 3rem 0 1.25rem; padding-bottom: .4rem;
+    border-bottom: 5px solid #111;
+  }
+  h2:first-of-type { margin-top: 2rem; }
+  h3 {
+    font-size: 21px; margin: 2rem 0 .7rem; padding-bottom: .25rem;
+    border-bottom: 1px solid #767676;
+  }
+  section.part > h3:first-of-type { margin-top: 1.2rem; }
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  /* U8b — medicines as a table. Scanning beats reading when the question is
+     "which of my pills changed?". Same templated values as the prose form. */
+  /* One rule under the head, hairlines between rows, nothing else. Rules
+     are the loudest mark on a page of serif text, and the table had three
+     weights of them competing with the section borders above it. */
+  table.meds { border-collapse: collapse; width: 100%; margin: .4rem 0 1.5rem; }
+  table.meds th, table.meds td {
+    text-align: left; vertical-align: top;
+    padding: .8rem .9rem;
+    border-bottom: 1px solid #d5d5d5;
+    border-right: 1px solid #d5d5d5;   /* column rules */
+  }
+  table.meds td:first-child, table.meds th:first-child { padding-left: 0; }
+  table.meds td:last-child, table.meds th:last-child {
+    padding-right: 0; border-right: none;
+  }
+  table.meds thead th {
+    font-size: 16px; font-weight: 400; color: #555;
+    text-transform: uppercase; letter-spacing: .07em;
+    border-bottom: 1px solid #111; padding-bottom: .45rem;
+  }
+  table.meds tbody tr:last-child td { border-bottom: none; }
+  table.meds td.drug { font-weight: 700; }
+  table.meds td .note { display: block; font-size: 17px; color: #333; margin-top: .3rem; }
+  /* A patient may read the digital copy on a phone. Below the fold of a
+     narrow screen a three-column table stops being scannable, so it becomes
+     labelled blocks — same cells, stacked. */
+  @media screen and (max-width: 34rem) {
+    table.meds thead { position: absolute; left: -9999px; }
+    table.meds tr { display: block; border-bottom: 3px solid #111; margin-bottom: 1rem; }
+    table.meds td { display: block; border: 0; padding: .15rem .8rem; }
+    table.meds td.drug { font-size: 21px; padding-top: .7rem; }
+    table.meds td[data-label]::before {
+      content: attr(data-label); display: block;
+      font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: #444;
+    }
+  }
+  li.entry { margin: 0 0 1.4rem; padding-left: 1.1rem; border-left: 4px solid #767676; }
+  p { margin: 0 0 .5rem; }
+  strong { font-weight: 700; }
+  .callout { border: 3px solid #111; padding: 1rem 1.2rem; margin: 0 0 1.2rem; }
+  .callout p { font-size: 21px; }
+  .callout p + p { margin-top: .7rem; }
+  .said { font-size: 17px; color: #444; margin: 0 0 .15rem; }
+  blockquote {
+    margin: 0 0 1.1rem; padding-left: 1rem; border-left: 4px solid #767676;
+    font-style: italic;
+  }
+  footer {
+    margin-top: 3.5rem; padding-top: 1rem; border-top: 2px solid #111;
+    font-size: 18px; color: #222;
+  }
+  @media print {
+    body { max-width: none; padding: 0; font-size: 12.5pt; }
+    h1 { font-size: 19pt; } h2 { font-size: 16pt; } h3 { font-size: 13.5pt; }
+    h2, h3 { break-after: avoid; }
+    section.part { break-inside: auto; }
+    li.entry, blockquote { break-inside: avoid; }
+  }
+</style>
+
+<h1>Your visit summary</h1>
+<p class="visit-date">{{ visit_date_long }} &middot; with {{ clinician_name }}</p>
+
+{% if presentation_lines %}
+<section class="part">
+<h2>Purpose of visit</h2>
+{# Reads as prose, but every span below is still verbatim: the template
+   supplies only the connective words ("You came in because", "The doctor
+   found"), never a rewording of what was said. Dropping the blockquotes and
+   the per-heading sub-titles is presentation; the sentences are the same
+   spans, in the same order, with the same words. #}
+<p class="lede">
+  {%- for line in presentation_lines %}
+  {{ line.lead }} {{ line.text }}.
+  {%- endfor %}
+</p>
+</section>
+{% endif %}
+
+<section class="part">
+<h2>What your doctor advised</h2>
+
+{% if medications %}
+{% macro cell(sentence) -%}
+  {%- for f in sentence.fragments -%}
+    {%- if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif -%}
+  {%- endfor -%}
+{%- endmacro %}
+<table class="meds">
+  <thead>
+    <tr><th scope="col">Medicine</th><th scope="col">What changed</th><th scope="col">How to take it</th></tr>
+  </thead>
+  <tbody>
+    {% for med in medications %}
+    <tr>
+      <td class="drug" data-label="Medicine">{{ med.row.name }}</td>
+      <td data-label="What changed">
+        {% if med.row.change %}{{ cell(med.row.change) }}{% endif %}
+        {% for note in med.row.notes %}<span class="note">{{ cell(note) }}</span>{% endfor %}
+      </td>
+      <td data-label="How to take it">
+        {% if med.row.how %}{{ cell(med.row.how) }}{% else %}&mdash;{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if red_flags %}
+<h3>Call the office if&hellip;</h3>
+{# One box, however many instructions. Two bordered boxes side by side read
+   as two separate warnings of equal weight; a patient then has to work out
+   whether they are different. They are one instruction: call. #}
+<div class="callout">
+  {% for flag in red_flags %}
+  <p>&ldquo;{{ flag.text }}&rdquo;</p>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if appointments %}
+{# Not "What happens next" — U7's third heading is already called that, and
+   two identical headings on one page is the kind of small confusion this
+   document exists to avoid. #}
+<h3>Your next visit</h3>
+<ul>
+  {% for appt in appointments %}
+  <li class="entry">
+    <p>{% for f in appt.sentence.fragments %}{% if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif %}{% endfor %}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if advice_lines %}
+<h3>Other advice</h3>
+<p>{% for line in advice_lines %}{{ line.lead }} {{ line.text }}. {% endfor %}</p>
+{% endif %}
+</section>
+
+<footer>
+  {# D10 names the responsible human; D27's clause is what makes the consent a
+     record rather than a UI affordance. Both come from data, not from a
+     hard-coded string. #}
+  <p>Prepared from a recording of your visit, made with your
+  {{ consent_method }} consent on {{ consent_date_long }}, and reviewed by
+  {{ clinician_name }}, {{ approved_date_long }}.</p>
+  {# Present tense, so the sentence is equally true on the clinician's print
+     preview and on the signed page a patient carries home. #}
+  <p>The recording is deleted when {{ clinician_name }} signs this page.</p>
+</footer>

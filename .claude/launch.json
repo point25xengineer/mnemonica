@@ -2,11 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "visitnotes-ui",
+      "name": "mnemonica-ui",
       "runtimeExecutable": "../vn-shared/.venv/bin/python",
       "runtimeArgs": [
         "-m",
-        "visitnotes.ui.app",
+        "mnemonica.ui.app",
         "--audio",
         "sessions/b5/MedScribe test 1.16000.wav"
       ],

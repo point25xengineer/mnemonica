@@ -9,7 +9,7 @@ edit and keeps a 6 GB model out of CI.
 
 What a live run adds that this cannot is C3's verbatim fidelity: whether the
 model quotes the transcript exactly. That is the gate, it needs the model, and
-it is `visitnotes.extract.c3_gate`.
+it is `mnemonica.extract.c3_gate`.
 """
 
 from __future__ import annotations
@@ -19,16 +19,16 @@ from pathlib import Path
 
 import pytest
 
-from visitnotes.contracts import Session
-from visitnotes.extract.schema import (
+from mnemonica.contracts import Session
+from mnemonica.extract.schema import (
     SummaryQuoteCall, TurnExtraction, VisitExtraction, merge_turns,
 )
-from visitnotes.tools.schemas import (
+from mnemonica.tools.schemas import (
     AppointmentItem, LooseThreadItem, MedicationItem, ParseSigCall,
     RedFlagItem, ResolveDateCall, ResolveMedicationCall,
 )
-from visitnotes.verify.pipeline import verify
-from visitnotes.verify.spans import SpanVerifier
+from mnemonica.verify.pipeline import verify
+from mnemonica.verify.spans import SpanVerifier
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 
@@ -45,7 +45,7 @@ def golden() -> dict:
 
 @pytest.fixture(scope="session")
 def kb():
-    from visitnotes.tools.resolve_medication import MedicationKB
+    from mnemonica.tools.resolve_medication import MedicationKB
 
     try:
         return MedicationKB()
@@ -314,7 +314,7 @@ def test_appointment_prints_both_forms(result):
 def test_header_matches_the_items(result):
     """U3 prints this. A header that drifts from its own list is a confident
     lie — and Track D recounts it, so a mismatch surfaces there too."""
-    from visitnotes.render.model import Extraction
+    from mnemonica.render.model import Extraction
 
     parsed = Extraction.parse(result.envelope)
     assert parsed.header() == result["header"]
@@ -323,7 +323,7 @@ def test_header_matches_the_items(result):
 def test_every_quote_in_the_envelope_verifies(session, result):
     """D14 once more, over the finished envelope: nothing reaches Track D
     whose offsets do not still point at its own text."""
-    from visitnotes.render.model import Extraction
+    from mnemonica.render.model import Extraction
 
     parsed = Extraction.parse(result.envelope)
     for item in parsed.items:

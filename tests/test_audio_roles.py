@@ -17,8 +17,8 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from visitnotes.audio.diarize import Diarization, Interval  # noqa: E402
-from visitnotes.audio.enroll import (  # noqa: E402
+from mnemonica.audio.diarize import Diarization, Interval  # noqa: E402
+from mnemonica.audio.enroll import (  # noqa: E402
     MAX_CLUSTER_DISPERSION,
     Enrollment,
     assign_roles,

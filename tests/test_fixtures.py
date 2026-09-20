@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from visitnotes.contracts import Session
+from mnemonica.contracts import Session
 
 ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = ROOT / "fixtures"

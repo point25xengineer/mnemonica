@@ -8,19 +8,19 @@ So the shape of the index is asserted, not eyeballed.
 
 These skip rather than fail when `data/rxnorm.db` is absent — the database is
 built from 500 MB of RRF that is gitignored, so a fresh clone cannot have one
-until `python -m visitnotes.kb.build` has run.
+until `python -m mnemonica.kb.build` has run.
 """
 
 import re
 
 import pytest
 
-from visitnotes.kb import db
-from visitnotes.kb.normalize import has_dose, normalize
+from mnemonica.kb import db
+from mnemonica.kb.normalize import has_dose, normalize
 
 pytestmark = pytest.mark.skipif(
     not db.DB_PATH.exists(),
-    reason="knowledge base not built — run python -m visitnotes.kb.build",
+    reason="knowledge base not built — run python -m mnemonica.kb.build",
 )
 
 

@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from visitnotes.contracts import Consent, Session, Turn, Word
+from mnemonica.contracts import Consent, Session, Turn, Word
 
 TRANSCRIPT = "Let's increase the metoprolol. Okay, fifty milligrams?"
 CLINICIAN_TEXT = "Let's increase the metoprolol."

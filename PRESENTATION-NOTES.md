@@ -130,6 +130,13 @@ and the point being made is that we know the difference between *local* and
 - Drug-drug interaction checking (see item 1 for why — this is a
   deliberate omission, not a gap).
 - Real EHR integration; v1 writes a local FHIR DocumentReference.
+- Live transcription *during* recording. Possible locally with a small
+  Whisper, deliberately not built via the browser's speech API — see item 10.
+
+Note: live *recording* was on this list and is now built (D28). If anyone
+asks why it moved, the answer is that the consent screen shipped a button
+saying "Start recording" that did not record, and a control promising
+something the system cannot do is worse than the missing feature.
 
 ## 9. We audited our own knowledge base, not just our dependencies
 
@@ -156,3 +163,38 @@ We counted what is actually in RxNorm instead of trusting the TTY names:
 The line: *we found this by counting our own data, which is the only way to
 find it. A matcher that looks fine on a demo is the thing we were most afraid
 of shipping.*
+
+## 10. Live capture, and the shortcut we did not take
+
+The app records the visit in the browser (D28). Two takes: a few seconds of
+the clinician's voice, because pyannote returns anonymous clusters and D20
+matches them against an enrolled voiceprint — without it there is no way to
+know which speaker is the doctor, and D19's rule that a dose may only come
+from a clinician turn has nothing to stand on.
+
+**Worth saying out loud, because it is the strongest privacy point we have:**
+Chrome ships a speech recogniser, `webkitSpeechRecognition`. It would have
+given us live transcription in an afternoon, for free, and it sends the audio
+to Google's servers. We did not use it. Everything — transcription,
+diarisation, extraction — runs on this laptop, which is why 4b can turn the
+Wi-Fi off and have the demo still work.
+
+## 11. Defects we found by using it, not by testing it
+
+Have one of these ready. They are the best evidence that the verification
+layer is real rather than decorative, and every one was green in the suite.
+
+- A patient's stumble over a drug name printed as a **third medicine** on the
+  handout, duplicating one already listed correctly. Unresolved items now
+  never reach the page.
+- `"my water pill"` resolved to the ingredient **water** — a real RxNorm
+  entry — and printed as a medicine.
+- The same follow-up appointment printed **three times** in broken English,
+  because dedup only caught identical spans and not overlapping ones.
+- `"twenty-five mg"` parsed to **5.0**. Not null, not flagged — a dose five
+  times too small, printed as fact. It also silently disabled the metformin
+  contradiction, since D16 category 7 needs two *parsed* doses to see a
+  conflict.
+
+The honest framing: a test suite cannot see a page. Every one of these was
+found by reading the output.

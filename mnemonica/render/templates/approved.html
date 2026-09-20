@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Signed &mdash; Mnemonica</title>
+<link rel="stylesheet" href="/static/review.css">
+<main class="done">
+  <h1>Signed by {{ clinician_name }}</h1>
+  <p>Three things happened, in this order: one render, two destinations, then
+  the recording went.</p>
+
+  <ul>
+    <li><a href="/document" target="_blank">The patient's copy</a> &mdash; print it
+      (<kbd>&#8984;P</kbd>). Same bytes as the chart copy.</li>
+    <li>Chart copy: FHIR <code>DocumentReference</code> at
+      <code>{{ fhir_path }}</code>, SHA-1 <code>{{ sha1 }}</code>.</li>
+    <li>Recording and session logs deleted &mdash; {{ shredded|length }} file(s):
+      <code>{{ shredded|join(', ') if shredded else 'nothing was left on disk' }}</code></li>
+  </ul>
+
+  <p class="fineprint">
+    Nothing went to a third party. The only destination is the provider's own
+    record system, which already holds this patient's chart &mdash; and here
+    that is a local FHIR resource on this laptop.
+  </p>
+
+  <p><a href="/new">Start another visit</a></p>
+</main>

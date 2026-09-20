@@ -11,8 +11,8 @@ from __future__ import annotations
 
 import pytest
 
-from visitnotes.tools.parse_sig import _number, parse_sig
-from visitnotes.tools.schemas import ParseSigCall as Call
+from mnemonica.tools.parse_sig import _number, parse_sig
+from mnemonica.tools.schemas import ParseSigCall as Call
 
 
 def dose(text: str):

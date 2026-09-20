@@ -9,16 +9,16 @@ from __future__ import annotations
 
 import pytest
 
-from visitnotes.kb.db import connect
-from visitnotes.kb.normalize import names_a_dose_form
-from visitnotes.render.model import (
+from mnemonica.kb.db import connect
+from mnemonica.kb.normalize import names_a_dose_form
+from mnemonica.render.model import (
     Item,
     Resolution,
     identity_is_verified,
     unverified_identity_flag,
 )
-from visitnotes.tools.resolve_medication import MedicationKB, resolve_medication
-from visitnotes.tools.schemas import ResolveMedicationCall as Call
+from mnemonica.tools.resolve_medication import MedicationKB, resolve_medication
+from mnemonica.tools.schemas import ResolveMedicationCall as Call
 
 
 @pytest.fixture(scope="module")

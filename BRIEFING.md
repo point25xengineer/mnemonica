@@ -1,6 +1,6 @@
 # Start here
 
-You are working on **Visit Notes**, a local-first clinical documentation tool
+You are working on **Mnemonica**, a local-first clinical documentation tool
 for HackMIT 2026. It records a doctor–patient consultation, extracts only what
 the clinician verifiably said, and prints a plain-language summary after the
 clinician reviews and signs it.

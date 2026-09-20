@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from visitnotes.render.actioncard import _fit_phrase, _fit_purpose
-from visitnotes.verify.pipeline import _one_per_appointment
+from mnemonica.render.actioncard import _fit_phrase, _fit_purpose
+from mnemonica.verify.pipeline import _one_per_appointment
 
 
 def _appt(phrase, *, date="2026-10-31", kind="followup_visit",
@@ -141,8 +141,8 @@ def test_every_post_form_supplies_its_handlers_fields():
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[1]
-    html = (root / "visitnotes/render/templates/review.html").read_text()
-    app = (root / "visitnotes/ui/app.py").read_text()
+    html = (root / "mnemonica/render/templates/review.html").read_text()
+    app = (root / "mnemonica/ui/app.py").read_text()
 
     forms = {}
     for match in re.finditer(

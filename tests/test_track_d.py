@@ -14,14 +14,14 @@ from pathlib import Path
 
 import pytest
 
-from visitnotes.contracts import Consent, Session
-from visitnotes.render import actioncard, fhir
-from visitnotes.render.audio import cue_for, words_in
-from visitnotes.render.document import render_patient_document
-from visitnotes.render.model import Extraction, Resolution, item_is_resolved
-from visitnotes.render.review import build_review, header_line
-from visitnotes.render.summary import HEADINGS, build_summary
-from visitnotes.ui import retention, state
+from mnemonica.contracts import Consent, Session
+from mnemonica.render import actioncard, fhir
+from mnemonica.render.audio import cue_for, words_in
+from mnemonica.render.document import render_patient_document
+from mnemonica.render.model import Extraction, Resolution, item_is_resolved
+from mnemonica.render.review import build_review, header_line
+from mnemonica.render.summary import HEADINGS, build_summary
+from mnemonica.ui import retention, state
 
 ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = ROOT / "fixtures"
@@ -167,7 +167,7 @@ def test_loose_thread_gets_its_own_row(extraction, rows):
 def test_a_question_is_asked_in_the_doctors_language(rows):
     """Not Track C's. *"dose stated in a turn with no confident speaker role"*
     is correct and is not something to read with a patient in the chair."""
-    from visitnotes.render.review import QUESTIONS
+    from mnemonica.render.review import QUESTIONS
 
     asked = [f.question for row in rows for f in row.flags]
     assert asked
@@ -323,7 +323,7 @@ def test_an_underived_direction_needs_the_clinicians_click(extraction):
     item = extraction.item("med-metoprolol")
     raw = json.loads(json.dumps(item.raw))
     raw["change_kind_derived"] = False
-    from visitnotes.render.model import Item
+    from mnemonica.render.model import Item
 
     underived = Item.parse(raw)
     held = actioncard.medication_sentences(underived, "Dr. Kovak")[0]
@@ -340,7 +340,7 @@ def test_no_prior_dose_changes_the_sentence_shape(extraction):
     item = extraction.item("med-metoprolol")
     raw = json.loads(json.dumps(item.raw))
     raw["change_kind_derivation"]["from_dose"] = None
-    from visitnotes.render.model import Item
+    from mnemonica.render.model import Item
 
     no_baseline = Item.parse(raw)
     text = actioncard.medication_sentences(no_baseline, "Dr. Kovak")[0].plain()
@@ -406,7 +406,7 @@ def test_patient_attribution_is_hedged_when_b6_saw_a_third_voice(
 
 
 def test_a_stale_quote_is_dropped_rather_than_printed(extraction, session):
-    from visitnotes.render.model import Quote
+    from mnemonica.render.model import Quote
 
     broken = Quote(
         text="a line nobody said",
@@ -717,7 +717,7 @@ def test_no_headline_ever_leaves_the_drug_unnamed(extraction):
     A patient cannot act on an instruction about an unnamed medicine, so every
     value of the enum — and anything outside it — must name the drug.
     """
-    from visitnotes.render.model import Item
+    from mnemonica.render.model import Item
 
     # lisinopril, not metoprolol: metoprolol carries a salt flag, and that
     # sentence names the drug by coincidence, so the fixture's headline drug

@@ -144,13 +144,13 @@ without touching it sent it to paper. Line 5 above re-creates the conditions.
 
 ```bash
 VP=/Users/evancanty/vn-shared/.venv/bin/python
-$VP -m visitnotes.audio.pipeline sessions/script2/visit.m4a \
+$VP -m mnemonica.audio.pipeline sessions/script2/visit.m4a \
     --session-dir sessions/script2 \
     --enrollment sessions/script2/clinician.wav \
     --out sessions/script2/session.json
-$VP -m visitnotes.verify.run sessions/script2/session.json \
+$VP -m mnemonica.verify.run sessions/script2/session.json \
     -o sessions/script2/extraction.json
-$VP -m visitnotes.ui.app --session sessions/script2/session.json \
+$VP -m mnemonica.ui.app --session sessions/script2/session.json \
     --extraction sessions/script2/extraction.json \
     --audio sessions/script2/visit.m4a
 ```

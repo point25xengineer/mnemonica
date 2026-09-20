@@ -16,9 +16,9 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from visitnotes.audio.assemble import assemble  # noqa: E402
-from visitnotes.audio.diarize import Diarization, Interval  # noqa: E402
-from visitnotes.audio.transcribe import RawWord, Segment, Transcript  # noqa: E402
+from mnemonica.audio.assemble import assemble  # noqa: E402
+from mnemonica.audio.diarize import Diarization, Interval  # noqa: E402
+from mnemonica.audio.transcribe import RawWord, Segment, Transcript  # noqa: E402
 
 DR, PT = "SPEAKER_00", "SPEAKER_01"
 
@@ -170,7 +170,7 @@ def test_assembled_session_round_trips_through_the_contract():
     same offset check independently."""
     from datetime import date, datetime
 
-    from visitnotes.contracts import Consent, Session
+    from mnemonica.contracts import Consent, Session
 
     t = _transcript(
         _words(

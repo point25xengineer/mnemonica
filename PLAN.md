@@ -120,8 +120,8 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 **Build the two databases before running anything** (both gitignored — 233 MB
 and 1.8 GB, rebuildable in 7 s and 37 s):
 
-    /Users/evancanty/vn-shared/.venv/bin/python -m visitnotes.kb.build
-    /Users/evancanty/vn-shared/.venv/bin/python -m visitnotes.kb.openfda
+    /Users/evancanty/vn-shared/.venv/bin/python -m mnemonica.kb.build
+    /Users/evancanty/vn-shared/.venv/bin/python -m mnemonica.kb.openfda
 
 ## Track B — Audio · [phases/PHASE-2B-audio.md](phases/PHASE-2B-audio.md)
 
@@ -147,8 +147,8 @@ and 1.8 GB, rebuildable in 7 s and 37 s):
 - [x] **C4.5** association check — mention turn vs sig/date turn (**D16 cat 8**)
 - [x] **C5** all **8** D16 dispositions fire on the fixture
 
-Run it: `python -m visitnotes.extract.c2_gate --live` · `python -m
-visitnotes.extract.c3_gate` · `python -m visitnotes.verify.run
+Run it: `python -m mnemonica.extract.c2_gate --live` · `python -m
+mnemonica.extract.c3_gate` · `python -m mnemonica.verify.run
 fixtures/golden_visit.json -o sessions/c5/extraction.json`
 
 ## Track D — Review UI + output · [phases/PHASE-2D-interface.md](phases/PHASE-2D-interface.md)
@@ -194,11 +194,11 @@ mean two different documents in one sentence.
 
 Run it end to end:
 
-    python -m visitnotes.audio.pipeline <audio.m4a> --session-dir sessions/demo \
+    python -m mnemonica.audio.pipeline <audio.m4a> --session-dir sessions/demo \
         --enrollment <clinician-10s.wav>
-    python -m visitnotes.verify.run sessions/demo/session.json \
+    python -m mnemonica.verify.run sessions/demo/session.json \
         -o sessions/demo/extraction.json
-    python -m visitnotes.ui.app --session sessions/demo/session.json \
+    python -m mnemonica.ui.app --session sessions/demo/session.json \
         --extraction sessions/demo/extraction.json
 
 ## Phase 4 — Demo · [phases/PHASE-4-demo.md](phases/PHASE-4-demo.md)
@@ -292,7 +292,7 @@ Format: `HH:MM · <step> · <what happened>`
         at the top level, nesting flattened) and symlinked as ./rrf, with
         ./openfda alongside. `phase0/check_env.py` runs every Phase 0 check
         in one command — run it before starting a track.
-18:55 · 1b · skeleton committed: visitnotes/{audio,tools,kb,extract,verify,
+18:55 · 1b · skeleton committed: mnemonica/{audio,tools,kb,extract,verify,
         render,ui}, fixtures/, tests/, all with __init__.py.
 18:55 · 1a · contracts.py committed and merged to main — rebase before your
         next commit. Three additions beyond the PHASE-1 sketch, all agreed:
@@ -560,8 +560,8 @@ Format: `HH:MM · <step> · <what happened>`
         character for character; all 35 turn boundaries match turn for turn;
         all 35 cluster labels match, SPEAKER_00 for SPEAKER_00. That last one
         is luck, not contract — do not depend on pyannote's numbering.
-        Entry point: `python -m visitnotes.audio.pipeline <audio>
-        --session-dir <dir>`. Diff: `python -m visitnotes.audio.b5_gate
+        Entry point: `python -m mnemonica.audio.pipeline <audio>
+        --session-dir <dir>`. Diff: `python -m mnemonica.audio.b5_gate
         <session.json>`.
 20:58 · B5 · GATE, structural half: PASS. The strong result is not the turn
         counts, it is that all 28 quotes in golden_extraction.json resolve in
@@ -631,7 +631,7 @@ Format: `HH:MM · <step> · <what happened>`
         read `.flags`. (2) `RoleAssignment.override(cluster)` is D20's
         "that's me" button, and it clears the identity flags it was raised to
         answer.
-20:58 · U1-U10 · Track D done. `python -m visitnotes.ui.app` serves the
+20:58 · U1-U10 · Track D done. `python -m mnemonica.ui.app` serves the
         review screen on 127.0.0.1:8765; `--sweep` runs U10 and exits;
         `--audio PATH` attaches a recording, since golden_visit.json names
         fixtures/sessions/golden/visit.m4a and that file is not in git. 48
@@ -674,7 +674,7 @@ Format: `HH:MM · <step> · <what happened>`
         call `retention.mark_demo_fixture(session_dir)` WHEN YOU CREATE the
         pre-computed session, not later — verified a 40-hour-old marked
         session survives a sweep that takes its unmarked neighbours.
-20:58 · 3a · The seam is `ReviewSession.load_fixture()` in visitnotes/ui/
+20:58 · 3a · The seam is `ReviewSession.load_fixture()` in mnemonica/ui/
         state.py — one method, and it is the only place Track D touches JSON.
         It re-homes the session into data/sessions/<id>/ before validating,
         because the fixture's own session_dir points inside fixtures/, which
@@ -747,7 +747,7 @@ Format: `HH:MM · <step> · <what happened>`
         successful parse, precisely so a grammar miss cannot let an
         unattributed dose through.
 21:30 · 3c · Two of the three thresholds are set and live in
-        visitnotes/verify/thresholds.py, ready for 3c to move:
+        mnemonica/verify/thresholds.py, ready for 3c to move:
         DOSE_WORD_PROBABILITY 0.80 (a dose numeral below this is flagged) and
         LOW_WORD_PROBABILITY 0.55 (everything else). The real recording puts
         the planted case at 0.14 and correct doses at 0.99+, so the range is
@@ -892,5 +892,7 @@ take four?"* can print as fact. If you cut it, adopt gate 0g's degraded mode in
 the same breath: **every dose becomes a D16 category 3 blocking item**, and say
 so on stage.
 
-Never in scope: live recording, interaction checking, mobile delivery,
-3+ speakers.
+Never in scope: interaction checking, mobile delivery, 3+ speakers.
+
+*Live recording was on this list and is now built — see D28. It was reversed
+because the consent screen shipped a button that promised it.*

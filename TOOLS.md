@@ -271,7 +271,17 @@ noise. Build the table at ingest; it is one `GROUP BY`.
    | nothing above threshold | `unresolved` |
 
    Two thresholds. The margin one is the one that prevents harm.
-6. **Enrich** from the RXCUI: `SPL_SET_ID` from `RXNSAT` for the openFDA join,
+6. **Colloquial-reference guard.** A mention of the shape `<descriptor>
+   <form word>` whose residue is an ordinary substance word is demoted to
+   `unresolved`, with the match kept as a candidate. `"my water pill"`
+   normalised to `water` — a genuine RxNorm ingredient — and returned
+   `resolved`, unflagged and printable: a patient's family would have read a
+   medicine called *water*. The frequency prior was tried first as a gate and
+   cannot do it (`water` has 7 prescribable products against `lisinopril`'s
+   16, but `potassium` has 1 and `calcium` 0), so this is an enumerated list,
+   applied only to that shape. `"metoprolol tablet"` and `"the oxygen"` — no
+   form word — are deliberately untouched.
+7. **Enrich** from the RXCUI: `SPL_SET_ID` from `RXNSAT` for the openFDA join,
    plus `RXN_AVAILABLE_STRENGTH` and dose forms for §3 cross-validation.
    **Also set `salt_unspecified`** by looking the matched `IN` up in the
    32-row salt table. One hash lookup.
@@ -390,6 +400,26 @@ class SigParse(BaseModel):
     source: Literal["deterministic grammar"]
     grammar_version: str
 ```
+
+### Numbers arrive as words
+
+Doses are spoken, so the grammar folds a **number phrase**, not a token.
+`"twenty-five mg"` parsed to **5.0** — the hyphen is a word boundary, so an
+alternation of single number words matched `five mg` and dropped the
+`twenty`. Not `None`, not flagged: a dose five times too small, printed as
+fact. `"five hundred milligrams"` and `"a thousand milligrams"` both parsed to
+`None`, scale words having no entry, and `fifteen`, `fifty` and every ten from
+forty up were missing outright.
+
+The table now covers ones, teens and tens, with `hundred` and `thousand` as
+multipliers folded by the usual English rules (`"one thousand two hundred and
+fifty"` -> 1250). Alternation is longest-first so `seventeen` cannot match as
+`seven`. An unparseable phrase raises rather than returning zero — a silent
+zero is the same class of bug as the silent five.
+
+This also gates D16 category 7: a contradiction needs **two parsed doses** to
+be visible, so while `"a thousand milligrams"` read as `None`, the most
+important safety case in the test script silently stopped blocking.
 
 ### The status distinction that matters most
 

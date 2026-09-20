@@ -15,12 +15,6 @@
 <header class="bar">
   <div>
     <h1>Visit review</h1>
-    <p class="counts">{{ header_line }}</p>
-  </div>
-  <div class="stat-chips">
-    {% for part in header_line.split(' · ') %}
-    <span class="stat-chip">{{ part }}</span>
-    {% endfor %}
   </div>
   <div class="bar-right">
     {% if can_approve %}

@@ -3,24 +3,23 @@
 <title>Signed &mdash; Mnemonica</title>
 <link rel="stylesheet" href="/static/review.css">
 <main class="done">
+  <div class="done-icon">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="#2F6E4F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
   <h1>Signed by {{ clinician_name }}</h1>
-  <p>Three things happened, in this order: one render, two destinations, then
-  the recording went.</p>
 
   <ul>
-    <li><a href="/document" target="_blank">The patient's copy</a> &mdash; print it
-      (<kbd>&#8984;P</kbd>). Same bytes as the chart copy.</li>
-    <li>Chart copy: FHIR <code>DocumentReference</code> at
-      <code>{{ fhir_path }}</code>, SHA-1 <code>{{ sha1 }}</code>.</li>
-    <li>Recording and session logs deleted &mdash; {{ shredded|length }} file(s):
-      <code>{{ shredded|join(', ') if shredded else 'nothing was left on disk' }}</code></li>
+    <li><div><a href="/document" target="_blank">The patient's copy</a> &mdash; print it
+      (<kbd>&#8984;P</kbd>). Same bytes as the chart copy.</div></li>
+    <li><div>Chart copy: FHIR <code style="display:inline;padding:0;background:none;">DocumentReference</code> at
+      <code>{{ fhir_path }}</code>
+      SHA-1 <code style="display:inline;padding:0;background:none;">{{ sha1 }}</code>.</div></li>
+    <li><div>Recording and session logs deleted &mdash; {{ shredded|length }} file(s):
+      <code style="display:inline;padding:0;background:none;">{{ shredded|join(', ') if shredded else 'nothing was left on disk' }}</code></div></li>
   </ul>
 
-  <p class="fineprint">
-    Nothing went to a third party. The only destination is the provider's own
-    record system, which already holds this patient's chart &mdash; and here
-    that is a local FHIR resource on this laptop.
-  </p>
+  <hr>
 
-  <p><a href="/new">Start another visit</a></p>
+  <p><a class="start-over" href="/new">Start another visit</a></p>
 </main>

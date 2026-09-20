@@ -17,10 +17,12 @@
     <h1>Visit review</h1>
     <p class="counts">{{ header_line }}</p>
   </div>
+  <div class="stat-chips">
+    {% for part in header_line.split(' · ') %}
+    <span class="stat-chip">{{ part }}</span>
+    {% endfor %}
+  </div>
   <div class="bar-right">
-    <a class="toggle" href="{{ '/' if show_details else '/?checks=1' }}">
-      {{ 'hide checks' if show_details else 'show checks' }}
-    </a>
     {% if can_approve %}
     <form method="post" action="/approve">
       <button type="submit" class="approve" id="approve-button">
@@ -34,7 +36,10 @@
 </header>
 
 {% if not audio_available %}
-<p class="notice">No audio attached &mdash; playback shows the cue window instead.</p>
+<p class="notice">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a1.5 1.5 0 0 0 1.29 2.25h17.78A1.5 1.5 0 0 0 22.18 18L13.71 3.86a1.5 1.5 0 0 0-2.42 0z" stroke="#C98A2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  No audio attached &mdash; playback shows the cue window instead.
+</p>
 {% endif %}
 
 <main id="rows">
@@ -61,7 +66,14 @@
 {% endfor %}
 {% endif %}
 
+<div class="eyebrow-row">
+  <a class="toggle" href="{{ '/' if show_details else '/?checks=1' }}">
+    {{ 'hide checks' if show_details else 'show checks' }}
+  </a>
+</div>
+
 <h2 class="part">What the doctor advised</h2>
+
 {% for row in rows %}
   <article class="row{% if row.blocking %} blocking{% endif %}{% if row.dropped %} dropped{% endif %}"
            id="row-{{ row.id }}" data-item="{{ row.id }}" tabindex="0"
@@ -81,6 +93,8 @@
         </p>
         {% endfor %}
 
+        {% if row.sentences and (row.needs_promotion or row.questions) %}<div class="divider"></div>{% endif %}
+
         {% if row.needs_promotion %}
         <div class="ask">
           {# Name the word. "Is that the right word?" did not say which one,
@@ -98,12 +112,17 @@
 
         {% for flag in row.questions %}
         <div class="ask{% if flag.blocking %} stop{% endif %}">
+
+          {% if flag.options %}
+          {# A question with an answer: which dose, which salt, confirm or
+             remove. Every shape in the design canvas — the two-up dose chips,
+             the confirm/remove pair — is this same form of `.option` buttons;
+             only the flex-basis differs, and that is a CSS decision, not a
+             template one. #}
           <p class="q">
             {{ flag.question }}
             {% if flag.d16_category %}<span class="detail">D16.{{ flag.d16_category }}</span>{% endif %}
           </p>
-
-          {% if flag.options %}
           <form method="post" action="/resolve" class="answers">
             <input type="hidden" name="item_id" value="{{ row.id }}">
             <input type="hidden" name="flag_index" value="{{ flag.index }}">
@@ -117,39 +136,44 @@
             </button>
             {% endfor %}
           </form>
-          {% endif %}
 
-          {% if flag.merge_target %}
+          {% elif flag.merge_target %}
+          <p class="q">
+            {{ flag.question }}
+            {% if flag.d16_category %}<span class="detail">D16.{{ flag.d16_category }}</span>{% endif %}
+          </p>
           <form method="post" action="/drop" class="answers">
             <input type="hidden" name="item_id" value="{{ row.id }}">
             <button type="submit" class="option">
               Same as {{ titles.get(flag.merge_target, flag.merge_target) }} &mdash; drop it
             </button>
           </form>
-          {% endif %}
 
-          {% if not flag.options %}
-          <ul class="evidence">
-            {% for ev in flag.evidence %}
-            <li>
-              <button class="play"
-                      data-cue-start="{{ '%.3f'|format(ev.cue.start) if ev.cue else 0 }}"
-                      data-cue-end="{{ '%.3f'|format(ev.cue.end) if ev.cue else 0 }}">
-                &#9658; &ldquo;{{ ev.text }}&rdquo;
-              </button>
-              <span class="detail">{{ ev.detail }}{% if not ev.verified %} &middot; offset stale{% endif %}</span>
-            </li>
-            {% endfor %}
-          </ul>
+          {% else %}
+          {# Nothing to answer, just something to hear — the sig pulled from a
+             different turn, a number the model wasn't confident on. This is
+             the one place a flag stays collapsed by default: there is no
+             decision to surface, only evidence to check if the clinician
+             wants it. #}
+          <details class="disclosure-wrap">
+            <summary class="disclosure">
+              <span class="q" style="margin:0;">{{ flag.question }}</span>
+              <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <ul class="evidence">
+              {% for ev in flag.evidence %}
+              <li>
+                <button class="play"
+                        data-cue-start="{{ '%.3f'|format(ev.cue.start) if ev.cue else 0 }}"
+                        data-cue-end="{{ '%.3f'|format(ev.cue.end) if ev.cue else 0 }}">
+                  &#9658; &ldquo;{{ ev.text }}&rdquo;
+                </button>
+                <span class="detail">{{ ev.detail }}{% if not ev.verified %} &middot; offset stale{% endif %}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </details>
           {% endif %}
-
-          <ul class="evidence detail">
-            {% if flag.options %}
-            {% for ev in flag.evidence %}
-            <li><span class="detail">&ldquo;{{ ev.text }}&rdquo; &middot; {{ ev.detail }}</span></li>
-            {% endfor %}
-            {% endif %}
-          </ul>
         </div>
         {% endfor %}
 
@@ -160,20 +184,24 @@
         {% endif %}
 
         {% if row.quote_text %}
-        <p class="heard">
+        <p class="detail heard">&ldquo;{{ row.quote_text }}&rdquo;</p>
+        {% endif %}
+
+        <div class="footer-row">
+          {% if row.quote_text %}
           <button class="play"
                   data-cue-start="{{ '%.3f'|format(row.cue.start) if row.cue else 0 }}"
                   data-cue-end="{{ '%.3f'|format(row.cue.end) if row.cue else 0 }}">
-            &#9658; hear it
+            Hear it
           </button>
-          <span class="detail">&ldquo;{{ row.quote_text }}&rdquo;</span>
-        </p>
-        {% endif %}
-
-        <form method="post" action="/drop" class="dropline">
-          <input type="hidden" name="item_id" value="{{ row.id }}">
-          <button type="submit">drop</button>
-        </form>
+          {% else %}
+          <span></span>
+          {% endif %}
+          <form method="post" action="/drop" class="dropline">
+            <input type="hidden" name="item_id" value="{{ row.id }}">
+            <button type="submit">Drop</button>
+          </form>
+        </div>
       </div>
     </details>
   </article>

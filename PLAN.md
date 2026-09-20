@@ -310,6 +310,34 @@ Format: `HH:MM · <step> · <what happened>`
         prompt before choosing on speed — the 9B-vs-MoE gap is narrower than
         the spec table implies. The 8-bit 9B fallback is still NOT cached;
         pull it the moment C3 wants it, not on demo day.
+20:35 · 0i · Track C — I ran the thinking-vs-xgrammar experiment rather than
+        leave it as a warning, because the predicted symptom was wrong and it
+        would have cost C2 an hour. CORRECTION to my own 19:36 line: thinking
+        tokens under a logits processor do NOT look like a schema failure.
+        The grammar masks <think> away, so the output stays schema-valid
+        either way — both enable_thinking=True and False returned parseable
+        JSON with quotes that passed a verbatim `in transcript` check. The
+        real symptom is subtler and worse: quote SELECTION drifts. Thinking-on
+        returned sig_quote='increase the metaprolol succinate from 25 mg to
+        50 mg. Once daily in the morning.' where thinking-off returned the
+        tight 'Once daily in the morning.' A sig quote that swallows the dose
+        sentence is precisely the cross-turn association smear C4.5 hunts
+        (D16 cat 8). So: still pass enable_thinking=False — but debug it at
+        C4/C4.5 by looking at quote BOUNDARIES, not at JSON validity.
+20:36 · 0i · Track C — three concrete C2 landmines, hit in 20 minutes. This
+        is a PRIOR, not the gate; C2 is still yours to record. (1) GOOD NEWS:
+        compile_json_schema(..., strict_mode=True) COMPILES on xgrammar
+        0.2.7 / cp314, and constrained generation works end to end on the 9B.
+        (2) xgr.apply_token_bitmask_inplace is TORCH-ONLY — it reads
+        logits.device and dies with AttributeError on an mlx array. Unpack
+        the packed int32 bitmask yourself: np.unpackbits(np.asarray(bm).
+        view(np.uint8), bitorder='little') then mx.where(bits, logits, -inf).
+        (3) Two shape/state traps in that unpack: the bitmask unpacks to the
+        tokenizer vocab (248096) but mlx logits are padded wider (248320), so
+        pad the mask with zeros to logits.shape[-1]; and GrammarMatcher
+        RAISES once it accepts the stop token if you keep filling masks, so
+        guard with `if m.is_terminated(): return logits` or generation dies
+        after the JSON closes.
 19:07 · 0e · Track B, empirical confirmation of 1a's offset contract: whisper
         emits words WITH a leading space (' Good', ' morning.'). 1a specified
         Word.text excludes whitespace, so B4 must strip and shift char_offset

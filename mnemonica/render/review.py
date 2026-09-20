@@ -170,6 +170,11 @@ class ReviewRow:
     cue: AudioCue | None
     quote_text: str | None
     flags: list[ReviewFlag] = field(default_factory=list)
+    promotion_verb: str | None = None
+    """The directional word being vouched for — `increased` /
+    `decreased`. Named in the prompt, because "is that the right
+    word?" does not say which word, and the clinician is being asked
+    to put their signature behind exactly one."""
 
     @property
     def id(self) -> str:
@@ -391,6 +396,10 @@ def build_review(
                 dropped=bool(res and res.dropped),
                 sentences=sentences,
                 needs_promotion=any(s.needs_promotion for s in sentences),
+                promotion_verb=(
+                    item.raw.get("change_kind")
+                    if any(s.needs_promotion for s in sentences) else None
+                ),
                 promoted=bool(res and res.promoted),
                 cue=cue_for(session, quote, flagged=flagged) if quote else None,
                 quote_text=quote.text if quote else None,

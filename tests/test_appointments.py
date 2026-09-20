@@ -224,3 +224,46 @@ def test_overlapping_spans_collapse():
     kept = _drop_restatements([_flag_item("you call the office", 10)],
                               "instruction_quote")
     assert len(kept) == 1
+
+
+# --- the promotion prompt names its word, and only appears when it matters --
+
+def _metformin(derivation=None):
+    import json
+    from pathlib import Path
+    from mnemonica.render.model import Extraction
+    raw = json.loads(
+        (Path(__file__).resolve().parents[1]
+         / "fixtures" / "golden_extraction.json").read_text()
+    )
+    med = next((m for m in raw["medications"]
+                if (m.get("change_kind") in ("increased", "decreased"))), None)
+    if med is None:
+        import pytest
+        pytest.skip("fixture carries no directional change")
+    med = dict(med)
+    if derivation is not None:
+        med["change_kind_derivation"] = derivation
+    med["change_kind_derived"] = False
+    return Extraction.parse({**raw, "medications": [med]}).medications[0]
+
+
+def test_no_prompt_when_the_verb_is_not_printed():
+    """With no baseline dose the sentence says "changed", never the model's
+    word — so there is nothing to vouch for. Asking anyway was a control with
+    no effect on its own output: promoting changed the rendered text not at
+    all, only the flag."""
+    from mnemonica.render.actioncard import medication_sentences
+    item = _metformin(derivation={"to_dose": {"amount": 1000.0, "unit": "mg"}})
+    assert not any(s.needs_promotion
+                   for s in medication_sentences(item, "Dr. H"))
+
+
+def test_prompt_appears_when_the_direction_does_print():
+    from mnemonica.render.actioncard import medication_sentences
+    item = _metformin(derivation={"from_dose": {"amount": 500.0, "unit": "mg"},
+                                  "to_dose": {"amount": 1000.0, "unit": "mg"}})
+    sentences = medication_sentences(item, "Dr. H")
+    assert any(s.needs_promotion for s in sentences)
+    assert any(item.raw["change_kind"] in s.plain() for s in sentences), \
+        "the word being confirmed must actually appear in the sentence"

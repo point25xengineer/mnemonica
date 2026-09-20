@@ -256,7 +256,12 @@ def medication_sentences(
                 Fragment(to_dose, strong=True),
                 Fragment("."),
             )
-            needs = False if derived else needs
+            # This branch prints "changed", never the model's verb — there is
+            # no baseline to give the change a direction. So there is nothing
+            # for the clinician to vouch for: asking them to confirm
+            # "increased" when the page will say "changed" either way is a
+            # control with no effect on its own output.
+            needs = False
         else:
             frags = (
                 Fragment(f"{doctor} {verb} {possessive}"),

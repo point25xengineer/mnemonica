@@ -83,10 +83,15 @@
 
         {% if row.needs_promotion %}
         <div class="ask">
-          <p class="q">Is that the right word?</p>
+          {# Name the word. "Is that the right word?" did not say which one,
+             and the button did not say what it would print — so the clinician
+             was signing for something the screen never identified. #}
+          <p class="q">Print &ldquo;{{ row.promotion_verb }}&rdquo;? Nothing in the
+            recording gave the change a direction.</p>
           <form method="post" action="/promote" class="answers">
             <input type="hidden" name="item_id" value="{{ row.id }}">
-            <button type="submit" class="option">Yes, print it</button>
+            <button type="submit" class="option">Yes &mdash; print
+              &ldquo;{{ row.promotion_verb }}&rdquo;</button>
           </form>
         </div>
         {% endif %}

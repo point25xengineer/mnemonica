@@ -37,6 +37,22 @@ then what to do about it — and each of these sits under one of them (see
 part's own title, so the section under it names who was speaking instead of
 repeating it."""
 
+LEAD_IN: dict[str, str] = {
+    "why_you_came_in": "You told the doctor,",
+    "what_the_doctor_found": "The doctor found,",
+    "what_happens_next": "Your doctor also said,",
+}
+"""The only words the template contributes to this section.
+
+They are connectives, not descriptions: nothing here characterises what was
+said, so no lead-in can be wrong about it. The span that follows is verbatim
+and stays inside quotation marks — a first-person span ("my feet have been
+bothering me") cannot be folded into second-person prose ("your feet have
+been bothering you") without rewording it, and rewording is the one thing
+D7 and D12 forbid. The quotation marks are what make the person shift
+legible instead of ungrammatical.
+"""
+
 PART_OF: dict[str, str] = {
     "why_you_came_in": "presentation",
     "what_the_doctor_found": "presentation",

@@ -85,6 +85,33 @@ def _printable(
     return out
 
 
+@dataclass(frozen=True)
+class _ProseLine:
+    lead: str
+    text: str
+
+
+def _prose_lines(sections, part: str) -> list[_ProseLine]:
+    """Flatten the summary into sentences for one paragraph.
+
+    The page used a sub-heading, a speaker label and a block quote per line,
+    which is three pieces of furniture around one sentence. Same spans, same
+    order, same words — one paragraph instead.
+    """
+    out: list[_ProseLine] = []
+    for section in sections:
+        if summary.PART_OF.get(section.key) != part:
+            continue
+        for line in section.lines:
+            text = line.quote.text.strip().rstrip(".,;:")
+            if text:
+                out.append(_ProseLine(
+                    lead=summary.LEAD_IN.get(section.key, "Your doctor said,"),
+                    text=f"\u201c{text}\u201d",
+                ))
+    return out
+
+
 def render_patient_document(
     extraction: Extraction,
     session: Session,
@@ -140,10 +167,8 @@ def render_patient_document(
         # Split by part rather than filtered in the template: which heading
         # belongs where is a content decision, and content decisions do not
         # belong in markup.
-        presentation=[s for s in summary_sections
-                      if summary.PART_OF.get(s.key) == "presentation"],
-        advice=[s for s in summary_sections
-                if summary.PART_OF.get(s.key) == "advice"],
+        presentation_lines=_prose_lines(summary_sections, "presentation"),
+        advice_lines=_prose_lines(summary_sections, "advice"),
         consent_method=consent.method,
         consent_date_long=long_date(consent.obtained_at),
         approved_date_long=long_date(approved_on),

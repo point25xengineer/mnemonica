@@ -25,6 +25,7 @@
   }
   h1 { font-size: 30px; line-height: 1.25; margin: 0 0 .25rem; }
   .visit-date { font-size: 19px; color: #333; margin: 0 0 2rem; }
+  p.lede { margin: 0 0 1rem; }
   /* Two parts, each with sections inside it. The part rule is heavy and the
      section rule is light, so the hierarchy survives being photocopied. */
   h2 {
@@ -41,15 +42,21 @@
 
   /* U8b — medicines as a table. Scanning beats reading when the question is
      "which of my pills changed?". Same templated values as the prose form. */
-  table.meds { border-collapse: collapse; width: 100%; margin: 0 0 1.5rem; }
+  /* One rule under the head, hairlines between rows, nothing else. Rules
+     are the loudest mark on a page of serif text, and the table had three
+     weights of them competing with the section borders above it. */
+  table.meds { border-collapse: collapse; width: 100%; margin: .4rem 0 1.5rem; }
   table.meds th, table.meds td {
     text-align: left; vertical-align: top;
-    padding: .7rem .8rem; border-bottom: 2px solid #999;
+    padding: .85rem .9rem .85rem 0; border-bottom: 1px solid #d5d5d5;
   }
+  table.meds td:last-child, table.meds th:last-child { padding-right: 0; }
   table.meds thead th {
-    font-size: 17px; text-transform: uppercase; letter-spacing: .06em;
-    border-bottom: 3px solid #111; padding-bottom: .4rem;
+    font-size: 16px; font-weight: 400; color: #555;
+    text-transform: uppercase; letter-spacing: .07em;
+    border-bottom: 1px solid #111; padding-bottom: .45rem;
   }
+  table.meds tbody tr:last-child td { border-bottom: none; }
   table.meds td.drug { font-weight: 700; }
   table.meds td .note { display: block; font-size: 17px; color: #333; margin-top: .3rem; }
   /* A patient may read the digital copy on a phone. Below the fold of a
@@ -91,16 +98,19 @@
 <h1>Your visit summary</h1>
 <p class="visit-date">{{ visit_date_long }} &middot; with {{ clinician_name }}</p>
 
-{% if presentation|selectattr('lines')|list %}
+{% if presentation_lines %}
 <section class="part">
 <h2>Why you came in</h2>
-{% for section in presentation %}{% if section.lines %}
-<h3>{{ section.heading }}</h3>
-{% for line in section.lines %}
-<p class="said">{{ line.speaker_label }}:</p>
-<blockquote>&ldquo;{{ line.quote.text }}&rdquo;</blockquote>
-{% endfor %}
-{% endif %}{% endfor %}
+{# Reads as prose, but every span below is still verbatim: the template
+   supplies only the connective words ("You came in because", "The doctor
+   found"), never a rewording of what was said. Dropping the blockquotes and
+   the per-heading sub-titles is presentation; the sentences are the same
+   spans, in the same order, with the same words. #}
+<p class="lede">
+  {%- for line in presentation_lines %}
+  {{ line.lead }} {{ line.text }}.
+  {%- endfor %}
+</p>
 </section>
 {% endif %}
 
@@ -159,13 +169,10 @@
 </ul>
 {% endif %}
 
-{% for section in advice %}{% if section.lines %}
-<h3>{{ section.heading }}</h3>
-{% for line in section.lines %}
-<p class="said">{{ line.speaker_label }}:</p>
-<blockquote>&ldquo;{{ line.quote.text }}&rdquo;</blockquote>
-{% endfor %}
-{% endif %}{% endfor %}
+{% if advice_lines %}
+<h3>Other advice</h3>
+<p>{% for line in advice_lines %}{{ line.lead }} {{ line.text }}. {% endfor %}</p>
+{% endif %}
 </section>
 
 <footer>

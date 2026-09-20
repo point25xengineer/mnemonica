@@ -53,7 +53,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | Phase 0 — environment | agent-phase-0 | 9 / 9 | **done** |
 | Phase 1 — foundations | Evan + agent | 5.5 / 6 | 1e — clip in; enrollment + long visit left |
 | Track A — knowledge base | Evan + agent | 13 / 13 | **done** |
-| Track B — audio | | 0 / 6 | **can start now** — clip ingested; B3 needs the enrollment sample |
+| Track B — audio | agent-track-b | 4 / 6 | **B1-B2-B4-B6 done**; B3 + B5 wait on 1e's enrollment and a listen |
 | Track C — extraction | | 0 / 6 | **can start now** |
 | Track D — interface | | 0 / 10 | **can start now** |
 | Phase 3 — integration | | 0 / 5 | waits on all tracks |
@@ -521,6 +521,84 @@ Format: `HH:MM · <step> · <what happened>`
         rather than fail when they are absent, so a fresh clone is not stuck.
         Gate 3c is still `—` and is still Phase 3's to answer.
 
+20:58 · B1/B2/B4 · Pipeline runs end to end on 1e's take, and the result
+        is the fixture. 2:48 of audio in 21.7 s wall clock (7.7x real-time,
+        both models, MPS): 35 turns, 480 words, 2463 chars — every one of
+        those identical to golden_visit.json. transcript_text matches
+        character for character; all 35 turn boundaries match turn for turn;
+        all 35 cluster labels match, SPEAKER_00 for SPEAKER_00. That last one
+        is luck, not contract — do not depend on pyannote's numbering.
+        Entry point: `python -m visitnotes.audio.pipeline <audio>
+        --session-dir <dir>`. Diff: `python -m visitnotes.audio.b5_gate
+        <session.json>`.
+20:58 · B5 · GATE, structural half: PASS. The strong result is not the turn
+        counts, it is that all 28 quotes in golden_extraction.json resolve in
+        the REAL transcript **at the fixture's own char_offsets**, and
+        turn_at_offset() returns the fixture's turn id for every one. That is
+        the D14 bridge proven on real audio rather than asserted: Track C can
+        search Track B's output and Track D can cite it. Track C — you can
+        swap the fixture for sessions/b5/session.json today; 3a is already
+        half done.
+20:58 · B5 · GATE, listening half: UNANSWERED, and it needs a human with
+        headphones. What I could check objectively is all clean — word starts
+        strictly monotonic, no zero-length words, longest word 1.32 s (no DTW
+        blowouts), every word inside its own turn's time span, per-word
+        probability median 1.00 and only 8 of 480 under p=0.50. Five random
+        citations to play: 0:05.84 'leaves', 1:40.22 'the', 2:05.34 'for',
+        2:20.76 'So', 2:39.72 'bring'. If they land late or early, the first
+        thing to check is that you are on large-v3-mlx and not turbo.
+20:58 · B4 · Zero words dropped on the real take — no silence inventions to
+        catch, because the clip is 2:48 of continuous conversation. The drop
+        rule is therefore UNEXERCISED by real audio and is covered only by
+        unit tests (tests/test_audio_assemble.py, 10 of them). It earns its
+        keep on 4a's long file, which has real pauses. Do not read "0
+        dropped" as "the rule works".
+20:58 · B3 · Enrollment matching works, but read the caveat. Against a proxy
+        sample cut from the take's own turn 18, the clinician's cluster came
+        back at cosine distance 0.095 and the patient's at 0.937 — a margin
+        of 0.84 against a 0.10 floor. The 0.095 is circular and means little;
+        the 0.937 does not — that is a real measurement of how far apart
+        these two voices sit, and it says the decision has enormous headroom.
+        1e still owes a genuine 10 s sample. Thresholds
+        (MAX_CLINICIAN_DISTANCE 0.65, MIN_MARGIN 0.10) are uncalibrated
+        guesses for 3c to tune. With no enrollment at all every role is
+        `unknown` and every dose goes blocking — that path is tested.
+20:58 · B6 · Fires correctly, and the first two ways I built it did not.
+        Spliced an 11 s third voice into the take at 1:29, ran the pinned
+        num_speakers=2. (1) Centroid separation alone: MISSES — the two
+        centroids stayed 0.948 apart, because folding a third person in
+        barely moves a centroid. (2) Mean within-cluster spread at
+        min_duration=1.0: MISSES, and worse, it is not separable at all — a
+        1-second "Mm-hm" embeds 0.71 from its own speaker's centroid, FURTHER
+        than the genuine intruder at 0.65. Any threshold between those would
+        have flagged every real session. What works is (3) embed only
+        intervals >= 2.0 s and take the WORST interval, not the mean: the two
+        real speakers' worst intervals drop to 0.20 and 0.32 while the
+        intruder stays at 0.65. One outlier is exactly what one intruder
+        looks like, and averaging it across ten honest intervals erases the
+        only evidence you have. The flag names the timestamp so the clinician
+        can go listen: "a segment at 1:29 sounds unlike the rest of
+        SPEAKER_00". Silent on the genuine take. Threshold 0.45 on n=1 file
+        each — 3c should tune it.
+20:58 · B1 · Priming prompt is the generic top-50 with metoprolol and
+        lisinopril REMOVED, and the removal is in the code as a named
+        constant with the reason attached. Priming on the demo's own drugs
+        would suppress the mistranscription the demo exists to catch. Note
+        the take's real ASR errors landed on lisinopril, not metoprolol (1c,
+        20:55) — so the exclusion is load-bearing for beat #2, not
+        hypothetical.
+20:58 · B4/D18 · visit_date on the real run is 2026-09-19, the audio mtime.
+        The fixture pins 2026-09-18. Both are correct, and 1d chose a ten-day
+        follow-up precisely so the printed date lands on a weekday from any
+        of Fri/Sat/Sun. Do not "fix" the fixture to match — mtime wins at
+        runtime, by D18.
+20:58 · B · Two things Track D should know. (1) `Session` stayed clean:
+        dropped words, B6 flags and per-cluster distances ride in an
+        `IngestResult` beside it, not bolted onto the contract. U3's
+        discarded count reads `IngestResult.dropped`; U5's blocking items
+        read `.flags`. (2) `RoleAssignment.override(cluster)` is D20's
+        "that's me" button, and it clears the identity flags it was raised to
+        answer.
 ```
 
 ---

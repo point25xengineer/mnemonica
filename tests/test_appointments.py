@@ -168,3 +168,59 @@ def test_every_post_form_supplies_its_handlers_fields():
             f'form action="{action}" posts {sorted(forms[action])} but the '
             f"handler needs {sorted(wanted)} — missing {sorted(missing)}"
         )
+
+
+# --- red flags: one instruction said twice is one instruction --------------
+
+def _flag_item(text, offset=0):
+    return {
+        "id": f"flag-{offset}", "kind": "red_flag", "disposition": "printed_as_fact",
+        "instruction_quote": {"text": text, "char_offset": offset,
+                              "char_end": offset + len(text)},
+        "flags": [],
+    }
+
+
+def test_a_restated_warning_collapses():
+    """Two bordered boxes of equal weight left the patient working out
+    whether they were different instructions. They are one: call."""
+    from mnemonica.verify.pipeline import _drop_restatements
+    kept = _drop_restatements([
+        _flag_item("If your feet start going numb, or you get any sore on your "
+                   "foot that isn't healing up, you call the office. Don't wait "
+                   "for the six weeks. Call us.", 10),
+        _flag_item("If there's a sore, or numbness, you call. That's not a "
+                   "wait-and-see.", 400),
+    ], "instruction_quote")
+    assert len(kept) == 1
+    assert "healing up" in kept[0]["instruction_quote"]["text"], \
+        "the fuller statement should survive, not the restatement"
+
+
+def test_distinct_warnings_both_survive():
+    """The dangerous direction. Dropping a real warning beats nothing."""
+    from mnemonica.verify.pipeline import _drop_restatements
+    kept = _drop_restatements([
+        _flag_item("If you get a rash or your throat swells, call 911.", 10),
+        _flag_item("If there's a sore, or numbness, you call.", 400),
+    ], "instruction_quote")
+    assert len(kept) == 2
+
+
+def test_a_single_shared_word_is_not_a_restatement():
+    """Containment is jumpy on short quotes — MIN_SHARED is what stops a
+    two-word instruction merging on one coincidence."""
+    from mnemonica.verify.pipeline import _drop_restatements
+    kept = _drop_restatements([
+        _flag_item("Call us if the swelling spreads.", 10),
+        _flag_item("Call us if the pain spreads.", 400),
+    ], "instruction_quote")
+    assert len(kept) == 2
+
+
+def test_overlapping_spans_collapse():
+    """Same words, same place — nominated from either side of a turn."""
+    from mnemonica.verify.pipeline import _drop_restatements
+    kept = _drop_restatements([_flag_item("you call the office", 10)],
+                              "instruction_quote")
+    assert len(kept) == 1

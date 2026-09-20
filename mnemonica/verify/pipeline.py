@@ -471,12 +471,18 @@ def _one_per_appointment(entries: list[dict]) -> list[dict]:
 def _simple_items(extraction, sv, *, attr, kind, quote_field, id_prefix,
                   disposition, flag) -> list[dict]:
     """Red flags and loose threads: one verbatim quote each, nothing to resolve."""
-    out, seen = [], set()
+    out, spans = [], []
     for i, item in enumerate(getattr(extraction, attr), start=1):
         quote = sv.verify(getattr(item, quote_field), kind=kind)
-        if quote is None or (quote.char_offset, quote.char_end) in seen:
+        if quote is None:
             continue
-        seen.add((quote.char_offset, quote.char_end))
+        # Overlapping offsets are the same words in the same place — the same
+        # argument identical offsets rest on, and the case that actually
+        # happens when a turn is nominated from either side.
+        if any(quote.char_offset < end and start < quote.char_end
+               for start, end in spans):
+            continue
+        spans.append((quote.char_offset, quote.char_end))
         flags = [flag] if flag else []
         out.append({
             "id": f"{id_prefix}-{i}",
@@ -487,7 +493,100 @@ def _simple_items(extraction, sv, *, attr, kind, quote_field, id_prefix,
             quote_field: quote.as_dict(),
             "flags": flags,
         })
+    return _drop_restatements(out, quote_field)
+
+
+_STOPWORDS = frozenset("""
+a an and or if the this that these those to of in on at for with your you
+my me we us i it its is are was were be been being do does did don don't
+not no so then than there here when what which who whom how any some
+call calls called get gets got go goes going come comes start starts
+isn don doesn didn won aren wasn weren hasn haven wouldn couldn shouldn
+""".split())
+"""Function words, plus the verbs every warning shares.
+
+`call`, `get` and `go` are in here because every red flag contains them —
+"call the office", "if you get a sore", "if it goes numb". Leaving them in
+makes two unrelated warnings look similar, which is the direction that loses
+an instruction.
+"""
+
+
+def _content(text: str) -> set[str]:
+    """Content words, lightly stemmed so `numbness` meets `numb`."""
+    import re as _re
+    words = _re.findall(r"[a-z]+", text.lower())
+    out = set()
+    for w in words:
+        if w in _STOPWORDS or len(w) < 3:
+            continue
+        for suffix in ("ness", "ing", "ed", "es", "s"):
+            if w.endswith(suffix) and len(w) - len(suffix) >= 3:
+                w = w[: -len(suffix)]
+                break
+        out.add(w)
     return out
+
+
+CONTAINMENT = 0.7
+MIN_SHARED = 3
+"""Both must hold before two warnings are treated as one.
+
+The asymmetry drives this: printing a warning twice is mildly confusing,
+dropping a distinct one is dangerous, so the test is tuned to under-merge.
+
+Measured on the pair this was built for — "if your feet start going numb, or
+you get any sore on your foot that isn't healing up, you call the office"
+against "if there's a sore, or numbness, you call" — containment is 0.75 on
+three shared words. Unrelated warnings in the same script score **0.00**, so
+the gap either side of the threshold is wide.
+
+`MIN_SHARED` exists because containment is jumpy on short quotes: with four
+content words each one is worth 0.25, and a two-word instruction could clear
+any ratio on a single coincidence. Three shared content words is a real
+overlap, not an accident of length.
+"""
+
+
+def _drop_restatements(entries: list[dict], quote_field: str) -> list[dict]:
+    """Collapse one instruction said twice in different words.
+
+    Overlap catches a span nominated twice. It does not catch the clinician
+    restating the warning later in the visit — "if your feet start going numb,
+    or you get any sore that isn't healing up, you call the office" and "if
+    there's a sore, or numbness, you call" are one instruction and printed as
+    two bordered boxes of equal weight, leaving the patient to work out
+    whether they differ.
+
+    No model here: this layer is deterministic by design, and a semantic
+    judgement about which safety instructions are "the same" is exactly the
+    kind of call that should not be made by something that cannot be audited.
+    Content-word containment is crude, explainable, and tuned to under-merge.
+    """
+    kept: list[dict] = []
+    for entry in entries:
+        words = _content((entry.get(quote_field) or {}).get("text", ""))
+        if not words:
+            kept.append(entry)
+            continue
+        replaced = False
+        for index, existing in enumerate(kept):
+            other = _content((existing.get(quote_field) or {}).get("text", ""))
+            if not other:
+                continue
+            shared = words & other
+            overlap = len(shared) / min(len(words), len(other))
+            if len(shared) < MIN_SHARED or overlap < CONTAINMENT:
+                continue
+            # Same instruction. Keep the fuller statement of it — the longer
+            # one carries the detail the restatement dropped.
+            if len(words) > len(other):
+                kept[index] = entry
+            replaced = True
+            break
+        if not replaced:
+            kept.append(entry)
+    return kept
 
 
 # ------------------------------------------------------------------ the whole

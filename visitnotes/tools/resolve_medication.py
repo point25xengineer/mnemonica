@@ -120,6 +120,40 @@ everything before these, and the tail is dose and qualifier text that belongs
 to `parse_sig`."""
 
 
+def _self_correction_tail(raw: str) -> str | None:
+    """The word a comma-separated stutter converged on, or `None`.
+
+    *"the lyso, ly, lysinop, lysinopril"* is what a real patient sounds like
+    reaching for a drug name, and Whisper transcribes the whole run-up. The
+    normalized key of the whole run-up matches nothing — 3d's first real pass
+    returned it `unresolved` with an **empty** near-match list, which is D16
+    category 4 firing without the one thing that makes it useful.
+
+    **This only ever supplies near-matches; it never resolves.** A stutter is
+    evidence about what the speaker was reaching for, not evidence about what
+    they said, and the difference between those two is the whole of D16.
+
+    Read off the **raw** mention, because `normalize` drops the commas that
+    are the only evidence a self-correction happened. Fragments must converge
+    — every one sharing a two-character prefix with the last — so that
+    *"metoprolol, lisinopril"* is two drugs and not a stutter, and a phrase
+    with no comma at all (*"the other blood pressure pill"*, the fixture's
+    category 4 plant) is never touched.
+    """
+    parts = [p.strip() for p in raw.split(",")]
+    parts = [p for p in parts if p]
+    if len(parts) < 3:
+        return None
+    tail = parts[-1].split()[-1].lower()
+    if len(tail) < 4:
+        return None
+    for frag in parts[:-1]:
+        word = frag.split()[-1].lower()
+        if len(word) < 2 or not tail.startswith(word[:2]):
+            return None
+    return tail
+
+
 def _head_of_phrase(key: str) -> str:
     """The leading tokens of a normalized key, cut at the first function word
     or numeral. Returns the key unchanged when there is nothing to cut."""
@@ -377,6 +411,22 @@ def resolve_medication(
         attempt = _resolve_normalized(normalize(head), head, kb)
         if attempt.status != "unresolved":
             return attempt
+
+    # Still unresolved. If the mention was a self-correction, say what it was
+    # converging on — as a suggestion the clinician confirms, never as a
+    # result. `res.status` is deliberately untouched.
+    if not res.candidates:
+        tail = _self_correction_tail(call.mention_quote)
+        if tail:
+            guess = _resolve_normalized(normalize(tail), tail, kb)
+            if guess.status == "resolved" and guess.rxcui:
+                res.candidates = [MedicationCandidate(
+                    rxcui=guess.rxcui, name=guess.canonical_name or tail,
+                    tty=guess.tty or "IN",
+                    score=round(guess.match_confidence or 0.0, 4),
+                    edit_distance=guess.edit_distance or 0)]
+            elif guess.candidates:
+                res.candidates = list(guess.candidates[:3])
     return res
 
 

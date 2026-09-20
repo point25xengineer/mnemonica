@@ -345,6 +345,19 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--session",
+        type=Path,
+        help=(
+            "3a — a `Session` from the real pipeline "
+            "(sessions/<name>/session.json) instead of 1c's fixture"
+        ),
+    )
+    parser.add_argument(
+        "--extraction",
+        type=Path,
+        help="the post-C5 envelope for --session (verify.run's -o output)",
+    )
+    parser.add_argument(
         "--sweep",
         action="store_true",
         help="run the U10 expiry sweep and exit (for cron, or before a demo)",
@@ -353,6 +366,13 @@ def main() -> None:
     if args.sweep:
         print(retention.sweep_expired(SESSIONS_ROOT).summary())
         return
+    if bool(args.session) != bool(args.extraction):
+        parser.error("--session and --extraction go together: a Session with "
+                     "the fixture's extraction would render quotes against "
+                     "the wrong transcript")
+    if args.session:
+        state.SESSION_OVERRIDE = args.session.resolve()
+        state.EXTRACTION_OVERRIDE = args.extraction.resolve()
     if args.audio:
         state.AUDIO_OVERRIDE = args.audio.resolve()
     serve(args.port)

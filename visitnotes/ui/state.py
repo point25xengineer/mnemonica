@@ -39,6 +39,17 @@ SESSIONS_ROOT = REPO_ROOT / "data" / "sessions"
 RECORDS_ROOT = REPO_ROOT / "data" / "records"
 FIXTURES = REPO_ROOT / "fixtures"
 
+SESSION_OVERRIDE: Path | None = None
+EXTRACTION_OVERRIDE: Path | None = None
+"""3a — the real pipeline's output in place of 1c's fixtures.
+
+Set by ``app.py --session/--extraction``. They are module-level rather than
+parameters because the two `load_fixture()` call sites in `app.py` are HTTP
+handlers with no argument to thread through, and because 3a's whole claim is
+that swapping the fixture for Track B's output is a *path*, not a code change.
+`Session` is the same contract either way, so nothing below this line knows
+which one it got."""
+
 AUDIO_OVERRIDE: Path | None = None
 """A recording to attach to the fixture session (``app.py --audio``).
 
@@ -132,8 +143,10 @@ class ReviewSession:
         re-homed into a working directory under `data/sessions/` and the
         contract's containment validator re-runs on the rewritten paths.
         """
-        visit_path = visit_path or FIXTURES / "golden_visit.json"
-        extraction_path = extraction_path or FIXTURES / "golden_extraction.json"
+        visit_path = (visit_path or SESSION_OVERRIDE
+                      or FIXTURES / "golden_visit.json")
+        extraction_path = (extraction_path or EXTRACTION_OVERRIDE
+                           or FIXTURES / "golden_extraction.json")
 
         raw = json.loads(Path(visit_path).read_text())
         original_audio = Path(raw["audio_path"])

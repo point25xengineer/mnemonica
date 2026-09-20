@@ -56,7 +56,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | Track B — audio | agent-track-b | 4 / 6 | **B1-B2-B4-B6 done**; B3 + B5 wait on 1e's enrollment and a listen |
 | Track C — extraction | Evan + agent | 6 / 6 | **done** — C2 pass, C3 pass at 100% verbatim on the 4-bit 9B |
 | Track D — interface | | 10 / 10 | **done** |
-| Phase 3 — integration | | 0 / 5 | waits on all tracks |
+| Phase 3 — integration | Evan + agent | 2.5 / 5 | **3a, 3b done** — 91 s end to end; 3c measured, 3d 7/8, 3e needs a human |
 | Phase 4 — demo | | 0 / 4 | waits on Phase 3 |
 
 ## Gate results — record immediately, others depend on these
@@ -72,7 +72,7 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 | **B5** | word offsets good enough for click-to-play? | **structural pass** — real `Session` reproduces fixture 1c exactly; 28/28 quotes resolve at the fixture's own offsets. The listening half is unanswered. | agent-track-b | fail → check you're on large-v3, not turbo |
 | **C2** | does `compile_json_schema(VisitExtraction)` compile at all? | **pass** — compiles, and an empty extraction is reachable | Track C | fail → post-hoc parse + retry; span verification still holds |
 | **C3** | verbatim quote fidelity holding? | **pass** — 100%, 33/33 quotes, 4-bit 9B | Track C | fail → 8-bit 9B, then 35B MoE |
-| **3c** | thresholds calibrated? | — | | no labeled data — bias toward flagging |
+| **3c** | thresholds calibrated? | **measured, awaiting sign-off** — both constants set; the margin fires on 1% of verbatim index names and 5% of one-transposition typos, so A3.5's index is not flooded | Phase 3 | no labeled data — bias toward flagging |
 
 ---
 
@@ -174,11 +174,32 @@ mean two different documents in one sentence.
 
 ## Phase 3 — Integration · [phases/PHASE-3-integration.md](phases/PHASE-3-integration.md)
 
-- [ ] **3a** swap fixture for real Track B output
-- [ ] **3b** first end-to-end run — **stopwatch the whole pipeline**, not just the review → ____ s
-- [ ] **3c** HUMAN GATE — tune thresholds
-- [ ] **3d** D16 sweep, all **8** categories on real audio
-- [ ] **3e** time the review against the 60 s target → ____ s
+- [x] **3a** swap fixture for real Track B output — **contract 1a held.** Track C
+  took a path argument and nothing else; Track D needed two CLI flags
+  (`app.py --session/--extraction`) because its two `load_fixture()` call
+  sites are HTTP handlers with no argument to thread through. No call site
+  changed, `contracts.py` did not change.
+- [x] **3b** first end-to-end run — **91 s**, machine time, cold: Track B
+  **21.5 s** (Whisper + diarization + enrollment, 2m50s of audio, 35 turns,
+  480 words, 0 dropped) + Track C **69.2 s** (3.7 s model load, 65.4 s for 35
+  constrained generations at 37 tok/s, 0.1 s verification). **It fits in the
+  demo slot** — no need to start the run under the intro slide.
+- [~] **3c** HUMAN GATE — both constants set and the margin sanity-checked
+  against A3.5 (see the gate row). The one-sentence sign-off is a human's.
+- [~] **3d** D16 sweep — **7 of 8 on real audio**, plus salt, silence and
+  consent. **Category 3 does not fire live**; see the Log. Two defects found
+  and fixed along the way, both invisible on the fixture.
+- [ ] **3e** time the review against the 60 s target → ____ s *(HUMAN — needs
+  someone who did not build the UI, and a stopwatch)*
+
+Run it end to end:
+
+    python -m visitnotes.audio.pipeline <audio.m4a> --session-dir sessions/demo \
+        --enrollment <clinician-10s.wav>
+    python -m visitnotes.verify.run sessions/demo/session.json \
+        -o sessions/demo/extraction.json
+    python -m visitnotes.ui.app --session sessions/demo/session.json \
+        --extraction sessions/demo/extraction.json
 
 ## Phase 4 — Demo · [phases/PHASE-4-demo.md](phases/PHASE-4-demo.md)
 
@@ -196,7 +217,8 @@ line when it clears.*
 
 | Step | Blocked on | Who can clear it | Raised |
 |---|---|---|---|
-| — | — | — | — |
+| **3d** | D16 category 3 does not fire on real audio. D19 checks the turn_role of sig quotes the model emitted, and the model did not emit the patient's *"So that's two of the 25s?"* as a sig — so there is nothing to check. Needs a design call: make cat 3 independent of the model, or accept that it is fixture-verified only. A naive sweep of non-clinician turns was costed and fires 3× on one card. | whoever owns D19 | 3d |
+| **3e** | needs a first-time user and a stopwatch. Nothing in the code blocks it. | a human who did not build the UI | 3e |
 
 ## Deviations from SPEC.md
 
@@ -216,6 +238,9 @@ SPEC.md — this table is the record, not the decision.*
 | TOOLS §2 / A9 | added three phrases to `parse_sig`'s `_NOT_SPECIFIED` list, in Track A's file | 1c-ii asserts `not_specified` for "Just take it the way you've been taking it" and A9 returned `unparseable`. That is the exact collapse D16 forbids — "I couldn't hear it" reading the same as "your doctor never said it" — and D16 category 5 cannot fire without it. Track A owns the list; the entry is commented in place. | Track C |
 | D16 cat 2 | implemented on per-word `probability` only; segment `no_speech_prob` / `compression_ratio` are **not** read | 1c measured them identical across nine consecutive segments of the real recording (the 30 s decode window's stats are stamped onto every sentence inside it), and contract 1a does not carry them onto `Word`. A threshold on a constant is a check that never fires, which looks exactly like a clean run. The constant is kept and documented as unused. | Track C |
 | D16 cat 1 | an **empty** required quote is not counted as a discard | Measured at C3: the model leaves `change_evidence_quote` blank rather than paraphrasing it. Blank is an absence, fabrication is an invention, and the discard count is the one number that tells a clinician something was deleted. Conflating them makes the header claim a deletion that never happened. | Track C |
+| D16 cat 4 / TOOLS §1 | `resolve_medication` gained a **self-correction backoff**: a comma-separated stutter whose fragments converge (*"lyso, ly, lysinop, lysinopril"*) is retried on its final word — **to populate near-matches only, never to resolve** | 3d found cat 4 firing on the real take with an **empty** near-match list, which is the flag without the part that makes it actionable. A whole-phrase fuzzy fallback was tried first and returned *lysyllysllysine* and *polyglyceryl-6 polyricinoleate* — noise that invites a wrong click, worse than nothing. The useful guess only exists if the stutter is recognised. Status stays `unresolved` because a stutter is evidence about what the speaker was reaching for, not about what they said. Guarded on commas in the **raw** mention (`normalize` drops them) and on fragment convergence, so the fixture's cat-4 plant *"the other blood pressure pill"* and a real two-drug list are both untouched. | Phase 3 |
+| D16 cat 7 / U5 | the clinician's answer to a category 7 contradiction now **selects the sig** that prints | 3b's first approval printed *"increased your metoprolol from 25 mg to 50 mg"* and *"The dose is 25 mg"* on the same card: sig selection ranked on parse confidence and never saw the resolution. Category 7's options *are* the competing sig quotes, so settling it is the clinician naming the instruction. Invisible on the fixture, which was never carried through an approval. | Phase 3 |
+| U6 / TOOLS §4 | the action card handles all **six** `change_kind` values, and names the drug even for a value outside the enum | The enum is `new, increased, decreased, stopped, continued, unchanged`; the card branched on `increased, decreased, continued, started, stopped`. `unchanged` and `new` matched nothing and produced **no headline at all** — the real take printed *"How to take it: no change was discussed"* with no drug attached. `new` is the dangerous one: a newly started drug with no name and no instruction to start it. The fixture only ever carried `continued` and `increased`. | Phase 3 |
 | PHASE-1 1a sketch | `Turn` gained `char_start`/`char_end`; `Session` gained `session_dir`; `Word.text` whitespace rule made explicit | C4.5 needs turn bounds to answer D16 cat 8 cheaply; D2/D3 retention covers logs and scratch files, not just the `.wav`; the leading-space ambiguity in mlx-whisper's `WordTiming.word` would break every citation silently. | Phase 1 |
 
 ---
@@ -732,6 +757,115 @@ Format: `HH:MM · <step> · <what happened>`
         onto Word at all, so a threshold on them would be a check that never
         fires. The resolution margin is Track A's AMBIGUITY_MARGIN and is not
         duplicated here.
+21:26 · 3a · Contract 1a held. Track C ran on the real Session with a path
+        argument and no code change at all. Track D needed two CLI flags
+        (app.py --session/--extraction) because its two load_fixture() call
+        sites are HTTP handlers with nothing to thread an argument through;
+        state.load_fixture already took the paths. contracts.py untouched, no
+        call site rewritten. That is 3a's whole return on the fixture.
+21:28 · 3b · FIRST END-TO-END RUN, real audio, cold: 91 s of machine time.
+        Track B 21.5 s (Whisper large-v3 + pyannote on MPS + enrollment;
+        2m50s of audio -> 35 turns, 480 words, 0 dropped, both clusters
+        assigned: clinician d=0.095, other d=0.937). Track C 69.2 s (3.7 s
+        model load, 65.4 s for 35 constrained generations at 37 tok/s, 0.1 s
+        verification). It FITS the demo slot — no need to start the run under
+        the intro slide, and 4b has 91 s to budget, not the four-to-six
+        minutes the phase file feared. Enrollment was b3rehearsal's proxy
+        sample, not 1e's real 10 s take; B3 is still unvalidated and the
+        role assignment above is the proxy's result.
+21:40 · 3b · The run produced a printable page and a FHIR DocumentReference,
+        driven both headlessly and over HTTP through consent -> review ->
+        resolve -> approve. Approval shredded the session directory (audio +
+        review.log) before the process exited. Two defects reached that page,
+        both invisible on the fixture — see the next two entries.
+21:41 · 3b · DEFECT, fixed. The patient's page read "Dr Kovak increased your
+        metoprolol from 25 mg to 50 mg." immediately followed by "The dose is
+        25 mg." The clinician had just settled the category 7 contradiction on
+        the 50 mg quote; _select_sig ranked on parse confidence and never saw
+        the resolution. Category 7's options ARE the competing sig quotes, so
+        settling it is the clinician naming the instruction, and nothing may
+        then print a different dose. medication_sentences now takes the
+        Resolution; a settled contradiction selects the sig and supplies the
+        headline's to_dose, and from_dose is dropped when the choice makes it
+        equal (no "increased from 25 mg to 25 mg"). The fixture could not show
+        this: nothing ever carried it through an approval.
+21:41 · 3b · DEFECT, fixed. change_kind is a six-value enum (new, increased,
+        decreased, stopped, continued, unchanged); the action card branched on
+        five names, two of which did not match it. 'unchanged' and 'new' fell
+        through to NO HEADLINE, and the real take printed "How to take it: no
+        change was discussed" with no drug attached — the lisinopril card, on
+        paper, naming nothing. 'new' is the worse half: a newly started drug
+        with no name and no instruction to start it. Both are now handled, and
+        an unrecognised value falls back to "About your <drug>:" so a card can
+        never omit its medicine. The fixture only ever carried 'continued' and
+        'increased', which is exactly why ten Track D steps passed over it.
+21:52 · 3d · D16 SWEEP on real audio: 7 of 8. cat 1 fired (1 discard,
+        span_verification_failed, counted in the header). cat 2 fired twice
+        (the 50 mg numeral at p=0.77 and the stuttered drug name). cat 4
+        fired. cat 5 fired as a finding and prints as "no change was
+        discussed", not as an error — checked specifically, it did not
+        regress. cat 6 fired. cat 7 fired BLOCKING with three competing
+        instructions. cat 8 fired three times, all on lisinopril with
+        metoprolol named in between — it is present, not merely absent-and-
+        clean. Extras: salt fired (bare "metoprolol" -> resolved +
+        salt_unspecified, both salts offered); silence produced no words and
+        no quotable spans across 9 inter-turn gaps up to 4.8 s; consent
+        gated recording and prints in the footer. U10's sweep ran and
+        correctly kept 6 fresh sessions.
+21:52 · 3d · DEFECT, fixed. cat 4 fired on "lyso, ly, lysinop, lysinopril"
+        with an EMPTY near-match list — the flag without the part that makes
+        it actionable, since the clinician is shown raw heard text and no
+        guess. Cause: the whole stutter's normalized key clears neither the
+        recall floor nor the phonetic branch, so the candidate pool is empty
+        and the unresolved return carries nothing. A whole-index fuzzy
+        fallback was tried and rejected: it returned lysyllysllysine and
+        polyglyceryl-6 polyricinoleate, noise that invites a wrong click.
+        resolve_medication now recognises a converging comma-separated
+        self-correction and retries its final word TO SUPPLY NEAR-MATCHES
+        ONLY — status stays unresolved, because a stutter is evidence about
+        what the speaker was reaching for, not about what they said. Reads the
+        raw mention because normalize drops the commas that are the only
+        evidence a self-correction happened. "the other blood pressure pill"
+        (the fixture's cat-4 plant) has no comma and is untouched; a real
+        two-drug list does not converge and is untouched. Now offers exactly
+        ['lisinopril'].
+21:52 · 3d · OPEN — cat 3 does not fire on the real take, and this is the one
+        thing standing between 3d and done. The code path is right and is
+        proven at C5. The gap is upstream: D19 checks the turn_role of sig
+        quotes THE MODEL EMITTED, and on real audio the model did not emit
+        turn 19's "So that's two of the 25s?" as a metoprolol sig at all — so
+        there was nothing to check the role of. The fixture reaches cat 3 only
+        because 1c hand-planted turn 19 with role 'unknown' AND hand-built the
+        sig; real diarization confidently assigns that turn to the patient
+        cluster, which is the correct answer and would make the flag
+        non-blocking rather than blocking. A deterministic sweep of
+        non-clinician turns for dose numerals was costed and NOT built: on
+        this transcript it fires on turns 13, 19 and 23 ("50, okay", "two of
+        the 25s?", "started the 20, uh, 25"), three expanded flags on one card
+        against D9's 60 seconds, and a check nobody reads is the failure mode
+        the whole D16 table is written against. This needs a design call from
+        whoever owns D19, not a patch. Until then: cat 3 is verified on the
+        fixture and UNVERIFIED on real audio, and that is what to say if a
+        judge asks.
+21:55 · 3c · Margin sanity-checked against A3.5 as the phase file asks.
+        AMBIGUITY_MARGIN 0.06 over an 18,091-string index: 400 sampled names
+        verbatim -> 98% resolved / 1% ambiguous / 0% unresolved; the same 400
+        with one transposition in the first word -> 70% / 5% / 24%. It does
+        not fire constantly, so the dose-bearing SY/TMSY rows really are out
+        of the index and this is a margin, not a flood. Both constants are
+        set and committed. The sentence: we had no labeled data, so we biased
+        every threshold toward asking the doctor, because over-flagging costs
+        a click and under-flagging costs a wrong dose. The human sign-off on
+        the gate is still a human's.
+21:56 · 3b · NOT FIXED, logged instead. The lisinopril card now prints "Keep
+        taking your lisinopril the same way you have been." followed by "How
+        to take it: no change was discussed — keep taking it the way you have
+        been." — true, but the same sentence twice, and redundancy costs
+        scanning time against D9's 60 s. Suppressing the second line is a
+        two-line change; it was not made because that line IS D16 category 5
+        on the review screen, which renders through the same function, and
+        the phase file names cat 5 as the one most likely to regress into
+        looking like a failure. Worth 3e's opinion before touching it.
 ```
 
 ---

@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, Iterable, Literal
 
-from visitnotes.render.model import Item
+from visitnotes.render.model import Item, Resolution
 
 __all__ = ["Fragment", "Sentence", "medication_sentences", "appointment_sentence",
            "red_flag_sentence", "format_dose", "format_frequency"]
@@ -106,16 +106,49 @@ def _clinician(clinician_name: str) -> str:
     return clinician_name.strip() or "Your doctor"
 
 
-def _select_sig(item: Item) -> dict[str, Any] | None:
+def _settled_quotes(item: Item, resolution: Resolution | None) -> set[str]:
+    """The sig quotes the clinician picked when settling a category 7 flag.
+
+    Category 7's options *are* the competing sig quotes (`Flag.options`), so a
+    settled contradiction is the clinician naming which instruction is the
+    real one. Nothing downstream may then print a different dose — which is
+    what 3b's first real run did.
+    """
+    if resolution is None:
+        return set()
+    return {
+        choice
+        for i, flag in enumerate(item.flags)
+        if flag.blocking and flag.d16_category == 7
+        for choice in (resolution.settles(i),)
+        if choice
+    }
+
+
+def _select_sig(
+    item: Item, settled: set[str] | None = None
+) -> dict[str, Any] | None:
     """Which of an item's sigs is the one the patient is told to follow.
 
-    Highest parse confidence among the sigs that are not themselves the reason
-    the item is blocking. Sigs are never merged across turns: combining a dose
-    from turn 12 with a frequency from turn 20 is exactly the cross-turn smear
-    D16 category 8 exists to catch, and doing it silently in a template would
-    launder the very thing the flag is warning about.
+    **The clinician's answer wins outright.** If they settled a category 7
+    contradiction, `settled` holds the quote they chose and that sig is the
+    instruction; the others were the losing side of a question they have
+    already answered. Falling back to parse confidence there printed *"from
+    25 mg to 50 mg"* above *"The dose is 25 mg"* on the same card — the first
+    end-to-end run's worst finding, and invisible on the fixture because the
+    fixture was never carried through an approval.
+
+    Otherwise: highest parse confidence among the sigs that are not themselves
+    the reason the item is blocking. Sigs are never merged across turns:
+    combining a dose from turn 12 with a frequency from turn 20 is exactly the
+    cross-turn smear D16 category 8 exists to catch, and doing it silently in
+    a template would launder the very thing the flag is warning about.
     """
     sigs = [s for s in (item.raw.get("sig") or []) if not s.get("blocking_reason")]
+    if settled:
+        chosen = [s for s in sigs if (s.get("quote") or {}).get("text") in settled]
+        if chosen:
+            return max(chosen, key=lambda s: s.get("parse_confidence") or 0.0)
     usable = [s for s in sigs if s.get("status") in ("parsed", "partial")]
     if not usable:
         return sigs[0] if sigs else None
@@ -134,10 +167,14 @@ def medication_sentences(
     clinician_name: str,
     *,
     promoted: bool = False,
+    resolution: Resolution | None = None,
 ) -> list[Sentence]:
     """The headline change, then how to take it.
 
     `promoted` is the clinician's click on an underived `change_kind`.
+    `resolution` is the rest of their answer — which sig a settled category 7
+    contradiction landed on. It is optional so that the review screen, which
+    renders before anything is settled, can keep calling this unchanged.
     """
     med = item.raw.get("medication") or {}
     name = med.get("canonical_name")
@@ -160,7 +197,21 @@ def medication_sentences(
         (derivation.get("from_dose") or {}).get("unit"),
     )
 
-    sig = _select_sig(item) or {}
+    settled = _settled_quotes(item, resolution)
+    sig = _select_sig(item, settled) or {}
+    if settled:
+        # The derivation was computed from the whole sig list, including the
+        # doses the clinician has just told us were not the instruction. Once
+        # they have chosen, the chosen sig is the only dose that may head the
+        # card.
+        chosen_dose = format_dose(sig.get("dose_amount"), sig.get("dose_unit"))
+        if chosen_dose:
+            to_dose = chosen_dose
+        # "increased from 25 mg to 25 mg" is not a sentence anyone should
+        # read. With no distinct baseline left, say what it is now and claim
+        # no direction.
+        if from_dose == to_dose:
+            from_dose = None
     if to_dose is None:
         to_dose = format_dose(sig.get("dose_amount"), sig.get("dose_unit"))
 
@@ -203,7 +254,7 @@ def medication_sentences(
                 Fragment("."),
             )
         sentences.append(Sentence(frags, needs_promotion=needs, promotion_reason=reason))
-    elif change == "continued":
+    elif change in ("continued", "unchanged"):
         sentences.append(
             Sentence(
                 (
@@ -213,7 +264,7 @@ def medication_sentences(
                 )
             )
         )
-    elif change == "started":
+    elif change in ("started", "new"):
         frags = [Fragment(f"{doctor} started you on "), Fragment(name, strong=True)]
         if to_dose:
             frags += [Fragment(", "), Fragment(to_dose, strong=True)]
@@ -226,6 +277,23 @@ def medication_sentences(
                     Fragment(f"{doctor} stopped your "),
                     Fragment(name, strong=True),
                     Fragment("."),
+                )
+            )
+        )
+
+    if not sentences:
+        # No branch matched — an unrecognised `change_kind`, or none at all.
+        # The card must still name its medicine: "How to take it: no change
+        # was discussed" with no drug attached is what the real run printed
+        # for `unchanged`, and it is unusable on paper. A drug the patient
+        # cannot identify is worse than a verb we decline to assert, so this
+        # says the one thing we are certain of and claims no change.
+        sentences.append(
+            Sentence(
+                (
+                    Fragment("About your "),
+                    Fragment(name, strong=True),
+                    Fragment(":"),
                 )
             )
         )

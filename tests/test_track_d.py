@@ -668,3 +668,70 @@ def test_the_policy_has_no_third_case(tmp_path):
 
     survivors = {p.name for p in tmp_path.iterdir() if p.is_dir()}
     assert survivors == {"fresh", "demo"}
+
+
+# -- Phase 3: what the fixture could not show ----------------------------
+#
+# Every case below was found by 3b's first end-to-end run on real audio and
+# was invisible on the fixture — not because the fixture is wrong, but because
+# it only ever carried `continued` and `increased`, and was never carried
+# through an approval with a settled contradiction.
+
+
+def test_a_settled_contradiction_decides_the_printed_dose(extraction):
+    """The real run printed *"from 25 mg to 50 mg"* and *"The dose is 25 mg"*
+    on one card, because sig selection never saw the clinician's answer.
+
+    Category 7's options *are* the competing sig quotes, so settling it is the
+    clinician naming the instruction. Nothing may then print a different one.
+    """
+    item = extraction.item("med-metoprolol")
+    cat7 = next(i for i, f in enumerate(item.flags)
+                if f.blocking and f.d16_category == 7)
+    chosen = item.flags[cat7].options()[1]
+
+    res = Resolution(item_id=item.id, choices={cat7: chosen})
+    text = " ".join(
+        s.plain()
+        for s in actioncard.medication_sentences(
+            item, "Dr. Kovak", resolution=res
+        )
+    )
+    sig = next(s for s in item.raw["sig"]
+               if s["quote"]["text"] == chosen)
+    losing = [s for s in item.raw["sig"] if s["quote"]["text"] != chosen
+              and s.get("dose_amount")]
+    for other in losing:
+        assert f"The dose is {other['dose_amount']:g} mg" not in text, (
+            "a dose the clinician did not choose reached the patient's page"
+        )
+    if sig.get("frequency_per_day"):
+        assert "twice a day" in text
+
+
+def test_no_headline_ever_leaves_the_drug_unnamed(extraction):
+    """`change_kind` is a six-value enum; the card handled four of them.
+
+    `unchanged` and `new` fell through to no headline at all, and the real run
+    printed *"How to take it: no change was discussed"* with no drug attached.
+    A patient cannot act on an instruction about an unnamed medicine, so every
+    value of the enum — and anything outside it — must name the drug.
+    """
+    from visitnotes.render.model import Item
+
+    # lisinopril, not metoprolol: metoprolol carries a salt flag, and that
+    # sentence names the drug by coincidence, so the fixture's headline drug
+    # passes this test even with the headline missing entirely. The item that
+    # exposed the bug on real audio is the one with nothing else to fall back
+    # on.
+    item = extraction.item("med-lisinopril")
+    kinds = ["new", "increased", "decreased", "stopped", "continued",
+             "unchanged", "something-the-model-invented", None]
+    for kind in kinds:
+        raw = json.loads(json.dumps(item.raw))
+        raw["change_kind"] = kind
+        sentences = actioncard.medication_sentences(Item.parse(raw), "Dr. Kovak")
+        assert sentences, f"{kind!r} produced no sentences at all"
+        assert "lisinopril" in sentences[0].plain(), (
+            f"{kind!r} left the drug unnamed"
+        )

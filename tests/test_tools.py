@@ -397,3 +397,42 @@ def test_a8_resolved_rxcui_returns_label_text(kb):
     assert r.spl_set_ids
     text = labels.geriatric_use(r.spl_set_ids)
     assert text and "geriatric" in text.lower()
+
+
+# -- Phase 3: found by 3b's first run on real audio -----------------------
+
+
+@needs_kb
+def test_a6_stutter_is_unresolved_but_offers_the_word_it_converged_on(kb):
+    """*"the lyso, ly, lysinop, lysinopril"* is what a patient reaching for a
+    drug name sounds like, and Whisper transcribes the whole run-up.
+
+    The real run returned it `unresolved` with an **empty** near-match list —
+    D16 category 4 firing without the one thing that makes it actionable. It
+    must stay `unresolved`, because a stutter is evidence about what the
+    speaker was reaching for and not about what they said; but the clinician
+    is owed the guess.
+    """
+    r = _resolve(kb, "lyso, ly, lysinop, lysinopril")
+    assert r.status == "unresolved"
+    assert r.rxcui is None
+    assert [c.name for c in r.candidates] == ["lisinopril"]
+
+
+@needs_kb
+def test_a6_the_category_4_plant_is_still_unresolved_with_no_guess(kb):
+    """The guard on the line above. *"the other blood pressure pill"* has no
+    comma, so the self-correction backoff must never see it — a general
+    prefix sweep is what "resolved" this once before (see Deviations)."""
+    r = _resolve(kb, "the other blood pressure pill")
+    assert r.status == "unresolved"
+    assert not r.candidates
+
+
+@needs_kb
+def test_a6_two_drugs_in_one_breath_are_not_read_as_a_stutter(kb):
+    """Commas alone are not evidence of self-correction. The fragments have
+    to converge, or *"metoprolol, lisinopril"* becomes a guess at one drug."""
+    r = _resolve(kb, "aspirin, metformin, lisinopril")
+    assert r.status == "unresolved"
+    assert "lisinopril" not in [c.name for c in r.candidates]

@@ -84,6 +84,7 @@ def render_patient_document(
                 item,
                 clinician_name,
                 promoted=bool(res and res.promoted),
+                resolution=res,
             )
         )
         for item, res in _printable(extraction.medications, resolutions)

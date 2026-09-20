@@ -123,6 +123,7 @@ Three models, ~9 GB total, all of it lazy by default:
 | `pyannote-community/speaker-diarization-community-1` | 31 MB | B2 | **D19** |
 | `mlx-community/whisper-large-v3-mlx` | 3.08 GB | B1 | **D21** — not turbo |
 | `mlx-community/Qwen3.5-9B-4bit` | 5.98 GB | C3 | **D24** — build on 9B |
+| `mlx-community/Qwen3.6-35B-A3B-4bit` | 20.43 GB | C3 / 4a | **D24** — demo candidate |
 
 ```bash
 env -u HF_HUB_OFFLINE -u TRANSFORMERS_OFFLINE \
@@ -130,7 +131,8 @@ env -u HF_HUB_OFFLINE -u TRANSFORMERS_OFFLINE \
 from huggingface_hub import snapshot_download
 for r in ['pyannote-community/speaker-diarization-community-1',
           'mlx-community/whisper-large-v3-mlx',
-          'mlx-community/Qwen3.5-9B-4bit']:
+          'mlx-community/Qwen3.5-9B-4bit',
+          'mlx-community/Qwen3.6-35B-A3B-4bit']:
     print('CACHED', snapshot_download(r))
 "
 ```
@@ -149,11 +151,20 @@ like a metadata-only stub. Use `du -shL` on the snapshot, or check
 **Done when:** each model loads with `HF_HUB_OFFLINE=1` set — *loads*, not
 just present on disk. `phase0/check_env.py` asserts this.
 
-**Not pulled, deliberately:** D24's demo candidate
-`mlx-community/Qwen3.6-35B-A3B-4bit` (20.43 GB) and the 8-bit 9B fallback
-(~10 GB). Both are contingent on C3's outcome, and 30 GB of speculative
-download on venue Wi-Fi is worse than the risk it hedges. **If C3 chooses
-either one, pull it that moment** — not on demo day.
+**The MoE is now pulled too** — 42 minutes on good Wi-Fi, which is exactly
+the download you do not want to discover you need at 4a. Measured on this
+machine: loads offline in 4.6 s, **41 tok/s** with `enable_thinking=False`.
+That is below SPEC §D24's ~65–85 tok/s estimate, so **C3 should time the real
+extraction prompt rather than trust the table** — the gap between 9B and MoE
+is narrower than the spec assumes.
+
+**Still not pulled:** the 8-bit 9B fallback (~10 GB), which only matters if
+C3 finds 4-bit verbatim fidelity lacking. **If C3 needs it, pull it that
+moment** — not on demo day.
+
+Cache is **27 GB** across four models. Note HF keeps the bytes in a shared
+`hub/blobs/`, so per-model directories read as single-digit MB — see the
+`du` trap above.
 
 ---
 

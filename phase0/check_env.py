@@ -66,10 +66,11 @@ def weights_cached():
 
     from huggingface_hub import snapshot_download
     for repo in ("mlx-community/whisper-large-v3-mlx",
-                 "mlx-community/Qwen3.5-9B-4bit"):
+                 "mlx-community/Qwen3.5-9B-4bit",
+                 "mlx-community/Qwen3.6-35B-A3B-4bit"):
         snapshot_download(repo)  # raises offline if anything is missing
 
-    return "all 3 models resolve offline (0i)"
+    return "all 4 models resolve offline (0i)"
 
 
 check("telemetry", telemetry_off)

@@ -84,7 +84,7 @@ steps behind it. A blank is not "probably fine"; it is "nobody has checked."
 - [x] **0d** openFDA downloaded, 14 parts / 1.77 GB · CLOCK
 - [x] **0e** `PYANNOTE_METRICS_ENABLED=false` in profile **and** in code *(set it above the pyannote import — it is read at import time)*, plus `HF_HUB_OFFLINE=1` / `TRANSFORMERS_OFFLINE=1` once weights are cached *(**0i** is what caches them — the flag alone turns a lazy fetch into a hard failure, it does not prevent one)*
 - [x] **0f** diarization model loads (ungated mirror, no token)
-- [x] **0i** all three model weights pre-cached, each verified to **load** offline · CLOCK
+- [x] **0i** all **four** model weights pre-cached, each verified to **load** offline · CLOCK
 - [x] **0g** GATE — pyannote on Python 3.14
 - [x] **0h** GATE — MPS output matches CPU
 
@@ -299,6 +299,17 @@ Format: `HH:MM · <step> · <what happened>`
         tok.apply_chat_template(..., enable_thinking=False) is supported and
         prefills an empty <think></think> block. Load+generate is 1.1s + 1.8s,
         so C2 is cheap to iterate on.
+20:25 · 0i · MoE pulled after all, on request, while the Wi-Fi was good:
+        Qwen3.6-35B-A3B-4bit, 20.43 GB, 42 minutes. Verified offline —
+        loads in 4.6 s, generates. Cache is now 27 GB across four models and
+        4a can no longer be ambushed by a 20 GB download. check_env.py
+        asserts all four.
+20:26 · 0i · Track C, a number worth having before C3: the MoE measured
+        **41 tok/s** here (300-token generation, enable_thinking=False),
+        against SPEC D24's ~65-85 tok/s estimate. Time the real extraction
+        prompt before choosing on speed — the 9B-vs-MoE gap is narrower than
+        the spec table implies. The 8-bit 9B fallback is still NOT cached;
+        pull it the moment C3 wants it, not on demo day.
 19:07 · 0e · Track B, empirical confirmation of 1a's offset contract: whisper
         emits words WITH a leading space (' Good', ' morning.'). 1a specified
         Word.text excludes whitespace, so B4 must strip and shift char_offset

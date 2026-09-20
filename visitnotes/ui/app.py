@@ -303,15 +303,33 @@ class Handler(BaseHTTPRequestHandler):
             # consent means someone reached the screen another way.
             return self._send(b"consent required", HTTPStatus.CONFLICT, "text/plain")
 
+        # A form that posts without the fields its handler needs used to
+        # raise KeyError inside the request thread: a 500 with no body, an
+        # unhandled traceback in the log, and a button that silently did
+        # nothing. That is how /promote shipped broken — say what is missing.
+        def need(*fields: str) -> str | None:
+            missing = [f for f in fields if not form.get(f)]
+            if missing:
+                self._send(f"missing form field(s): {', '.join(missing)}".encode(),
+                           HTTPStatus.BAD_REQUEST, "text/plain; charset=utf-8")
+                return None
+            return form["item_id"]
+
         if path == "/resolve":
-            current.resolve(form["item_id"], int(form["flag_index"]), form["option"])
-            return self._redirect(f"/#row-{form['item_id']}")
+            if (item_id := need("item_id", "flag_index", "option")) is None:
+                return
+            current.resolve(item_id, int(form["flag_index"]), form["option"])
+            return self._redirect(f"/#row-{item_id}")
         if path == "/promote":
-            current.promote(form["item_id"])
-            return self._redirect(f"/#row-{form['item_id']}")
+            if (item_id := need("item_id")) is None:
+                return
+            current.promote(item_id)
+            return self._redirect(f"/#row-{item_id}")
         if path == "/drop":
-            current.drop(form["item_id"])
-            return self._redirect(f"/#row-{form['item_id']}")
+            if (item_id := need("item_id")) is None:
+                return
+            current.drop(item_id)
+            return self._redirect(f"/#row-{item_id}")
         if path == "/approve":
             try:
                 current.approve()

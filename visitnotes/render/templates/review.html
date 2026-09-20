@@ -61,6 +61,7 @@
         <div class="ask">
           <p class="q">Is that the right word?</p>
           <form method="post" action="/promote" class="answers">
+            <input type="hidden" name="item_id" value="{{ row.id }}">
             <button type="submit" class="option">Yes, print it</button>
           </form>
         </div>

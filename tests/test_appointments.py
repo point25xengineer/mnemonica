@@ -125,3 +125,46 @@ def test_a_purpose_that_cannot_fit_is_dropped():
     """Decoration on an appointment. A mangled one costs more than none."""
     assert _fit_purpose("it") is None
     assert _fit_purpose("") is None
+
+
+# --- every POST form must carry what its handler requires -----------------
+
+def test_every_post_form_supplies_its_handlers_fields():
+    """/promote shipped without `item_id` and 500'd on click.
+
+    The button looked identical to the working ones, the keyboard shortcut
+    routed to the same button, and nothing in the suite touched the template's
+    form fields — so it stayed broken from Track D until a real click found
+    it. This reads both files and checks they agree.
+    """
+    import re
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    html = (root / "visitnotes/render/templates/review.html").read_text()
+    app = (root / "visitnotes/ui/app.py").read_text()
+
+    forms = {}
+    for match in re.finditer(
+        r'<form[^>]*action="(/[a-z]+)"[^>]*>(.*?)</form>', html, re.S
+    ):
+        action, body = match.group(1), match.group(2)
+        names = set(re.findall(r'name="([a-z_]+)"', body))
+        forms.setdefault(action, set()).update(names)
+
+    required = {}
+    for match in re.finditer(
+        r'if path == "(/[a-z]+)":\n(.*?)(?=\n        if path|\n\n)', app, re.S
+    ):
+        required[match.group(1)] = set(re.findall(r'need\(([^)]*)\)', match.group(2)))
+
+    for action, fields in required.items():
+        wanted = {f.strip().strip('"') for part in fields for f in part.split(",")}
+        wanted.discard("")
+        if not wanted or action not in forms:
+            continue
+        missing = wanted - forms[action]
+        assert not missing, (
+            f'form action="{action}" posts {sorted(forms[action])} but the '
+            f"handler needs {sorted(wanted)} — missing {sorted(missing)}"
+        )

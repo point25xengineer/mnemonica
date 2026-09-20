@@ -24,6 +24,7 @@ import mimetypes
 import urllib.parse
 from datetime import date
 from http import HTTPStatus
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -95,6 +96,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._static(path)
         if path == "/audio":
             return self._audio()
+        if path == "/record":
+            return self._record()
+        if path == "/progress":
+            return self._progress()
         if path == "/new":
             STATE.new_session()
             return self._redirect("/")
@@ -114,6 +119,14 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
+
+    def _record(self) -> None:
+        """U2b — the live capture screen."""
+        self._html("record.html", clinician_name=STATE.require().clinician_name)
+
+    def _progress(self) -> None:
+        body = json.dumps(STATE.require().progress.as_dict()).encode()
+        self._send(body, HTTPStatus.OK, "application/json")
 
     def _static(self, path: str) -> None:
         name = Path(path).name
@@ -199,6 +212,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._html(
                 "consent.html", clinician_name=current.clinician_name, error=None
             )
+        if current.stage == "recording":
+            # Mid-capture, or mid-pipeline. `/` is not the page they want.
+            return self._redirect("/record")
         if current.session is None:
             current.load_fixture()
         show_details = (
@@ -270,8 +286,14 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         path = urllib.parse.urlparse(self.path).path
-        form = self._form()
         current = STATE.require()
+
+        # Before `_form()`: an audio blob is binary, and reading it as UTF-8
+        # form data raises on the first non-text byte.
+        if path == "/upload":
+            return self._upload(current)
+
+        form = self._form()
 
         if path == "/consent":
             return self._consent(current, form)
@@ -299,6 +321,52 @@ class Handler(BaseHTTPRequestHandler):
 
         self._send(b"not found", HTTPStatus.NOT_FOUND, "text/plain")
 
+    def _upload(self, current: ReviewSession) -> None:
+        """U2b — a take arrives from MediaRecorder.
+
+        Two kinds. `enrollment` is the clinician alone and is only stored;
+        `visit` is the consultation and starts the pipeline, on a worker
+        thread so the POST can return and the page can poll `/progress`.
+
+        The body is a raw blob rather than multipart: one file per request,
+        and `Content-Length` is all the framing needed.
+        """
+        if current.stage not in ("recording", "consent"):
+            return self._send(b"not recording", HTTPStatus.CONFLICT, "text/plain")
+
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        kind = (query.get("kind") or ["visit"])[0]
+        if kind not in ("enrollment", "visit"):
+            return self._send(b"unknown kind", HTTPStatus.BAD_REQUEST, "text/plain")
+
+        length = int(self.headers.get("Content-Length") or 0)
+        if not length:
+            return self._send(b"empty upload", HTTPStatus.BAD_REQUEST, "text/plain")
+
+        current.session_dir.mkdir(parents=True, exist_ok=True)
+        # The extension matters: ffmpeg sniffs content, but `load_audio` keys
+        # its cache off the name, and a blob called .wav that is not one reads
+        # as a decode failure rather than a naming mistake.
+        target = current.session_dir / f"{kind}.webm"
+        target.write_bytes(self.rfile.read(length))
+
+        if kind == "enrollment":
+            return self._send(b"ok", HTTPStatus.OK, "text/plain")
+
+        enrollment = current.session_dir / "enrollment.webm"
+
+        def work() -> None:
+            try:
+                current.ingest_recording(
+                    target, enrollment if enrollment.exists() else None
+                )
+            except Exception:
+                pass  # already on current.progress, which the page is polling
+
+        current.progress.set("transcribing", "starting")
+        threading.Thread(target=work, daemon=True).start()
+        return self._send(b"started", HTTPStatus.ACCEPTED, "text/plain")
+
     def _consent(self, current: ReviewSession, form: dict[str, str]) -> None:
         current.clinician_name = form.get("clinician_name") or current.clinician_name
         if form.get("obtained") != "yes":
@@ -317,8 +385,14 @@ class Handler(BaseHTTPRequestHandler):
             return self._html(
                 "consent.html", clinician_name=current.clinician_name, error=str(exc)
             )
-        current.load_fixture()
-        self._redirect("/")
+        # A `--session` on the command line means the visit was recorded
+        # earlier and the pipeline has already run: go straight to review.
+        # With no session to load, the microphone is the input (U2b).
+        if state.SESSION_OVERRIDE is not None:
+            current.load_fixture()
+            return self._redirect("/")
+        current.start_recording()
+        return self._redirect("/record")
 
 
 def serve(port: int = 8765) -> None:

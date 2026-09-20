@@ -60,6 +60,34 @@ the fixture lying about where the file lives.
 """
 
 
+@dataclass
+class Progress:
+    """What the recording screen shows while the pipeline runs (U2b).
+
+    The chain takes ~90 s on an M5 Pro and the clinician is watching it. A
+    spinner with no stages reads as a hang; naming the stage reads as work.
+    Coarse on purpose — these are the four things a person can picture, not
+    the eleven the code actually does.
+    """
+
+    stage: str = "idle"
+    detail: str = ""
+    done: int = 0
+    total: int = 0
+    error: str | None = None
+    finished: bool = False
+
+    def set(self, stage: str, detail: str = "", *, done: int = 0,
+            total: int = 0) -> None:
+        self.stage, self.detail, self.done, self.total = stage, detail, done, total
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "stage": self.stage, "detail": self.detail, "done": self.done,
+            "total": self.total, "error": self.error, "finished": self.finished,
+        }
+
+
 class ConsentRequired(RuntimeError):
     """D27. Raised rather than returned, because every caller that could
     swallow a `False` here is a caller that turns on a microphone."""
@@ -91,6 +119,7 @@ class ReviewSession:
     unexpected_speaker: bool = False
     resolutions: dict[str, Resolution] = field(default_factory=dict)
     approved: ApprovalResult | None = None
+    progress: Progress = field(default_factory=lambda: Progress())
 
     @property
     def session_dir(self) -> Path:
@@ -174,6 +203,74 @@ class ReviewSession:
             f"{datetime.now().isoformat(timespec='seconds')} session opened\n"
         )
         self.stage = "review"
+
+    def ingest_recording(
+        self,
+        audio_path: Path,
+        enrollment_path: Path | None = None,
+        *,
+        model_id: str | None = None,
+    ) -> None:
+        """A recording made moments ago, all the way to a review screen.
+
+        The same two stages the CLI runs (`audio.pipeline` then `verify.run`),
+        called in-process so the clinician never leaves the page. `load_fixture`
+        remains the path for a pre-computed session — the demo fallback, and
+        what the tests use — and neither knows about the other.
+
+        Imports are local because they pull in MLX, Whisper and pyannote: at
+        module scope they would cost ~10 s on every `ui.app` start, including
+        the runs that never record anything.
+        """
+        from visitnotes.audio.pipeline import ingest
+        from visitnotes.extract.runner import DEV_MODEL, Extractor
+        from visitnotes.verify.pipeline import verify
+        from visitnotes.verify.run import _log
+
+        if self.consent is None:
+            raise ConsentRequired("recording requires consent first (D27)")
+
+        p = self.progress
+        try:
+            p.set("transcribing", "Whisper large-v3 — words and timings")
+            result = ingest(
+                audio_path,
+                session_dir=self.session_dir,
+                consent=self.consent,
+                enrollment_path=enrollment_path,
+            )
+            self.session = result.session
+            self.unexpected_speaker = bool(result.flags)
+            (self.session_dir / "session.json").write_text(
+                self.session.model_dump_json(indent=1)
+            )
+
+            p.set("extracting", "quoting what the clinician said",
+                  total=len(self.session.turns))
+            extractor = Extractor(model_id or DEV_MODEL)
+
+            def tick(_result, done: int, total: int) -> None:
+                p.set("extracting", "quoting what the clinician said",
+                      done=done, total=total)
+
+            run = extractor.extract(self.session, progress=tick)
+
+            p.set("verifying", "checking every quote against the transcript")
+            verified = verify(self.session, run.visit, logger=_log(self.session))
+            (self.session_dir / "extraction.json").write_text(
+                json.dumps(verified.envelope, indent=1)
+            )
+            self.extraction = Extraction.parse(verified.envelope)
+
+            self._log("session opened from a live recording")
+            self.stage = "review"
+            p.set("done")
+        except Exception as exc:  # surfaced on the page, not just in a log
+            p.error = f"{type(exc).__name__}: {exc}"
+            p.set("failed", p.error)
+            raise
+        finally:
+            p.finished = True
 
     # -- U5 ---------------------------------------------------------------
 

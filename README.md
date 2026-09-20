@@ -20,14 +20,34 @@ cd "/Users/evancanty/HackMIT 26 Project"
 VP=/Users/evancanty/vn-shared/.venv/bin/python
 ```
 
+### Record a real visit (live capture)
+
+```bash
+$VP -m visitnotes.ui.app
+```
+
+Open **http://127.0.0.1:8765** in a browser that can reach your microphone —
+Chrome or Safari, not an embedded pane — and allow mic access when asked.
+
+Consent, then two takes: a few seconds of the clinician's voice alone, then
+the consultation. Stop, and the pipeline runs on this machine with a live
+progress bar (~90 s for a four-minute visit). It lands on the review screen.
+
+The voice sample is not a formality. pyannote returns anonymous clusters, and
+matching them against an enrolled voiceprint is the only thing that tells the
+system which speaker is the doctor — which is what D19's rule, that a dose may
+only come from a clinician turn, stands on.
+
 ### See it working (fastest — no pipeline run, ~5 seconds)
 
 ```bash
 $VP -m visitnotes.ui.app --session sessions/phase3/session.json --extraction sessions/phase3/extraction.json --audio "sessions/phase3/MedScribe test 1.m4a"
 ```
 
-Then open **http://127.0.0.1:8765**. Consent gate first, then the review
-screen. Settle the blocking item, approve, and the patient's page renders.
+Then open **http://127.0.0.1:8765**. Passing `--session` skips capture and
+goes straight to review — the demo fallback, and what to use if a microphone
+is unavailable. Settle the blocking item, approve, and the patient's page
+renders.
 
 ### Full run, from audio (~90 seconds)
 

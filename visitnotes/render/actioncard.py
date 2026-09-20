@@ -178,11 +178,19 @@ def medication_sentences(
     """
     med = item.raw.get("medication") or {}
     name = med.get("canonical_name")
+    # "your" reads correctly in front of a drug name and wrongly in front of
+    # the words a patient used for one — "your the other blood pressure pill".
+    # The heard text carries its own determiner, so the possessive drops.
+    possessive = "your "
     if not name:
         # D16 category 4 — unresolved. The patient's page prints what was
-        # actually said, in quotes, rather than a drug we could not name.
+        # actually said rather than a drug we could not name. It is NOT
+        # quoted: quotation marks on this page mean a verified verbatim span
+        # the doctor said (the red flags, the summary), and a drug reference
+        # dropped into a sentence we wrote is not one of those.
         heard = item.primary_quote
-        name = f"“{heard.text}”" if heard else "a medication"
+        name = heard.text if heard else "a medication"
+        possessive = ""
 
     doctor = _clinician(clinician_name)
     change = item.raw.get("change_kind")
@@ -228,7 +236,7 @@ def medication_sentences(
         verb = change
         if from_dose and to_dose:
             frags = (
-                Fragment(f"{doctor} {verb} your "),
+                Fragment(f"{doctor} {verb} {possessive}"),
                 Fragment(name, strong=True),
                 Fragment(" from "),
                 Fragment(from_dose, strong=True),
@@ -240,7 +248,7 @@ def medication_sentences(
             # No baseline was spoken. Say what changed, not what it changed
             # from — the chart is not ours to read.
             frags = (
-                Fragment(f"{doctor} changed your "),
+                Fragment(f"{doctor} changed {possessive}"),
                 Fragment(name, strong=True),
                 Fragment(" to "),
                 Fragment(to_dose, strong=True),
@@ -249,7 +257,7 @@ def medication_sentences(
             needs = False if derived else needs
         else:
             frags = (
-                Fragment(f"{doctor} {verb} your "),
+                Fragment(f"{doctor} {verb} {possessive}"),
                 Fragment(name, strong=True),
                 Fragment("."),
             )
@@ -258,7 +266,7 @@ def medication_sentences(
         sentences.append(
             Sentence(
                 (
-                    Fragment("Keep taking your "),
+                    Fragment(f"Keep taking {possessive}"),
                     Fragment(name, strong=True),
                     Fragment(" the same way you have been."),
                 )
@@ -274,7 +282,7 @@ def medication_sentences(
         sentences.append(
             Sentence(
                 (
-                    Fragment(f"{doctor} stopped your "),
+                    Fragment(f"{doctor} stopped {possessive}"),
                     Fragment(name, strong=True),
                     Fragment("."),
                 )
@@ -291,7 +299,7 @@ def medication_sentences(
         sentences.append(
             Sentence(
                 (
-                    Fragment("About your "),
+                    Fragment(f"About {possessive}"),
                     Fragment(name, strong=True),
                     Fragment(":"),
                 )

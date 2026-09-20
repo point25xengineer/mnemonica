@@ -13,8 +13,10 @@
   --muted: #6b7681;
   --line: #e2e6ea;
   --stop: #9a1b1b;
-  --ok: #1a5c34;
-  --focus: #1b4ea8;
+  --ok: #0f6e6b;
+  --ok-edge: #0a4f4d;
+  --ok-wash: #eef6f5;
+  --focus: #0a4f4d;
   --bg: #fbfbfc;
   color-scheme: light;
 }
@@ -52,7 +54,7 @@ body.lean .detail { display: none; }
 .toggle:hover { color: var(--focus); }
 .approve {
   font: 600 14px/1 inherit; padding: .6rem 1rem; border-radius: 7px;
-  border: 1px solid #14431f; background: #1a5c34; color: #fff; cursor: pointer;
+  border: 1px solid var(--ok-edge); background: var(--ok); color: #fff; cursor: pointer;
 }
 .approve[disabled] { background: #fff; color: var(--muted); border-color: var(--line); cursor: not-allowed; font-weight: 400; }
 .approve kbd { color: rgba(255,255,255,.7); }
@@ -92,7 +94,7 @@ summary::-webkit-details-marker { display: none; }
   display: inline-flex; align-items: baseline; gap: .3rem;
 }
 .option:hover { border-color: var(--focus); }
-.option.chosen { border-color: var(--ok); background: #f3f9f5; font-weight: 600; }
+.option.chosen { border-color: var(--ok); background: var(--ok-wash); font-weight: 600; }
 .hear { color: var(--muted); font-size: 10px; }
 
 .evidence { margin: .25rem 0 0; padding: 0; list-style: none; display: grid; gap: .2rem; }
@@ -131,7 +133,7 @@ button.play:hover { text-decoration: underline; }
 .consent .clinician input { width: 100%; padding: .5rem; font: inherit; border: 1px solid var(--line); border-radius: 6px; }
 .consent button[type=submit] {
   font: 600 15px/1 inherit; padding: .7rem 1.1rem; border-radius: 7px;
-  border: 1px solid #14431f; background: #1a5c34; color: #fff; cursor: pointer;
+  border: 1px solid var(--ok-edge); background: var(--ok); color: #fff; cursor: pointer;
 }
 .error { color: var(--stop); font-weight: 600; font-size: 14px; }
 .fineprint { margin-top: 1.5rem; font-size: 12px; color: var(--muted); }
@@ -155,7 +157,7 @@ button.play:hover { text-decoration: underline; }
    the same name clipped its title to 6px. Scope anything added here. */
 .record-progress       { height: 6px; border-radius: 3px; background: #e6e6e6;
                          overflow: hidden; margin: .8rem 0; }
-.record-progress-fill  { height: 100%; width: 12%; background: #1c6b3f;
+.record-progress-fill  { height: 100%; width: 12%; background: var(--ok);
                          transition: width .4s ease; }
 
 @media (prefers-reduced-motion: reduce) {

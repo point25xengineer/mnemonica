@@ -119,7 +119,7 @@ button.play:hover { text-decoration: underline; }
 .keyhint { margin: 1.25rem 1.5rem; font-size: 12px; color: var(--muted); }
 
 /* -- consent screen (U2) ----------------------------------------------- */
-.consent { max-width: 32rem; margin: 3.5rem auto; padding: 2rem; background: #fff;
+.consent { max-width: 32rem; margin: 0 auto; padding: 2rem; background: #fff;
   border: 1px solid var(--line); border-radius: 10px; }
 .consent h1 { font-size: 22px; }
 .lede { color: var(--muted); font-size: 14px; }
@@ -131,7 +131,11 @@ button.play:hover { text-decoration: underline; }
 .consent .clinician { display: block; margin-bottom: 1.4rem; }
 .consent .clinician span { display: block; font-size: 12px; color: var(--muted); margin-bottom: .3rem; }
 .consent .clinician input { width: 100%; padding: .5rem; font: inherit; border: 1px solid var(--line); border-radius: 6px; }
-.consent button[type=submit] {
+/* `[type=submit]` missed every button on the recording screen, which are
+   type=button because they drive MediaRecorder rather than a form — so the
+   first screen a clinician actually touches showed browser defaults next to
+   a styled one. */
+.consent button[type=submit], .record button {
   font: 600 15px/1 inherit; padding: .7rem 1.1rem; border-radius: 7px;
   border: 1px solid var(--ok-edge); background: var(--ok); color: #fff; cursor: pointer;
 }
@@ -139,7 +143,7 @@ button.play:hover { text-decoration: underline; }
 .fineprint { margin-top: 1.5rem; font-size: 12px; color: var(--muted); }
 
 /* -- approved ---------------------------------------------------------- */
-.done { max-width: 38rem; margin: 3.5rem auto; padding: 2rem; background: #fff;
+.done { max-width: 38rem; margin: 0 auto; padding: 2rem; background: #fff;
   border: 1px solid var(--line); border-radius: 10px; }
 .done ul { padding-left: 1.1rem; }
 .done code { font: 12px/1.6 ui-monospace, Menlo, monospace; word-break: break-all; }
@@ -211,3 +215,31 @@ h2.part:first-child { margin-top: 0; }
   .record-progress-fill { animation: breathe 2.4s ease-in-out infinite; }
 }
 @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .72; } }
+
+/* -- composing for a full screen ---------------------------------------- *
+ * In kiosk the viewport is the whole display, and a 32rem card pinned to the
+ * top of it reads as a small page that failed to load rather than a step in
+ * a flow. The single-card screens centre themselves; the review screen keeps
+ * its reading measure but sits in the middle rather than against the left
+ * edge. */
+body:has(.consent), body:has(.done) {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding-block: 2rem;
+}
+
+main { margin-inline: auto; }
+.bar { padding-inline: max(1.5rem, calc((100vw - 46rem) / 2)); }
+.notice, .keyhint, .discarded {
+  margin-inline: max(1.5rem, calc((100vw - 46rem) / 2));
+}
+
+/* The stop controls read as the opposite action to the one that started the
+   take, so they should not look identical to it. */
+.record button#enroll-stop, .record button#visit-stop {
+  background: #fff; color: var(--ink); border-color: var(--rule);
+}
+.record button#enroll-stop:hover, .record button#visit-stop:hover {
+  border-color: var(--ok); color: var(--ok);
+}

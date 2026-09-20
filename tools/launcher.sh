@@ -72,12 +72,20 @@ done
 
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 if [ -x "$CHROME" ]; then
-  # --app gives a window with no tab strip or address bar. The persisted
-  # profile is what makes the microphone permission a one-time question.
+  # --app removes the tab strip and address bar; --kiosk removes the window
+  # frame and the menu bar too, so the screen is only ever the consultation.
+  # (--start-fullscreen was tried first and only maximises under the menu
+  # bar; macOS native fullscreen also animates into its own Space, which is
+  # a transition rather than the absence of one.)
+  #
+  # There is no close button in kiosk, so Cmd-Q is the way out — it drops the
+  # renderers, which is the same signal a closed window gives.
+  #
+  # The persisted profile is what makes the microphone a one-time question.
   "$CHROME" --app="$URL" \
             --user-data-dir="$PROFILE" \
             --no-first-run --no-default-browser-check \
-            --window-size=1180,980 &
+            --kiosk &
   BROWSER=$!
 
   # Waiting on that process does NOT work: on macOS Chrome keeps running with

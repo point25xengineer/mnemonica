@@ -23,7 +23,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from mnemonica.contracts import Session
-from mnemonica.render import actioncard
+from mnemonica.render import actioncard, model
 from mnemonica.render.model import (
     Extraction,
     Item,
@@ -162,13 +162,18 @@ def render_patient_document(
         visit_date_long=long_date(extraction.visit_date),
         clinician_name=clinician_name,
         medications=medications,
-        appointments=appointments,
-        red_flags=red_flags,
+        # D29 — the patient's page follows the review screen's scope. A note
+        # that lists a follow-up the clinician never saw would be worse than
+        # one that omits it.
+        appointments=appointments if "appointments" in model.SCOPE else [],
+        red_flags=red_flags if "red_flags" in model.SCOPE else [],
         # Split by part rather than filtered in the template: which heading
         # belongs where is a content decision, and content decisions do not
         # belong in markup.
-        presentation_lines=_prose_lines(summary_sections, "presentation"),
-        advice_lines=_prose_lines(summary_sections, "advice"),
+        presentation_lines=(_prose_lines(summary_sections, "presentation")
+                            if "summary" in model.SCOPE else []),
+        advice_lines=(_prose_lines(summary_sections, "advice")
+                      if "summary" in model.SCOPE else []),
         consent_method=consent.method,
         consent_date_long=long_date(consent.obtained_at),
         approved_date_long=long_date(approved_on),

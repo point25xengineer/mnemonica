@@ -531,6 +531,42 @@ one.**
 
 ### 3.6 Output and integration
 
+**D29 — Only medications reach a human.**
+
+Extraction still produces appointments, red flags and loose threads; they are
+still verified and still in `extraction.json`. They are not shown. The review
+screen is one box per medication, and the patient's page carries the medicines
+table and nothing else.
+
+Every kind is a surface that can be wrong in its own way, and the non-drug
+ones are the ungrounded ones: appointments needed deduplication, red flags
+needed deduplication and a containment threshold, and nothing checks either
+beyond quoting them. Medications are what the tool layer actually grounds —
+RxNorm resolves the name, the sig grammar parses the dose, cross-validation
+checks it against available strengths, and D16 category 7 catches a
+contradiction. A narrower product that is right beats a broad one that is
+nearly right.
+
+Gated by `render/model.py::SCOPE`, not by the prompt, so the data survives and
+the decision is one line to reverse. The tests for the hidden kinds widen
+`SCOPE` through a fixture rather than being deleted — they are capability
+tests, and reversing this should not require rewriting a suite to prove
+something that never stopped working.
+
+**A mention with no drug name in it is dropped before it becomes a box.**
+Per-turn extraction nominates from a single turn, so a clinician's correction
+— *"Five hundred. With food."* — arrives as a medication containing no drug,
+and so does *"Still on it"*. On the test script two of the four boxes were
+fragments like these. Under D29 they were half of everything the clinician had
+to confirm. The test is narrow: a phrase is dropped only when every token is a
+number word, a unit or a function word. *"my blood pressure pill"* and
+*"water pill"* survive — they name a drug by what it does, which is a real
+mention D16 category 4 exists to flag.
+
+- *Rejected — fixing it in the prompt.* The model is not wrong to nominate
+  these; they are what the turn said. The judgement that a phrase names no
+  drug is deterministic and belongs where it can be audited.
+
 **D28 — Live capture in the browser.** *(supersedes the original scope cut)*
 
 Numbered last because it was reversed last. Live recording was cut early — a
@@ -918,6 +954,7 @@ Do these before building on top of the assumption.
 | D26 | Local FHIR DocumentReference, identical to print | Q17a |
 | D27 | Patient consents to the recording; the artifact proves it | — |
 | D28 | Live capture in the browser (reverses the original scope cut) | — |
+| D29 | Only medications reach a human; drug-less mentions dropped | — |
 
 See also [PRESENTATION-NOTES.md](PRESENTATION-NOTES.md) for what must be said
 on stage.

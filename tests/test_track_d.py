@@ -45,7 +45,7 @@ def rows(extraction, session):
 # -- the fixture itself ---------------------------------------------------
 
 
-def test_computed_header_matches_the_fixtures_own_counts(extraction):
+def test_computed_header_matches_the_fixtures_own_counts(full_scope, extraction):
     """If these two ever disagree, the fixture's `header` block is wrong and
     the UI must not quietly print either number."""
     assert extraction.header() == extraction.recorded_header
@@ -92,7 +92,7 @@ def test_category_8_renders_expanded_even_though_it_is_not_blocking(extraction, 
     assert next(r for r in rows if r.id == item.id).expanded
 
 
-def test_the_header_shows_the_discarded_count(extraction):
+def test_the_header_shows_the_discarded_count(full_scope, extraction):
     """D16 category 1 is silent about the item and loud about the number."""
     line = header_line(extraction)
     assert "1 discarded" in line
@@ -154,7 +154,7 @@ def test_contradiction_shows_both_values_with_timestamps(rows):
     )
 
 
-def test_loose_thread_gets_its_own_row(extraction, rows):
+def test_loose_thread_gets_its_own_row(full_scope, extraction, rows):
     """D16 category 6. Counted separately from the confirm queue so it does
     not inflate the number the clinician reads as work."""
     row = next(r for r in rows if r.kind == "loose_thread")
@@ -249,7 +249,7 @@ def test_a_flagged_line_cues_to_the_uncertain_word(extraction, session):
     assert cue.duration < 4.0, "a cue longer than a few seconds is not a cue"
 
 
-def test_a_verified_line_cues_to_its_whole_span(extraction, session):
+def test_a_verified_line_cues_to_its_whole_span(full_scope, extraction, session):
     quote = extraction.item("flag-dizzy").primary_quote
     cue = cue_for(session, quote, flagged=False)
     words = words_in(session, quote)
@@ -358,7 +358,7 @@ def test_salt_ambiguity_reaches_the_patient(extraction):
     assert "metoprolol succinate or metoprolol tartrate" in text
 
 
-def test_dates_print_both_forms_with_a_recomputed_weekday(extraction):
+def test_dates_print_both_forms_with_a_recomputed_weekday(full_scope, extraction):
     """D18. Printing both forms exists so a patient can catch a mismatch; a UI
     that copies the resolver's precomputed string can only repeat its error."""
     item = extraction.item("appt-followup")
@@ -485,7 +485,7 @@ def test_body_type_is_at_least_18px(document):
     assert size and int(size.group(1)) >= 18
 
 
-def test_nothing_on_the_page_was_written_by_the_model(document, session):
+def test_nothing_on_the_page_was_written_by_the_model(full_scope, document, session):
     """Every sentence is either a template of ours or a verbatim span. The
     only model-authored artefacts in the pipeline are *selections*."""
     import re

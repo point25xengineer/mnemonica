@@ -311,7 +311,7 @@ def test_appointment_prints_both_forms(result):
     assert appt["disposition"] == "printed_as_fact"
 
 
-def test_header_matches_the_items(result):
+def test_header_matches_the_items(full_scope, result):
     """U3 prints this. A header that drifts from its own list is a confident
     lie — and Track D recounts it, so a mismatch surfaces there too."""
     from mnemonica.render.model import Extraction

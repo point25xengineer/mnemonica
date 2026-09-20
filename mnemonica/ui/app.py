@@ -30,6 +30,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from mnemonica.render import model
 from mnemonica.render import review as review_view
 from mnemonica.render.document import render_patient_document
 from mnemonica.ui import retention, state
@@ -238,9 +239,12 @@ class Handler(BaseHTTPRequestHandler):
         self._html(
             "review.html",
             rows=rows,
-            presentation=review_view.build_summary_review(
-                current.extraction, current.session,
-                unexpected_speaker=current.unexpected_speaker,
+            presentation=(
+                review_view.build_summary_review(
+                    current.extraction, current.session,
+                    unexpected_speaker=current.unexpected_speaker,
+                )
+                if "summary" in model.SCOPE else []
             ),
             header_line=review_view.header_line(current.extraction),
             discarded=current.extraction.discarded,

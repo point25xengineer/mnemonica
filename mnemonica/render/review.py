@@ -400,6 +400,11 @@ def build_review(
     return rows
 
 
+def summary_mod_scope() -> tuple[str, ...]:
+    from mnemonica.render.model import SCOPE
+    return SCOPE
+
+
 def header_line(extraction: Extraction) -> str:
     """*"3 confirmed · 1 needs your ear · 1 discarded"* — the honest count.
 
@@ -412,7 +417,9 @@ def header_line(extraction: Extraction) -> str:
         parts.append(f"{counts['blocking']} needs your ear")
     if counts["needs_confirmation"]:
         parts.append(f"{counts['needs_confirmation']} to confirm")
-    if counts["loose_threads"]:
+    # A count for something the screen does not show is a number the
+    # clinician cannot act on (D29).
+    if counts["loose_threads"] and "loose_threads" in summary_mod_scope():
         parts.append(f"{counts['loose_threads']} left open")
     parts.append(f"{counts['discarded']} discarded")
     return " · ".join(parts)

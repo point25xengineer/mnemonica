@@ -101,6 +101,41 @@ class _Med:
     change_from_model: bool = True
 
 
+_NOT_A_DRUG_NAME = frozenset("""
+still on it that this one the a an my your his her our their same as
+before now then also too again just only more less other another
+take taking took takes keep keeping stay staying
+""".split())
+"""Words that can make up a whole phrase without any of it naming a drug."""
+
+
+def _names_nothing(heard: str) -> bool:
+    """Is there any token here that could be a drug name at all?
+
+    Per-turn extraction nominates from a single turn, so a clinician's
+    correction — *"Five hundred. With food."* — arrives as a medication with
+    no drug in it. So does *"Still on it"*. Both resolve to `unresolved` and
+    are handled honestly from there, but each becomes a box the clinician has
+    to dismiss, and under D29 medications are the only boxes there are: on the
+    test script two of the four were fragments like these.
+
+    The test is deliberately narrow. A phrase is dropped only when **nothing**
+    in it could be a name: every token is a number word, a unit, or a function
+    word. *"my blood pressure pill"* survives — it names a drug by what it
+    does, which is a real mention that D16 category 4 exists to flag, and the
+    clinician should see it. So does *"water pill"*.
+    """
+    import re as _re
+    tokens = [t for t in _re.findall(r"[a-z]+", heard.lower()) if len(t) > 1]
+    if not tokens:
+        return True
+    from mnemonica.kb.normalize import SALT_WORDS  # noqa: F401  (kept in sync)
+    from mnemonica.tools.parse_sig import _MULTIPLIERS, _NUMBER_WORDS, _UNIT_CANON
+    ignorable = (set(_NUMBER_WORDS) | set(_MULTIPLIERS) | set(_UNIT_CANON)
+                 | _NOT_A_DRUG_NAME)
+    return all(t in ignorable for t in tokens)
+
+
 def _verify_medications(session, extraction, sv, kb) -> list[_Med]:
     """Steps 1–3 and 5 for every medication the model emitted, merged on RxCUI.
 
@@ -113,6 +148,13 @@ def _verify_medications(session, extraction, sv, kb) -> list[_Med]:
         near = session.turn_at_offset(0)
         mention = sv.verify(item.medication.mention_quote, kind="medication")
         if mention is None:
+            continue
+        # The span is real — the clinician did say "Five hundred" — but there
+        # is no drug in it, so there is nothing for the tools to resolve and
+        # nothing for a patient to be told. Dropped before it becomes a box.
+        if _names_nothing(mention.text):
+            sv._drop(kind="medication", reason="no drug name in the mention",
+                    stage="C4.5")
             continue
         near = session.turn_at_offset(mention.char_offset)
         resolution = resolve_medication(

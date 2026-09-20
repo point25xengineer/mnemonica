@@ -320,9 +320,15 @@ class Extraction:
     def items(self) -> list[Item]:
         """Review order: blocking first, then anything expanded, then the
         collapsed remainder — D9's eye-path, not the JSON's key order."""
-        everything = (
-            self.medications + self.appointments + self.red_flags + self.loose_threads
-        )
+        # `summary` is a scope entry but not an item list — it is quotes,
+        # with nothing to settle — so it is filtered out here and consulted
+        # directly by the two renderers.
+        everything = [
+            item
+            for kind in SCOPE
+            if kind in ITEM_KINDS
+            for item in getattr(self, kind)
+        ]
         return sorted(
             everything,
             key=lambda i: (0 if i.is_blocking else 1 if i.render_expanded else 2),
@@ -376,6 +382,33 @@ class Resolution:
 
     def settles(self, flag_index: int) -> str | None:
         return self.choices.get(flag_index)
+
+
+ITEM_KINDS: frozenset[str] = frozenset(
+    {"medications", "appointments", "red_flags", "loose_threads"}
+)
+"""Scope entries that are lists of `Item`. `summary` is not one."""
+
+SCOPE: tuple[str, ...] = ("medications",)
+"""Which extracted kinds reach a human — D29.
+
+Extraction still produces appointments, red flags and loose threads, they are
+still verified, and they are still in `extraction.json`. They are simply not
+shown. Narrowing here rather than in the prompt keeps the data, keeps the
+tests, and makes the decision one line to reverse:
+
+    SCOPE = ("medications", "appointments", "red_flags", "loose_threads")
+
+Why medications. Every kind is a surface that can be wrong in its own way —
+appointments needed deduplication, red flags needed deduplication, and each
+carried its own rendering quirks. Medications are the highest-stakes output
+and the one the tool layer actually grounds: RxNorm resolves the name, the sig
+grammar parses the dose, and D16 category 7 catches a contradiction. Nothing
+grounds a red flag beyond quoting it.
+
+A narrower product that is right beats a broad one that is nearly right,
+particularly when the broad parts are the ungrounded ones.
+"""
 
 
 def unverified_identity_flag(item: Item) -> int | None:

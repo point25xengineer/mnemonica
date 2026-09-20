@@ -365,12 +365,21 @@ def _appointments(session, extraction, sv, visit_date: date) -> list[dict]:
     deduplicating on the model's strings would not be: identical offsets are
     the same words in the same place, not two things that happen to read alike.
     """
-    out, seen = [], set()
+    out, spans = [], []
     for i, item in enumerate(extraction.appointments):
         when = sv.verify(item.when.phrase_quote, kind="appointment")
-        if when is None or (when.char_offset, when.char_end) in seen:
+        if when is None:
             continue
-        seen.add((when.char_offset, when.char_end))
+        # Identical offsets were already deduplicated here; overlapping ones
+        # were not, and that is the common case. `"in six weeks"` sits inside
+        # `"Come back and see me in six weeks"`, so the same follow-up
+        # nominated from either side of the turn produced two entries and
+        # printed twice. Overlapping offsets are the same words in the same
+        # place, which is the same argument identical offsets rest on.
+        if any(when.char_offset < end and start < when.char_end
+               for start, end in spans):
+            continue
+        spans.append((when.char_offset, when.char_end))
         purpose = sv.verify(item.purpose_quote, kind="appointment_purpose",
                             near=session.turn_at_offset(when.char_offset))
         resolution = resolve_date(item.when, visit_date)
@@ -393,11 +402,70 @@ def _appointments(session, extraction, sv, visit_date: date) -> list[dict]:
             "disposition": "prefilled_flagged" if flags else "printed_as_fact",
             "d16_categories": sorted({f["d16_category"] for f in flags
                                       if f["d16_category"]}),
-            "when": {"quote": when.as_dict(), **resolution.model_dump(mode="json")},
+            # `event_kind` is the model's classification, not the resolver's
+            # output, so it is not in the resolution dump — but it is what
+            # keeps a follow-up visit and a blood test on the same day from
+            # being merged as duplicates.
+            "when": {"quote": when.as_dict(), "event_kind": item.when.event_kind,
+                     **resolution.model_dump(mode="json")},
             "purpose_quote": purpose.as_dict() if purpose else None,
             "flags": flags,
+            "_turn_role": when.turn_role,
         })
-    return out
+    return _one_per_appointment(out)
+
+
+def _one_per_appointment(entries: list[dict]) -> list[dict]:
+    """Collapse entries that are the same appointment said twice.
+
+    Overlap catches a follow-up nominated from either side of one turn. It
+    does not catch the patient repeating the date back — `"Six weeks."` is a
+    different span in a different turn, and it printed as a third visit.
+
+    Two entries are the same appointment when they resolve to the same day
+    **and** are the same kind of event. The kind matters: a follow-up visit
+    and a blood test can honestly fall on one day, and merging those would
+    lose a real instruction rather than a duplicate.
+
+    Which survives: the clinician's, then the one carrying a purpose, then the
+    earliest. The doctor sets the appointment; the patient echoes it, and the
+    echo is the one with no reason attached.
+    """
+    def rank(entry: dict) -> tuple[int, int, int]:
+        return (
+            0 if entry.get("_turn_role") == "clinician" else 1,
+            0 if (entry.get("purpose_quote") or {}).get("text") else 1,
+            (entry["when"].get("quote") or {}).get("char_offset", 0),
+        )
+
+    best: dict[tuple, dict] = {}
+    for entry in entries:
+        when = entry["when"]
+        key = (when.get("resolved_date"), when.get("event_kind"))
+        if key[0] is None:          # unresolved dates are never merged
+            best[("unresolved", id(entry))] = entry
+            continue
+        current = best.get(key)
+        if current is None:
+            best[key] = entry
+            continue
+        winner, loser = ((entry, current) if rank(entry) < rank(current)
+                         else (current, entry))
+        # Merge rather than discard. The clinician's phrasing is the one to
+        # print, but the reason may have been captured from the turn where the
+        # patient repeated the date back — dropping the whole losing entry
+        # loses a real instruction along with the duplicate.
+        if not (winner.get("purpose_quote") or {}).get("text"):
+            purpose = (loser.get("purpose_quote") or {}).get("text")
+            if purpose:
+                winner["purpose_quote"] = loser["purpose_quote"]
+        best[key] = winner
+
+    kept = sorted(best.values(),
+                  key=lambda e: (e["when"].get("quote") or {}).get("char_offset", 0))
+    for entry in kept:
+        entry.pop("_turn_role", None)
+    return kept
 
 
 def _simple_items(extraction, sv, *, attr, kind, quote_field, id_prefix,

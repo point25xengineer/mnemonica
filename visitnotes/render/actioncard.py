@@ -19,6 +19,7 @@ confidently wrong headline sentence if you let them slide:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import date
 from typing import Any, Iterable, Literal
@@ -474,10 +475,76 @@ def medication_row(
 # -- appointment ---------------------------------------------------------
 
 
+_PHRASE_LEAD = re.compile(
+    r"^(?:and\s+)?(?:i(?:'ll|\s+will)\s+see\s+you\s+"
+    r"|come\s+back\s+(?:and\s+)?(?:see\s+me\s+)?"
+    r"|see\s+me\s+"
+    r"|come\s+(?=in\b|back\b)"
+    r"|come\s+)",
+    re.I,
+)
+"""The template already says "Come back". A phrase that says it too produced
+*"Come back Come back and see me in six weeks from today"* — the model quoted
+the whole clause, which is correct verbatim capture and wrong inside a frame
+that supplies its own verb."""
+
+_PURPOSE_LEAD = re.compile(
+    r"^(?:so\s+(?:that\s+)?)?(?:we|i|you)(?:'ll|\s+will|\s+can|\s+could)?\s+",
+    re.I,
+)
+"""`", to " + "we'll see where the sugars have landed"` reads *"to we'll
+see"*. The frame wants a bare infinitive; a quoted clause carries its own
+subject."""
+
+
+_PROPER = frozenset(
+    "january february march april may june july august september october "
+    "november december monday tuesday wednesday thursday friday saturday "
+    "sunday christmas easter thanksgiving".split()
+)
+"""Capitalised words that are proper nouns rather than a sentence opening.
+
+The set of them that can start a time phrase is small and closed, which is
+why this is a list and not a heuristic: *"Monday morning"* must not become
+*"monday morning"*, and no test of the letters alone can tell it apart from
+*"Six weeks."*
+"""
+
+
+def _fit_phrase(phrase: str) -> str:
+    """Trim a verbatim time phrase to what fits after "Come back ".
+
+    Deliberately conservative: it removes a leading verb the frame already
+    supplies and trailing sentence punctuation, and changes nothing else. The
+    words a patient reads are still the doctor's words.
+    """
+    trimmed = _PHRASE_LEAD.sub("", phrase.strip()).strip(" .,;:!?")
+    trimmed = trimmed or phrase.strip(" .,;:!?")
+    # It lands mid-sentence after "Come back ", so a sentence-initial capital
+    # reads as a stray proper noun. Only the first word, and only when the
+    # rest of it is lower case — "March" and "Monday" must survive.
+    head, sep, tail = trimmed.partition(" ")
+    if head[1:].islower() and head.lower() not in _PROPER:
+        trimmed = head.lower() + sep + tail
+    return trimmed
+
+
+def _fit_purpose(text: str) -> str | None:
+    """Trim a purpose to a bare infinitive, or give up and drop it.
+
+    Dropping is the right failure: the purpose is decoration on an
+    appointment, and a mangled one costs more than a missing one.
+    """
+    trimmed = _PURPOSE_LEAD.sub("", text.strip()).strip(" .,;:!?")
+    if not trimmed or len(trimmed.split()) < 2:
+        return None
+    return trimmed
+
+
 def appointment_sentence(item: Item) -> Sentence:
     when = item.raw.get("when") or {}
     resolved = when.get("resolved_date")
-    phrase = when.get("original_phrase") or "soon"
+    phrase = _fit_phrase(when.get("original_phrase") or "soon")
     purpose = item.raw.get("purpose_quote") or {}
 
     if resolved:
@@ -486,10 +553,9 @@ def appointment_sentence(item: Item) -> Sentence:
         when_text = phrase
 
     frags = [Fragment("Come back "), Fragment(when_text, strong=True)]
-    if purpose.get("text"):
-        # The purpose is a verbatim span, quoted so it reads as the doctor's
-        # words rather than ours.
-        frags += [Fragment(", to "), Fragment(purpose["text"])]
+    fitted = _fit_purpose(purpose.get("text") or "")
+    if fitted:
+        frags += [Fragment(", to "), Fragment(fitted)]
     frags.append(Fragment("."))
     return Sentence(tuple(frags))
 

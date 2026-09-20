@@ -48,9 +48,14 @@
   table.meds { border-collapse: collapse; width: 100%; margin: .4rem 0 1.5rem; }
   table.meds th, table.meds td {
     text-align: left; vertical-align: top;
-    padding: .85rem .9rem .85rem 0; border-bottom: 1px solid #d5d5d5;
+    padding: .8rem .9rem;
+    border-bottom: 1px solid #d5d5d5;
+    border-right: 1px solid #d5d5d5;   /* column rules */
   }
-  table.meds td:last-child, table.meds th:last-child { padding-right: 0; }
+  table.meds td:first-child, table.meds th:first-child { padding-left: 0; }
+  table.meds td:last-child, table.meds th:last-child {
+    padding-right: 0; border-right: none;
+  }
   table.meds thead th {
     font-size: 16px; font-weight: 400; color: #555;
     text-transform: uppercase; letter-spacing: .07em;
@@ -118,7 +123,6 @@
 <h2>What your doctor advised</h2>
 
 {% if medications %}
-<h3>Your medicines</h3>
 {% macro cell(sentence) -%}
   {%- for f in sentence.fragments -%}
     {%- if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif -%}

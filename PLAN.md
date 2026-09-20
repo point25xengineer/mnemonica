@@ -138,7 +138,7 @@ and 1.8 GB, rebuildable in 7 s and 37 s):
 
 ## Track C — Extraction + verification · [phases/PHASE-2C-extraction.md](phases/PHASE-2C-extraction.md)
 
-*Owner:* ____  ·  *Needs 1a, 1c. Builds on the fixture, not on Track B.*
+*Owner:* agent-track-c  ·  *Needs 1a, 1c. Builds on the fixture, not on Track B.*
 
 - [x] **C1** schemas — no free-text field anywhere
 - [x] **C2** GATE — xgrammar compiles the real `VisitExtraction`, + logits processor

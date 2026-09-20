@@ -143,12 +143,6 @@
       return;
     }
 
-    if (key === 'd') {
-      const toggle = document.querySelector('a.toggle');
-      if (toggle) { event.preventDefault(); window.location.href = toggle.href; }
-      return;
-    }
-
     if (key === 'a') {
       const approve = document.getElementById('approve-button');
       if (approve) { event.preventDefault(); approve.click(); }

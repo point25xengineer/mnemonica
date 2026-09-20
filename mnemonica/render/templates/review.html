@@ -66,14 +66,6 @@
 {% endfor %}
 {% endif %}
 
-<div class="eyebrow-row">
-  <a class="toggle" href="{{ '/' if show_details else '/?checks=1' }}">
-    {{ 'hide checks' if show_details else 'show checks' }}
-  </a>
-</div>
-
-<h2 class="part">What the doctor advised</h2>
-
 {% for row in rows %}
   <article class="row{% if row.blocking %} blocking{% endif %}{% if row.dropped %} dropped{% endif %}"
            id="row-{{ row.id }}" data-item="{{ row.id }}" tabindex="0"

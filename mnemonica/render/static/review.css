@@ -45,18 +45,12 @@
   color-scheme: light;
 }
 
-/* Wide viewport: the canvas's "Desktop" artboard widens the reading measure
-   and lets the medication cards sit two up. Everything below that already
-   centers on `--measure` picks this up for free. */
+/* Wide viewport: the canvas's "Desktop" artboard widens the reading measure.
+   Everything below that already centers on `--measure` picks this up for
+   free; the two-column rule for the cards lives with `main` further down,
+   because it overrides `main`'s own display and has to come after it. */
 @media (min-width: 900px) {
   :root { --measure: 1040px; }
-  main { grid-template-columns: repeat(auto-fit, minmax(430px, 1fr)); align-items: start; }
-  /* Only the cards (`.row`) go two-up. The presentation blocks are prose,
-     not a card, and need the full row or they get shuffled into the grid
-     alongside the cards. */
-  main > h2.part, main > .summary-block {
-    grid-column: 1 / -1;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -106,7 +100,32 @@ body.lean .detail { display: none; }
 .notice svg { flex: none; margin-top: 1px; }
 
 /* -- rows -------------------------------------------------------------- */
-main { padding: 1rem 1.5rem; display: grid; gap: 16px; max-width: var(--measure); }
+/* `margin-inline: auto` — `--measure` caps the width on every screen, and
+   without it the cap parks everything against the left edge on a wide
+   display instead of centring it. */
+main {
+  padding: 1rem 1.5rem; display: grid; gap: 16px;
+  max-width: var(--measure); margin-inline: auto;
+}
+
+/* Wide viewport: the cards sit two up — and *flow* down two columns rather
+   than filling a grid. A grid aligns rows, so one tall card holds its whole
+   row open and leaves a card-height hole beside a short neighbour, which is
+   the gap that made the screen look broken. Column flow packs the next card
+   into that space instead. Reading order becomes down the first column and
+   then down the second, which keeps the blocking card first at top-left and
+   D9's eye-path intact.
+
+   `#rows` on purpose: consent, record and the signed page share this `main`
+   and are each one centred card, which two columns cut in half. */
+@media (min-width: 900px) {
+  main#rows { display: block; columns: 2; column-gap: 16px; }
+  /* `gap` belonged to the grid; in column flow the spacing is the card's. */
+  main#rows > .row { break-inside: avoid; margin-bottom: 16px; }
+  /* The presentation blocks are prose, not cards — full width above the
+     columns rather than packed in beside one. */
+  main#rows > h2.part, main#rows > .summary-block { column-span: all; }
+}
 .row {
   background: var(--card); border: 1px solid var(--line); border-radius: 20px;
   outline: none; box-shadow: 0 10px 28px rgba(18, 49, 61, .06);

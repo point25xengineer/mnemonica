@@ -11,6 +11,30 @@
         "sessions/b5/MedScribe test 1.16000.wav"
       ],
       "port": 8765
+    },
+    {
+      "name": "mnemonica-review",
+      "runtimeExecutable": "/Users/evancanty/vn-shared/.venv/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "mnemonica.ui.app",
+        "--session",
+        "sessions/phase3/session.json",
+        "--extraction",
+        "sessions/phase3/extraction.json",
+        "--audio",
+        "sessions/phase3/MedScribe test 1.m4a"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "mnemonica-record",
+      "runtimeExecutable": "/Users/evancanty/vn-shared/.venv/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "mnemonica.ui.app"
+      ],
+      "port": 8765
     }
   ]
 }

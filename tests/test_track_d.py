@@ -19,7 +19,7 @@ from mnemonica.render import actioncard, fhir
 from mnemonica.render.audio import cue_for, words_in
 from mnemonica.render.document import render_patient_document
 from mnemonica.render.model import Extraction, Resolution, item_is_resolved
-from mnemonica.render.review import build_review, header_line
+from mnemonica.render.review import ReviewFlag, build_review, header_line
 from mnemonica.render.summary import HEADINGS, build_summary
 from mnemonica.ui import retention, state
 
@@ -177,15 +177,34 @@ def test_a_question_is_asked_in_the_doctors_language(rows):
     assert next(f for f in row.flags if f.d16_category == 7).question == QUESTIONS[7]
 
 
-def test_category_8_is_never_demoted_to_a_footnote(rows):
-    """It is non-blocking and has no options, so every rule that keys on
-    those alone hides it — which is the one thing U3 forbids."""
+def test_category_8_is_recorded_but_stays_off_the_glass(rows):
+    """It fired on every row of the demo, three times on one, and a warning
+    that is always on is read as chrome. Held back from the screen by
+    explicit instruction — the flag, its two quotes and their audio are
+    still built, so the extraction and the FHIR copy are unchanged and
+    putting it back is one predicate."""
     row = next(r for r in rows if r.id == "med-metoprolol")
     cat8 = next(f for f in row.flags if f.d16_category == 8)
-    assert not cat8.quiet
-    assert cat8 in row.questions
+    assert cat8.bookkeeping
+    assert cat8 not in row.questions and cat8 not in row.notes
     assert len(cat8.evidence) == 2, "both quotes, side by side"
     assert all(e.cue for e in cat8.evidence)
+
+
+def test_an_unparsed_dose_remainder_stays_off_the_glass(rows):
+    """The span the grammar could not parse is already on the screen. The
+    note only adds a more alarming way to read a line already shown."""
+    flag = ReviewFlag(
+        index=0, d16_category=None, blocking=False,
+        question='a dose was spoken but not fully parsed: “25”',
+        render="collapsed", evidence=[], options=[], chosen=None,
+        merge_target=None,
+    )
+    assert flag.bookkeeping
+    row = next(r for r in rows if r.id == "med-metoprolol")
+    row.flags.append(flag)
+    assert flag not in row.questions and flag not in row.notes
+    assert flag in row.flags, "still recorded, only hidden"
 
 
 def test_category_3_reads_correctly_for_a_patient_turn(rows):

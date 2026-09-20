@@ -141,18 +141,39 @@ class ReviewFlag:
             return False
         return not self.blocking and not self.options and not self.merge_target
 
+    OFF_THE_GLASS = (
+        "change_kind",
+        "a dose was spoken but not fully parsed",
+    )
+    """Track C reasons the review screen does not show.
+
+    `change_kind was not derived from two parsed doses` is true, and the
+    screen already answers it: an underived direction gets its own *"Is that
+    the right word?"* question, and a non-directional verb needs no answer at
+    all. Saying it twice, once in Track C's vocabulary, is noise.
+
+    *"a dose was spoken but not fully parsed"* names the grammar's failure,
+    not the visit's. The span it could not parse is already on the screen —
+    either as the dose being asked about or as the quote under it — so the
+    note adds a second, more alarming way to read a line the clinician has
+    already been shown.
+
+    String-matched on purpose: if Track C rewords one we show a slightly
+    verbose note, which degrades the right way.
+    """
+
     @property
     def bookkeeping(self) -> bool:
         """A note about the pipeline's own state rather than about the visit.
 
-        `change_kind was not derived from two parsed doses` is true, and the
-        screen already answers it: an underived direction gets its own
-        *"Is that the right word?"* question, and a non-directional verb needs
-        no answer at all. Saying it twice, once in Track C's vocabulary, is
-        noise. String-matched on purpose — if Track C rewords it we show a
-        slightly verbose note, which degrades the right way.
+        Category 8 is here by explicit instruction, against the argument in
+        `quiet` above: the association warning fired on every row of the
+        demo — three times on one — and a warning that is always on is read
+        as chrome rather than as a finding. It is still recorded in the
+        extraction and the FHIR copy; it is only off the glass.
         """
-        return self.quiet and self.question.startswith("change_kind")
+        return (self.d16_category == 8
+                or self.question.startswith(self.OFF_THE_GLASS))
 
 
 @dataclass
@@ -186,7 +207,7 @@ class ReviewRow:
 
     @property
     def questions(self) -> list[ReviewFlag]:
-        return [f for f in self.flags if not f.quiet]
+        return [f for f in self.flags if not f.quiet and not f.bookkeeping]
 
     @property
     def notes(self) -> list[ReviewFlag]:

@@ -226,13 +226,13 @@ and a session flagged as a demo fixture survives.
 
 ## Track D is done when
 
-- [ ] consent is captured before recording and prints on the page (U2, D27)
-- [ ] only blocking items demand attention; the rest collapse
-- [ ] the discarded count is in the header
-- [ ] category-8 items render expanded, not collapsed
-- [ ] click-to-play lands correctly
-- [ ] both blocking types resolve keyboard-only
-- [ ] no LLM-authored prose reaches the page; underived `change_kind` is flagged
-- [ ] print is legible at 18px+ with the clinician footer
-- [ ] approve shreds audio **and logs**, writes FHIR, and prints
-- [ ] expiry sweep works, and skips flagged demo sessions
+- [x] consent is captured before recording and prints on the page (U2, D27)
+- [x] only blocking items demand attention; the rest collapse
+- [x] the discarded count is in the header
+- [x] category-8 items render expanded, not collapsed
+- [x] click-to-play lands correctly
+- [x] both blocking types resolve keyboard-only
+- [x] no LLM-authored prose reaches the page; underived `change_kind` is flagged
+- [x] print is legible at 18px+ with the clinician footer
+- [x] approve shreds audio **and logs**, writes FHIR, and prints
+- [x] expiry sweep works, and skips flagged demo sessions

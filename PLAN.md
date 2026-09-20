@@ -55,7 +55,7 @@ Status markers: `[ ]` not started · `[~]` in progress · `[x]` done ·
 | Track A — knowledge base | Evan + agent | 13 / 13 | **done** |
 | Track B — audio | agent-track-b | 4 / 6 | **B1-B2-B4-B6 done**; B3 + B5 wait on 1e's enrollment and a listen |
 | Track C — extraction | | 0 / 6 | **can start now** |
-| Track D — interface | | 0 / 10 | **can start now** |
+| Track D — interface | | 10 / 10 | **done** |
 | Phase 3 — integration | | 0 / 5 | waits on all tracks |
 | Phase 4 — demo | | 0 / 4 | waits on Phase 3 |
 
@@ -155,16 +155,16 @@ Steps are **U**1–U10. `D1`–`D27` are SPEC decision IDs; this track used to
 number its steps D1–D9 too, which made *"D8 — approve: shred the audio (D2)"*
 mean two different documents in one sentence.
 
-- [ ] **U1** localhost app shell
-- [ ] **U2** consent capture at session start (**D27**) — required before recording
-- [ ] **U3** review list — only blocking items demand attention; header shows the **discarded count** (D16 cat 1)
-- [ ] **U4** click-a-line → audio playback (clinician only)
-- [ ] **U5** blocking-item resolution, keyboard-only
-- [ ] **U6** action card templates — `change_kind` never printed as fact unless derived
-- [ ] **U7** extractive summary — no generated prose
-- [ ] **U8** print stylesheet, 18px+, clinician footer **+ consent line**
-- [ ] **U9** approve → shred audio **and logs**, write FHIR, print
-- [ ] **U10** 24 h expiry sweep — **exempt pre-computed demo sessions (4a)**
+- [x] **U1** localhost app shell
+- [x] **U2** consent capture at session start (**D27**) — required before recording
+- [x] **U3** review list — only blocking items demand attention; header shows the **discarded count** (D16 cat 1)
+- [x] **U4** click-a-line → audio playback (clinician only)
+- [x] **U5** blocking-item resolution, keyboard-only
+- [x] **U6** action card templates — `change_kind` never printed as fact unless derived
+- [x] **U7** extractive summary — no generated prose
+- [x] **U8** print stylesheet, 18px+, clinician footer **+ consent line**
+- [x] **U9** approve → shred audio **and logs**, write FHIR, print
+- [x] **U10** 24 h expiry sweep — **exempt pre-computed demo sessions (4a)**
 
 ---
 
@@ -599,6 +599,56 @@ Format: `HH:MM · <step> · <what happened>`
         read `.flags`. (2) `RoleAssignment.override(cluster)` is D20's
         "that's me" button, and it clears the identity flags it was raised to
         answer.
+20:58 · U1-U10 · Track D done. `python -m visitnotes.ui.app` serves the
+        review screen on 127.0.0.1:8765; `--sweep` runs U10 and exits;
+        `--audio PATH` attaches a recording, since golden_visit.json names
+        fixtures/sessions/golden/visit.m4a and that file is not in git. 48
+        tests in tests/test_track_d.py, one per done-when row. Stdlib
+        http.server + Jinja2 and NO web framework: 4b turns the Wi-Fi off,
+        and a pip install on venue Wi-Fi is a demo-day risk taken for a
+        router we do not need.
+20:58 · U4 · A landmine worth knowing about if anyone else serves media from
+        BaseHTTPRequestHandler: it answers every GET with the whole file and
+        no Accept-Ranges, so the browser reports seekable=[0,0] and SILENTLY
+        IGNORES currentTime=64.35. Clicking a line played the visit from the
+        top — no error, no console warning, just the wrong two seconds.
+        Caught it by reading p.seekable in the live page, not from a test.
+        app.py now serves 206 Partial Content and answers HEAD. Verified in
+        the browser: click "the metoprolol up to 50 milligrams" → starts
+        64.49s, stops 65.35s, pauses. Cues are computed from Word.start, so
+        this is contract 1a paying for itself a second time.
+20:58 · U3/U6 · Two calls Track C should know about, because they read the
+        same fixture. (a) A flagged line cues to the LEAST CONFIDENT WORD in
+        the span, not the start of the turn — with a dose numeral at p=0.14
+        inside a confident sentence, cueing to the sentence makes the doctor
+        listen and guess which part we doubted. (b) Sigs are never merged
+        across turns in the action card, even when one turn has the dose and
+        another the frequency. That merge is exactly the D16 cat 8 smear, and
+        a template doing it silently would launder the thing the flag warns
+        about. `actioncard._select_sig` picks ONE sig and prints only what it
+        carries.
+20:58 · U3 · The rebuilt fixture (11b32a4) carries D16 cat 2 as well, which
+        1c's first cut did not. Nothing needed changing — the review screen
+        reads `flags[].render` rather than switching on category — but it is
+        a good sign for 3d: the categories are data, not code paths.
+20:58 · U9 · Verified end to end in the browser, not just in tests: consent
+        → review → two keystrokes to settle both blocking flags → A →
+        signed. Shred took visit.wav AND review.log; the FHIR
+        DocumentReference landed in data/records/<id>/ (outside session_dir,
+        so the shred cannot reach it) and its base64 attachment decodes
+        byte-for-byte equal to the printed HTML. One render, two
+        destinations — D26 holds.
+20:58 · U10 · Sweep runs on server startup and as `--sweep` for cron. 4a:
+        call `retention.mark_demo_fixture(session_dir)` WHEN YOU CREATE the
+        pre-computed session, not later — verified a 40-hour-old marked
+        session survives a sweep that takes its unmarked neighbours.
+20:58 · 3a · The seam is `ReviewSession.load_fixture()` in visitnotes/ui/
+        state.py — one method, and it is the only place Track D touches JSON.
+        It re-homes the session into data/sessions/<id>/ before validating,
+        because the fixture's own session_dir points inside fixtures/, which
+        is checked-in test data U9 must never shred. Track B: hand it a
+        Session and delete the json.loads. Nothing else in Track D reads a
+        file path.
 ```
 
 ---

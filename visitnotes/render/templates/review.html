@@ -1,0 +1,177 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Review &mdash; VisitNotes</title>
+<link rel="stylesheet" href="/static/review.css">
+{#
+  U3. Sixty seconds (D9). Blocking items are open and first; everything that
+  verified is a one-line <details> the doctor never has to open. Category 8 is
+  open despite being non-blocking, because span verification cannot see it.
+#}
+<header class="bar">
+  <div>
+    <h1>Visit review</h1>
+    <p class="counts">{{ header_line }}</p>
+  </div>
+  <div class="approve-box">
+    {% if can_approve %}
+    <form method="post" action="/approve">
+      <button type="submit" class="approve" id="approve-button">
+        Approve &amp; print <kbd>A</kbd>
+      </button>
+    </form>
+    {% else %}
+    <button class="approve" disabled title="{{ unresolved|length }} item(s) still need a decision">
+      {{ unresolved|length }} to settle first
+    </button>
+    {% endif %}
+  </div>
+</header>
+
+<p class="keyhint">
+  <kbd>J</kbd>/<kbd>K</kbd> move &middot; <kbd>1</kbd>&ndash;<kbd>9</kbd> choose
+  &middot; <kbd>Space</kbd> hear it &middot; <kbd>C</kbd> confirm wording
+  &middot; <kbd>X</kbd> drop &middot; <kbd>A</kbd> approve
+</p>
+
+{% if not audio_available %}
+<p class="notice">
+  No audio on disk for this session yet (1e is unrecorded), so playback shows
+  the cue window instead of playing it. Every offset below is live.
+</p>
+{% endif %}
+
+<main id="rows">
+{% for row in rows %}
+  <article class="row{% if row.blocking %} blocking{% endif %}{% if row.dropped %} dropped{% endif %}"
+           id="row-{{ row.id }}" data-item="{{ row.id }}" tabindex="0"
+           {% if row.cue %}data-cue-start="{{ '%.3f'|format(row.cue.start) }}"
+           data-cue-end="{{ '%.3f'|format(row.cue.end) }}"{% endif %}>
+    <details {% if row.expanded %}open{% endif %}>
+      <summary>
+        <span class="kind">{{ row.kind|replace('_', ' ') }}</span>
+        <span class="title">{{ row.title }}</span>
+        {% if row.blocking %}<span class="tag stop">needs your ear</span>{% endif %}
+        {% if row.dropped %}<span class="tag">dropped</span>
+        {% elif row.resolved and row.blocking %}<span class="tag ok">settled</span>{% endif %}
+        {% for label in row.category_labels %}<span class="tag cat">{{ label }}</span>{% endfor %}
+      </summary>
+
+      <div class="body">
+        {% for sentence in row.sentences %}
+        <p class="sentence{% if sentence.needs_promotion %} unconfirmed{% endif %}">
+          {% for f in sentence.fragments %}{% if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif %}{% endfor %}
+          {% if sentence.needs_promotion %}
+          <span class="promo">
+            {{ sentence.promotion_reason }}
+            <form method="post" action="/promote" class="inline">
+              <input type="hidden" name="item_id" value="{{ row.id }}">
+              <button type="submit">Confirm wording <kbd>C</kbd></button>
+            </form>
+          </span>
+          {% endif %}
+        </p>
+        {% endfor %}
+
+        {% if row.quote_text %}
+        <p class="heard">
+          Heard:
+          <button class="play" data-cue-start="{{ '%.3f'|format(row.cue.start) if row.cue else 0 }}"
+                  data-cue-end="{{ '%.3f'|format(row.cue.end) if row.cue else 0 }}">
+            &ldquo;{{ row.quote_text }}&rdquo;
+          </button>
+          {% if row.cue %}<span class="ts">{{ '%.1f'|format(row.cue.focus) }}s</span>{% endif %}
+        </p>
+        {% endif %}
+
+        {% for flag in row.flags %}
+        <section class="flag{% if flag.blocking %} stop{% endif %}">
+          <p class="reason">
+            {% if flag.d16_category %}<span class="tag cat">D16.{{ flag.d16_category }}</span>{% endif %}
+            {{ flag.reason }}
+            {% if flag.display %}&mdash; prints as <strong>{{ flag.display }}</strong>{% endif %}
+          </p>
+
+          {% if flag.heard_text %}
+          <p class="heard">Heard, unmatched: &ldquo;{{ flag.heard_text }}&rdquo;
+            {% if flag.near_matches %}
+            &middot; nearest: {{ flag.near_matches|join(', ') }}
+            {% else %}&middot; no near matches{% endif %}
+          </p>
+          {% endif %}
+
+          {% if flag.evidence|length %}
+          <ul class="evidence">
+            {% for ev in flag.evidence %}
+            <li>
+              <button class="play"
+                      data-cue-start="{{ '%.3f'|format(ev.cue.start) if ev.cue else 0 }}"
+                      data-cue-end="{{ '%.3f'|format(ev.cue.end) if ev.cue else 0 }}">
+                &ldquo;{{ ev.text }}&rdquo;
+              </button>
+              <span class="ts">
+                turn {{ ev.turn_id }} &middot; {{ ev.turn_role }} &middot;
+                {{ '%.1f'|format(ev.audio_start) }}s
+                {% if ev.cue %}&middot; weakest word
+                &ldquo;{{ ev.cue.focus_word }}&rdquo; p={{ '%.2f'|format(ev.cue.focus_probability) }}{% endif %}
+                {% if not ev.verified %}&middot; <strong>offset stale</strong>{% endif %}
+              </span>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+
+          {% if flag.merge_target %}
+          <form method="post" action="/drop" class="options">
+            <input type="hidden" name="item_id" value="{{ row.id }}">
+            <button type="submit" class="option">
+              Same as {{ titles.get(flag.merge_target, flag.merge_target) }}
+              &mdash; drop this line
+            </button>
+          </form>
+          {% endif %}
+
+          {% if flag.options %}
+          <form method="post" action="/resolve" class="options">
+            <input type="hidden" name="item_id" value="{{ row.id }}">
+            <input type="hidden" name="flag_index" value="{{ flag.index }}">
+            {% for option in flag.options %}
+            <button type="submit" name="option" value="{{ option }}"
+                    class="option{% if flag.chosen == option %} chosen{% endif %}">
+              <kbd>{{ loop.index }}</kbd> {{ option }}
+            </button>
+            {% endfor %}
+          </form>
+          {% if flag.chosen %}<p class="chosen-note">You chose: <strong>{{ flag.chosen }}</strong></p>{% endif %}
+          {% endif %}
+        </section>
+        {% endfor %}
+
+        <form method="post" action="/drop" class="inline drop">
+          <input type="hidden" name="item_id" value="{{ row.id }}">
+          <button type="submit">Drop this item <kbd>X</kbd></button>
+        </form>
+      </div>
+    </details>
+  </article>
+{% endfor %}
+</main>
+
+{% if discarded %}
+<section class="discarded">
+  {#
+    D16 category 1. The text is never shown — it was fabricated, and putting
+    it on screen invites someone to rescue it. The count is shown, because an
+    invisible deletion on a page of collapsed rows is indistinguishable from a
+    clean run.
+  #}
+  <h2>{{ discarded|length }} discarded before you saw it</h2>
+  <ul>
+    {% for d in discarded %}
+    <li>a {{ d.kind }} &mdash; {{ d.reason|replace('_', ' ') }} (dropped at {{ d.dropped_at }})</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<audio id="player" {% if audio_available %}src="/audio"{% endif %} preload="auto"></audio>
+<script src="/static/review.js"></script>

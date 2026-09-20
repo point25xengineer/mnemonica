@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Your visit summary — {{ visit_date_long }}</title>
+{#
+  U8. The accessibility floor is not a preference: 18px body minimum, real
+  contrast, nothing carried by colour alone, generous leading. This page is
+  read by a 78-year-old at arm's length, possibly through the wrong glasses.
+
+  It is also deliberately self-contained — one file, no external stylesheet,
+  no script. These exact bytes are what U9 embeds in the FHIR
+  DocumentReference (D26), so the chart copy must not depend on a server being
+  up to look like the paper did.
+
+  No audio affordance anywhere (D8): provenance is the doctor's review tool.
+  No "AI GENERATED" banner (D10): by the time this prints, a clinician has
+  attested to every line.
+#}
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font: 19px/1.65 Georgia, "Iowan Old Style", "Times New Roman", serif;
+    color: #111; background: #fff;
+    max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem;
+  }
+  h1 { font-size: 30px; line-height: 1.25; margin: 0 0 .25rem; }
+  .visit-date { font-size: 19px; color: #333; margin: 0 0 2rem; }
+  h2 {
+    font-size: 23px; margin: 2.5rem 0 .75rem; padding-bottom: .3rem;
+    border-bottom: 3px solid #111;
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li.entry { margin: 0 0 1.4rem; padding-left: 1.1rem; border-left: 4px solid #767676; }
+  p { margin: 0 0 .5rem; }
+  strong { font-weight: 700; }
+  .callout { border: 3px solid #111; padding: 1rem 1.2rem; margin: 0 0 1.2rem; }
+  .callout p { font-size: 21px; }
+  .said { font-size: 17px; color: #444; margin: 0 0 .15rem; }
+  blockquote {
+    margin: 0 0 1.1rem; padding-left: 1rem; border-left: 4px solid #767676;
+    font-style: italic;
+  }
+  footer {
+    margin-top: 3.5rem; padding-top: 1rem; border-top: 2px solid #111;
+    font-size: 18px; color: #222;
+  }
+  @media print {
+    body { max-width: none; padding: 0; font-size: 12.5pt; }
+    h1 { font-size: 19pt; } h2 { font-size: 15pt; }
+    li.entry, blockquote { break-inside: avoid; }
+    h2 { break-after: avoid; }
+  }
+</style>
+
+<h1>Your visit summary</h1>
+<p class="visit-date">{{ visit_date_long }} &middot; with {{ clinician_name }}</p>
+
+{% if medications %}
+<h2>Your medicines</h2>
+<ul>
+  {% for med in medications %}
+  <li class="entry">
+    {% for sentence in med.sentences %}
+    <p>{% for f in sentence.fragments %}{% if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif %}{% endfor %}</p>
+    {% endfor %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if red_flags %}
+<h2>Call the office if&hellip;</h2>
+{% for flag in red_flags %}
+<div class="callout">
+  <p class="said">Your doctor said:</p>
+  <p>&ldquo;{{ flag.text }}&rdquo;</p>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if appointments %}
+{# Not "What happens next" — U7's third heading is already called that, and
+   two identical headings on one page is the kind of small confusion this
+   document exists to avoid. #}
+<h2>Your next visit</h2>
+<ul>
+  {% for appt in appointments %}
+  <li class="entry">
+    <p>{% for f in appt.sentence.fragments %}{% if f.strong %}<strong>{{ f.text }}</strong>{% else %}{{ f.text }}{% endif %}{% endfor %}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% for section in summary %}{% if section.lines %}
+<h2>{{ section.heading }}</h2>
+{% for line in section.lines %}
+<p class="said">{{ line.speaker_label }}:</p>
+<blockquote>&ldquo;{{ line.quote.text }}&rdquo;</blockquote>
+{% endfor %}
+{% endif %}{% endfor %}
+
+<footer>
+  {# D10 names the responsible human; D27's clause is what makes the consent a
+     record rather than a UI affordance. Both come from data, not from a
+     hard-coded string. #}
+  <p>Prepared from a recording of your visit, made with your
+  {{ consent_method }} consent on {{ consent_date_long }}, and reviewed by
+  {{ clinician_name }}, {{ approved_date_long }}.</p>
+  {# Present tense, so the sentence is equally true on the clinician's print
+     preview and on the signed page a patient carries home. #}
+  <p>The recording is deleted when {{ clinician_name }} signs this page.</p>
+</footer>

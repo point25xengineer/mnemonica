@@ -1,0 +1,148 @@
+/* U3 — the clinician's screen. Dense, keyboard-first, high contrast.
+   This is the opposite design problem from the patient's page: someone with
+   fifteen minutes per visit, looking for the two things that need a decision.
+   Nothing here is carried by colour alone — every state also has a word. */
+
+:root {
+  --ink: #14181d;
+  --muted: #5b6672;
+  --line: #d3d9df;
+  --stop: #9a1b1b;
+  --stop-bg: #fdf2f2;
+  --ok: #1a5c34;
+  --focus: #1b4ea8;
+  --bg: #f6f7f9;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 0 0 5rem;
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+h1 { font-size: 20px; margin: 0; }
+kbd {
+  font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px;
+  padding: 2px 4px; background: #fff; color: var(--muted);
+}
+
+/* -- header ------------------------------------------------------------ */
+.bar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .85rem 1.25rem; background: #fff; border-bottom: 1px solid var(--line);
+}
+.counts { margin: .2rem 0 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+.approve {
+  font: 600 15px/1 inherit; padding: .7rem 1.1rem; border-radius: 8px;
+  border: 1px solid #14431f; background: #1a5c34; color: #fff; cursor: pointer;
+}
+.approve[disabled] { background: #e7eaee; color: var(--muted); border-color: var(--line); cursor: not-allowed; }
+.approve kbd { background: transparent; border-color: rgba(255,255,255,.5); color: #fff; }
+
+.keyhint { margin: .75rem 1.25rem .25rem; color: var(--muted); font-size: 13px; }
+.notice {
+  margin: .5rem 1.25rem; padding: .6rem .8rem; background: #fff8e6;
+  border: 1px solid #e0cf9a; border-radius: 6px; font-size: 13px;
+}
+
+/* -- rows -------------------------------------------------------------- */
+main { padding: .75rem 1.25rem; display: grid; gap: .55rem; }
+.row {
+  background: #fff; border: 1px solid var(--line); border-radius: 8px;
+  outline: none;
+}
+.row:focus-within, .row.focused { border-color: var(--focus); box-shadow: 0 0 0 2px rgba(27,78,168,.16); }
+.row.blocking { border-left: 5px solid var(--stop); }
+.row.dropped { opacity: .55; }
+
+summary {
+  display: flex; align-items: baseline; gap: .55rem; flex-wrap: wrap;
+  padding: .6rem .8rem; cursor: pointer; list-style: none;
+}
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "\25B8"; color: var(--muted); font-size: 11px; }
+details[open] > summary::before { content: "\25BE"; }
+.kind { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.title { font-weight: 600; }
+
+.tag {
+  font-size: 11px; padding: 1px 6px; border-radius: 999px;
+  border: 1px solid var(--line); color: var(--muted); background: #fafbfc;
+}
+.tag.stop { color: var(--stop); border-color: #e3b6b6; background: var(--stop-bg); font-weight: 600; }
+.tag.ok { color: var(--ok); border-color: #b6d7c2; background: #f2f9f5; }
+.tag.cat { font-family: ui-monospace, Menlo, monospace; }
+
+.body { padding: 0 .8rem .8rem; border-top: 1px solid #eef1f4; }
+.sentence { margin: .7rem 0 .4rem; font-size: 16px; }
+.sentence.unconfirmed { border-left: 3px solid #b8860b; padding-left: .6rem; }
+.promo { display: block; margin-top: .3rem; font-size: 13px; color: #7a5c00; }
+
+.heard { margin: .35rem 0; color: var(--muted); font-size: 13px; }
+.ts { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+button.play {
+  font: inherit; font-size: 14px; color: var(--focus); background: none;
+  border: none; border-bottom: 1px dashed currentColor; padding: 0;
+  cursor: pointer; text-align: left;
+}
+button.play:hover { background: #eef3fb; }
+
+/* -- flags ------------------------------------------------------------- */
+.flag { margin: .6rem 0 0; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 6px; background: #fbfcfd; }
+.flag.stop { border-color: #e3b6b6; background: var(--stop-bg); }
+.reason { margin: 0 0 .35rem; font-size: 14px; }
+.evidence { margin: .35rem 0 0; padding: 0 0 0 1rem; display: grid; gap: .3rem; }
+.evidence li { font-size: 14px; }
+
+.options { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+.option {
+  font: inherit; font-size: 14px; padding: .4rem .6rem; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 6px; background: #fff;
+}
+.option.chosen { border-color: var(--ok); background: #f2f9f5; font-weight: 600; }
+.chosen-note { margin: .4rem 0 0; font-size: 13px; color: var(--ok); }
+
+form.inline { display: inline; }
+form.inline button {
+  font: inherit; font-size: 13px; color: var(--muted); background: none;
+  border: none; cursor: pointer; padding: 0;
+}
+.drop { display: block; margin-top: .6rem; }
+
+/* -- discarded --------------------------------------------------------- */
+.discarded {
+  margin: 1rem 1.25rem; padding: .8rem 1rem; background: #fff;
+  border: 1px dashed var(--line); border-radius: 8px;
+}
+.discarded h2 { margin: 0 0 .35rem; font-size: 15px; }
+.discarded ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: 13px; }
+
+/* -- consent screen (U2) ----------------------------------------------- */
+.consent { max-width: 34rem; margin: 3rem auto; padding: 2rem; background: #fff;
+  border: 1px solid var(--line); border-radius: 10px; }
+.consent h1 { font-size: 24px; }
+.lede { color: var(--muted); }
+.consent-check { display: flex; gap: .6rem; align-items: flex-start; margin: 1.5rem 0;
+  font-size: 17px; font-weight: 600; }
+.consent-check input { width: 22px; height: 22px; margin-top: 1px; }
+.consent fieldset { border: 1px solid var(--line); border-radius: 6px; margin: 0 0 1.2rem; }
+.consent fieldset label { margin-right: 1rem; }
+.consent .clinician { display: block; margin-bottom: 1.4rem; }
+.consent .clinician span { display: block; font-size: 13px; color: var(--muted); margin-bottom: .3rem; }
+.consent .clinician input { width: 100%; padding: .5rem; font: inherit; border: 1px solid var(--line); border-radius: 6px; }
+.consent button[type=submit] {
+  font: 600 16px/1 inherit; padding: .75rem 1.2rem; border-radius: 8px;
+  border: 1px solid #14431f; background: #1a5c34; color: #fff; cursor: pointer;
+}
+.error { color: var(--stop); font-weight: 600; }
+.fineprint { margin-top: 1.5rem; font-size: 13px; color: var(--muted); }
+
+/* -- approved ---------------------------------------------------------- */
+.done { max-width: 40rem; margin: 3rem auto; padding: 2rem; background: #fff;
+  border: 1px solid var(--line); border-radius: 10px; }
+.done ul { padding-left: 1.1rem; }
+.done code { font: 12px/1.6 ui-monospace, Menlo, monospace; word-break: break-all; }
